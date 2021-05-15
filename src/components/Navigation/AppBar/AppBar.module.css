@@ -1,0 +1,10 @@
+.Frame {
+    height: 3.3em;
+    display: flex;
+    padding: 3px 0;
+}
+
+.Color {
+    color: #fff !important;
+    background-color: black !important;
+}

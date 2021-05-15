@@ -1,0 +1,12 @@
+.Box{
+    margin: auto;
+    width: 70%;
+    padding: 10px;
+    align-content: center;
+    font-size: 1.3rem;
+}
+
+.Line{
+    margin: auto;
+    text-align: center;
+}
