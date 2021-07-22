@@ -13,15 +13,8 @@
 }
 
 .summary {
-    width: 10rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-}
-
-.price {
-    font-weight: bold;
-    color: #8a2b06;
 }
 
 .amount {
@@ -30,6 +23,7 @@
     padding: 0.25rem 0.75rem;
     border-radius: 6px;
     color: #363636;
+    margin: 1em;
 }
 
 .actions {
@@ -47,8 +41,8 @@
     font: inherit;
     font-weight: bold;
     font-size: 1.25rem;
-    color: #8a2b06;
-    border: 1px solid #8a2b06;
+    color: #d8222b;
+    border: 1px solid #d8222b;
     width: 3rem;
     text-align: center;
     border-radius: 6px;
@@ -59,6 +53,6 @@
 
 .cart-item button:hover,
 .cart-item button:active {
-    background-color: #8a2b06;
+    background-color: #d8222b;
     color: white;
 }

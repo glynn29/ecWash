@@ -1,37 +1,23 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
+import {AuthContext} from "../../../containers/Auth/Auth";
 import SideDrawer from "../SideDrawer/SideDrawer";
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import TransitionModal from "../../UI/Modal/Modal";
 import Cart from "../../Cart/Cart";
-import ec_logo from '../../../assets/images/ec_logo.png';
 import classes from './AppBar.module.css';
-
-import HeaderCartButton from "../../UI/Buttons/HeaderCartButton/HeaderCartButton";
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    title: {
-        flexGrow: 1,
-    },
-    frame: {
-        height: 4
-    }
-}));
+import EcIcon from "../../../assets/icons/EcIcon/EcIcon"
+import SearchBar from "../../UI/Search/SearchBar/SearchBar";
+import HeaderCartButton from "../HeaderCartButton/HeaderCartButton";
+import formStyles from "../../../components/UI/Styles/formStyle";
 
 export default function CustomAppBar() {
-    const styles = useStyles();
+    const {currentUser} = useContext(AuthContext);
+    const styles = formStyles();
     const [drawerState, setDrawerState] = useState(false);
     const [modalState, setModalState] = useState(false);
 
@@ -43,27 +29,30 @@ export default function CustomAppBar() {
         setModalState(!modalState);
     };
 
-
     return (
-        <div className={styles.root}>
+        <div >
             <AppBar position="static" className={classes.Color}>
-                <Toolbar>
-                    <IconButton edge="start" className={styles.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon onClick={toggleDrawer}/>
+                <Toolbar className={classes.Bar}>
+                    <IconButton className={styles.menuButton} edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
+                        <MenuIcon fontSize={"large"} />
                     </IconButton>
-                    <Typography variant="h6" className={styles.title}>
-                        <img className={classes.Frame} src={ec_logo}/>
-                    </Typography>
-                    <HeaderCartButton open={toggleModal}/>
+                    <div className={classes.Pic}>
+                        <EcIcon/>
+                    </div>
+                    {currentUser && <div className={classes.Search}>
+                        <SearchBar/>
+                    </div>}
+                    {currentUser && <div className={classes.Button}>
+                        <HeaderCartButton open={toggleModal}/>
+                    </div>}
                 </Toolbar>
             </AppBar>
-            <SideDrawer toggleDrawer={toggleDrawer} state={drawerState}/>
+            <SideDrawer toggleDrawer={toggleDrawer} drawerState={drawerState}/>
             <TransitionModal
                 open={modalState}
-                handleOpen={toggleModal}
                 handleClose={toggleModal}
                 form={<Cart close={toggleModal}/>}
-                title={"Shopping"}
+                title={"Cart"}
             />
         </div>
     );

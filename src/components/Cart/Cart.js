@@ -1,15 +1,18 @@
+import Grid from "@material-ui/core/Grid";
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
+import {useHistory} from "react-router-dom";
 
 import CartItem from "./CartItem/CartItem";
 import * as actions from '../../store/actions/index';
 import classes from "./Cart.module.css";
 
 import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
 
 const Cart = (props) => {
+    const history = useHistory();
     const [items, setItems] = useState(null);
-    const [totalPrice, setTotalPrice] = useState('0');
     const hasItems = props.items.length > 0;
 
     useEffect(() => {
@@ -20,46 +23,51 @@ const Cart = (props) => {
                     price={item.price}
                     amount={item.amount}
                     name={item.name}
-                    onAdd={props.onAddItem.bind(null, item)}
-                    onRemove={props.onRemoveItem.bind(null, item.id)}
+                    onAdd={() => props.onAddItem(item, 1)}
+                    onRemove={() => props.onRemoveItem(item.id)}
                 />
             ))}</ul>;
         setItems(cartItems);
-        setTotalPrice(props.total.toFixed(2))
-    }, [props.total, props.items]);
+    }, [props.items]);
+
+    const handleCheckoutClick = () => {
+        props.close();
+        history.push('/checkout');
+    };
 
     return (
-        <Container component="main" maxWidth="sm" className={classes.Container} style={{overflow:'auto'}}>
-          {items && items}
-            {totalPrice > 0 ?
-                <div className={classes.total}>
-                    <span>Total</span>
-                    <span>{totalPrice}</span>
-                </div> :
+        <Container component="main" className={classes.Container}>
+            {items && items}
+            {props.items.length <= 0 &&
                 <div className={classes.Center}>
-                    <span>Nothing in cart bruh</span>
+                    <span>Cart is empty</span>
                 </div>
             }
-          <div className={classes.actions}>
-              <button onClick={() => props.onAddItem({id: 1, name: 'Poop', amount: 2, price: 12.99})}>add</button>
-              <button  onClick={() => props.onRemoveItem(1)}>remove</button>
-              <button className={classes['button-alt']} onClick={props.close}>Close</button>
-              {hasItems && <button className={classes.button}>Order</button>}
-          </div>
+            <div>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={hasItems ? 6 : 12}>
+                        <Button onClick={props.close} variant={"outlined"} style={{width: '100%', color: '#d8222b'}}>Continue Shopping</Button>
+                    </Grid>
+                    {hasItems &&
+                        <Grid item xs={12} sm={6}>
+                            <Button variant={"contained"} style={{width: '100%', }} color={"primary"} onClick={handleCheckoutClick}>Check Out</Button>
+                        </Grid>
+                    }
+                </Grid>
+            </div>
         </Container>
     );
 };
 
 const mapStateToProps = state => {
-    return{
-        total: state.cart.total,
+    return {
         items: state.cart.items,
     };
 };
 
 const mapDispatchToProps = dispatch => {
-    return{
-        onAddItem: (item) => dispatch(actions.onAddItem(item)),
+    return {
+        onAddItem: (item, amount) => dispatch(actions.onAddItem(item, amount)),
         onRemoveItem: (id) => dispatch(actions.onRemoveItem(id)),
     }
 };

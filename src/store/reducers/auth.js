@@ -5,15 +5,16 @@ const initialState = {
     email: null,
     userId: null,
     userDocId: null,
-    name: null,
-    role: null,
-    events: [],
+    city: null,
+    state: null,
+    zip: null,
     error: null,
     loading: false,
     registered: false,
     approved: false,
-    language: null,
-    positions: []
+    locationPhone: null,
+    managerPhone: null,
+    washType: null,
 };
 
 const authStart = (state, action) => {
@@ -50,14 +51,16 @@ const authLogout = (state, action) => {
         email: null,
         userId: null,
         userDocId: null,
-        name: null,
-        role: null,
-        events: [],
+        city: null,
+        state: null,
+        zip: null,
         error: null,
         loading: false,
+        registered: false,
         approved: false,
-        language: null,
-        positions: []
+        locationPhone: null,
+        managerPhone: null,
+        washType: null,
     });
 };
 

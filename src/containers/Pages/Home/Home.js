@@ -6,8 +6,8 @@ import * as classes from './Home.module.css';
 
 const Home = () => (
     <div className={classes.Box}>
-        <Typography variant="h2" className={classes.Line}><b>EC Wash baby</b></Typography>
-        <Typography variant="h4" className={classes.Line}><b>Tanner is gay as poop</b></Typography>
+        <Typography variant="h2" className={classes.Line}><b>EC Wash </b></Typography>
+        <Typography variant="h4" className={classes.Line}><b>Landing Page info here</b></Typography>
         <br/>
     </div>
 );

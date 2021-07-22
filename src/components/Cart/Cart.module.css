@@ -16,43 +16,40 @@
 }
 
 .actions {
-    text-align: right;
+    /*text-align: right;*/
 }
 
 .actions button {
     font: inherit;
     cursor: pointer;
     background-color: transparent;
-    border: 1px solid #8a2b06;
-    padding: 0.5rem 2rem;
-    border-radius: 25px;
-    margin-left: 1rem;
+    border: 1px solid #d8222b;
+    padding: 0.2rem .8rem;
+    border-radius: 5px;
+    margin-left: .3rem;
 }
 
 .actions button:hover,
 .actions button:active {
-    background-color: #5a1a01;
-    border-color: #5a1a01;
+    background-color: black;
+    border-color: black;
     color: white;
 }
 
 .actions .button--alt {
-    color: #8a2b06;
+    color: #d8222b;
 }
 
 .actions .button {
-    background-color: #8a2b06;
+    background-color: #d8222b;
     color: white;
 }
 
 .Container {
     text-align: center;
-    align-items: center;
 }
 
 .Center {
-    text-align: center;
-    align-items: center;
     font-weight: bold;
     font-size: 1.5rem;
     margin: 1rem 0;

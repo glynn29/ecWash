@@ -10,6 +10,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import authReducer from './store/reducers/auth';
 import cartReducer from './store/reducers/cart';
+import partReducer from './store/reducers/parts';
+import categoryReducer from './store/reducers/categories'
 // import confirmationReducer from './store/reducers/singUp';
 import {AuthProvider} from './containers/Auth/Auth';
 
@@ -18,6 +20,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const rootReducer = combineReducers({
     cart: cartReducer,
     auth: authReducer,
+    parts: partReducer,
+    categories: categoryReducer,
 });
 
 const store = createStore(rootReducer,composeEnhancers(

@@ -8,8 +8,8 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     avatar: {
-        margin: theme.spacing(2),
-        backgroundColor: theme.palette.secondary.main,
+        margin: theme.spacing(1),
+        backgroundColor: '#d8222b',
     },
     form: {
         display: 'flex',
@@ -40,9 +40,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3),
+        padding: theme.spacing(2, 0, 3),
         maxHeight: '80vh',
-        overflow: 'scroll',
+        overflow: 'auto',
+        borderRadius: 15
     },
     deleteButton:{
         backgroundColor: "red",
@@ -57,7 +58,9 @@ const useStyles = makeStyles((theme) => ({
         color: "white"
     },
     addButton: {
-        margin: theme.spacing(2, 4, 3),
+        margin: theme.spacing(1, 0, 1),
+        backgroundColor: "blue",
+        color: "white",
         minWidth: 200
     },
     cancelButton: {
@@ -75,7 +78,44 @@ const useStyles = makeStyles((theme) => ({
     Container: {
         textAlign: 'center',
         alignItems: 'center',
-    }
+    },
+    input: {
+        display: "none"
+    },
+    button: {
+        color: "blue",
+        margin: 10
+    },
+    root: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    cartButton: {
+        marginLeft: theme.spacing(2),
+    },
+    title: {
+        flexGrow: 1,
+    },
+    frame: {
+        height: 4
+    },
+    searchBar: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: '30em',
+        margin: 'auto',
+    },
+    searchInput: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    searchIconButton: {
+        padding: 10,
+    },
 }));
 
 export default useStyles;

@@ -4,7 +4,6 @@ import {Redirect} from "react-router-dom";
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -35,6 +34,14 @@ const Login = (props) => {
         }
     },[]);
 
+    useEffect(() => {
+        if (rememberMe){
+            localStorage.setItem("email", email);
+            localStorage.setItem("password", password);
+            console.log("changed ", email, password);
+        }
+    },[email, password]);
+
     const onChangeHandler = () =>{
         if(!rememberMe){
             localStorage.setItem("rememberMe", true);
@@ -61,7 +68,6 @@ const Login = (props) => {
 
     return (
         <Container component="main" maxWidth="sm">
-            <CssBaseline />
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />

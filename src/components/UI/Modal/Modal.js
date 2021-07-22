@@ -2,6 +2,7 @@ import React from 'react';
 
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
+import Divider from '@material-ui/core/Divider';
 import Fade from '@material-ui/core/Fade';
 import useStyles from "../Styles/formStyle";
 import Container from "@material-ui/core/Container";
@@ -27,10 +28,11 @@ const TransitionModal = (props) => {
             >
                 <Fade in={props.open}>
                     <div className={classes.modalPaper}>
-                        <Grid container spacing={2} direction={"column"} alignItems={"center"}>
+                        <Grid container direction={"column"} alignItems={"center"} style={{minWidth: '50vw'}}>
                             <Typography component="h1" variant="h5">
                                 {props.title}
                             </Typography>
+                            {props.title && <Divider style={{width: "100%"}}/>}
                             <br/>
                             {props.form}
                         </Grid>

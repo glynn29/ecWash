@@ -1,0 +1,13 @@
+.Card {
+    height: 100%;
+}
+
+.Title {
+    flex: 1;
+}
+
+.Pic {
+    flex: 1;
+    height: auto;
+    max-width: 100%;
+}

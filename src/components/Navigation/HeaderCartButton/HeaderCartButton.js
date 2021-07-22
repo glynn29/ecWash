@@ -1,14 +1,23 @@
+import Paper from "@material-ui/core/Paper";
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 
 import classes from "./HeaderCartButton.module.css";
 
-import CartIcon from "../../../../assets/icons/CartIcon/CartIcon";
-import * as actions from "../../../../store/actions";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import Badge from "@material-ui/core/Badge";
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+const StyledBadge = withStyles(() => ({
+    badge: {
+         color: '#fff', backgroundColor: '#d8222b'
+    },
+}))(Badge);
 
 const HeaderCartButton = (props) => {
     const [btnIsHighlighted, setBtnIsHighlighted] = useState(false);
-    const btnClasses = `${classes.button} ${btnIsHighlighted ? classes.bump : ''}`;
+    const btnClasses = `${classes.cart} ${btnIsHighlighted ? classes.bump : ''}`;
+    const btnClasses2 = `${classes.button} ${btnIsHighlighted ? classes.bump : ''}`;
 
     const numberOfCartItems = (props.items.reduce((curNumber, item) => {
         return curNumber + item.amount;
@@ -29,13 +38,15 @@ const HeaderCartButton = (props) => {
         };
     }, [props.items]);
 
+
     return(
-      <button className={btnClasses} onClick={props.open}>
-          <span className={classes.icon}>
-              <CartIcon />
-          </span>
-          <span className={classes.badge}>{numberOfCartItems}</span>
-      </button>
+        <IconButton className={btnClasses2} onClick={props.open}>
+        <StyledBadge badgeContent={numberOfCartItems} showZero >
+            <ShoppingCartIcon className={btnClasses}
+
+                              fontSize={"large"} />
+        </StyledBadge>
+        </IconButton>
     );
 };
 

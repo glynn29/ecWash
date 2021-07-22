@@ -1,10 +1,36 @@
-.Frame {
-    height: 3.3em;
-    display: flex;
-    padding: 3px 0;
-}
-
 .Color {
     color: #fff !important;
     background-color: black !important;
+}
+
+.Pic {
+    font-size: 1.25rem;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.0075em;
+}
+
+.Search {
+    margin: auto;
+    flex: 2;
+}
+
+.Button {
+    margin-right: 12px;
+}
+
+.Bar {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media (max-width: 520px) {
+    .Pic {
+        display: none;
+    }
+    .Search {
+        flex: 1;
+        max-width: 9em;
+    }
 }

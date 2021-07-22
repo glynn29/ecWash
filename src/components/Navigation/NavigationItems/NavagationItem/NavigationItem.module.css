@@ -1,0 +1,29 @@
+.NavigationItem{
+    margin: 10px 0;
+    box-sizing: border-box;
+    display: inherit;
+    width: 100%;
+    text-decoration: none;
+}
+
+.NavigationItem a{
+    color: black;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
+    display: inherit;
+    align-items: center;
+}
+
+.NavigationItem a:hover,
+.NavigationItem a:active,
+.NavigationItem a.active {
+    background-color: #f7f3f3;
+    border-radius: 5px;
+    align-items: center;
+}
+
+.NavigationItem a:hover,
+.NavigationItem a.active {
+    padding-left: 5px;
+}

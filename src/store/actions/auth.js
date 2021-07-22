@@ -62,19 +62,21 @@ export const login = (email, password) => {
   }
 };
 
-async function createUser({first, last, email, role, language, positions}) {
-    console.log("adding user",first,last,email,role,language,positions);
+async function createUser({first, last, email, city, state, zip, locationPhone,managerPhone, washType}) {
+    console.log("adding user",first,last,email);
     const user = await auth.currentUser;
     await firestore.collection('users').add({
         first: first,
         last: last,
         email: email,
-        role: role,
-        language: language,
+        city: city,
+        state: state,
+        zip: zip,
+        locationPhone: locationPhone,
+        managerPhone: managerPhone,
+        washType: washType,
         id: user.uid,
         approved: 'false',
-        positions: positions,
-        events: []
     });
 }
 
