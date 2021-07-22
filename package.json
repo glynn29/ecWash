@@ -9,10 +9,10 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
-    "axios": "^0.19.2",
-    "date-fns": "^2.16.1",
+    "axios": "^0.21.1",
+    "date-fns": "^2.22.1",
     "firebase": "^7.24.0",
-    "firebase-functions": "^3.11.0",
+    "firebase-functions": "^3.14.1",
     "prop-types": "latest",
     "react": "^16.13.1",
     "react-calendar": "^3.1.0",
@@ -46,9 +46,10 @@
     ]
   },
   "devDependencies": {
+    "@material-ui/data-grid": "^4.0.0-alpha.31",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/pickers": "^3.2.10",
-    "firebase-admin": "^9.1.1"
+    "firebase-admin": "^9.9.0"
   },
   "description": "wash app",
   "main": "index.js",

@@ -29,5 +29,6 @@ firestore.indexes.json
 firestore.rules
 .firebaserc
 firebase.js
-package.json
 package-lock.json
+.firebase
+/functions
