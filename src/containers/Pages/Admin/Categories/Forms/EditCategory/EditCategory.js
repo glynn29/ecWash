@@ -96,17 +96,7 @@ const EditCategory = props => {
                             }}/>
                         }
                     </Grid>
-                    <Grid item xs={6}>
-                        <Button
-                            onClick={props.handleClose}
-                            fullWidth
-                            className={styles.cancelButton}
-                            variant="outlined"
-                        >
-                            Cancel
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             type="submit"
                             fullWidth

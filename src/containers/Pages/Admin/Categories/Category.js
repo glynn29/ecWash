@@ -40,7 +40,7 @@ const Category = () => {
     //add modal functions
     const onAddPart = () => {
         reloadCategories();
-        setAddOpen(false);
+        handleAddClose();
     };
 
     const handleAddOpen = () => {
@@ -67,9 +67,13 @@ const Category = () => {
     };
 
     //delete modal functions
-    const onDeletePart = () => {
+    const onDeletePart = (id) => {
+        firestore.collection("categories").doc(id).delete()
+            .catch((error) => {
+                console.log(error);
+            });
         reloadCategories();
-        setDeleteOpen(false);
+        handleDeleteClose();
     };
 
     const handleDeleteOpen = (props) => {
@@ -95,21 +99,21 @@ const Category = () => {
                 open={addOpen}
                 handleOpen={handleAddOpen}
                 handleClose={handleAddClose}
-                form={<AddCategory onAdd={onAddPart} handleClose={handleAddClose}/>}
+                form={<AddCategory onAdd={onAddPart}/>}
                 title={"Add Category"}
             />
             <TransitionModal
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditPartForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose}/>}
+                form={<EditPartForm formData={formData} onEdit={onEditPart}/>}
                 title={"Edit Category"}
             />
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"}/>}
+                form={<DeleteForm formData={formData} onDelete={onDeletePart} title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"}/>}
                 title={"Are You Sure?"}
             />
         </div>
