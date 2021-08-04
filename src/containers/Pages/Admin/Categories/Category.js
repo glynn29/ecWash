@@ -4,9 +4,9 @@ import EnhancedTable from "../../../../components/UI/Table/Table";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
 import {firestore} from "../../../../firebase";
 
-import AddPartForm from "./Forms/AddCategory/AddCategory";
+import AddCategory from "./Forms/AddCategory/AddCategory";
 import EditPartForm from "./Forms/EditCategory/EditCategory";
-import DeletePartForm from "./Forms/DeleteCategory/DeleteCategory";
+import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
 const headCells = [
     {id:'name', label: 'Name'},
@@ -95,22 +95,22 @@ const Category = () => {
                 open={addOpen}
                 handleOpen={handleAddOpen}
                 handleClose={handleAddClose}
-                form={<AddPartForm onAdd={onAddPart} handleClose={handleAddClose}/>}
-                title={"Add Part"}
+                form={<AddCategory onAdd={onAddPart} handleClose={handleAddClose}/>}
+                title={"Add Category"}
             />
             <TransitionModal
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
                 form={<EditPartForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose}/>}
-                title={"Edit Part"}
+                title={"Edit Category"}
             />
 
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeletePartForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} />}
+                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} title={"Delete this category?"} buttonText={"Delete Category"}/>}
                 title={"Are You Sure?"}
             />
         </div>

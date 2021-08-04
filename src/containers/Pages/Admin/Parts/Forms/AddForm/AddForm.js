@@ -13,7 +13,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
 
-const AddPart = props => {
+const AddForm = props => {
     const styles = formStyles();
     const [name, setName] = useState("");
     const [code, setCode] = useState("");
@@ -103,10 +103,7 @@ const AddPart = props => {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={3} sm={2}>
-                        {imageButton}
-                    </Grid>
-                    <Grid item xs={9} sm={10}>
+                    <Grid item xs={12}>
                         <FormControl variant="outlined" className={styles.formControl} required>
                             <InputLabel required>Part Category</InputLabel>
                             <Select
@@ -124,7 +121,7 @@ const AddPart = props => {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <FormControl variant="outlined" className={styles.formControl}>
                             <TextField
                                 value={details}
@@ -134,12 +131,15 @@ const AddPart = props => {
                                 multiline
                                 variant="outlined"
                                 fullWidth
-                                rows={4}
+                                rows={2}
                                 inputProps={{ className: styles.textarea }}
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
+                    <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {imageButton}
+                    </Grid>
+                    <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {picture &&
                             <img src={picture} alt={"error"} style={{
                                 margin: 'auto',
@@ -149,17 +149,7 @@ const AddPart = props => {
                             }}/>
                         }
                     </Grid>
-                    <Grid item xs={6}>
-                        <Button
-                            onClick={props.handleClose}
-                            fullWidth
-                            className={styles.cancelButton}
-                            variant="outlined"
-                        >
-                            Cancel
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             type="submit"
                             fullWidth
@@ -175,4 +165,4 @@ const AddPart = props => {
     );
 };
 
-export default AddPart;
+export default AddForm;

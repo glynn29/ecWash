@@ -13,9 +13,9 @@ import EnhancedTable from "../../../../components/UI/Table/Table";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
 import * as actions from "../../../../store/actions";
 
-import AddPartForm from "./Forms/AddPart/AddPart";
-import EditPartForm from "./Forms/EditPart/EditPart";
-import DeletePartForm from "./Forms/DeletePart/DeletePart";
+import AddForm from "./Forms/AddForm/AddForm";
+import EditForm from "./Forms/EditForm/EditForm";
+import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
 const headCells = [
     {id:'name', label: 'Name'},
@@ -146,21 +146,21 @@ const Parts = (props) => {
                 open={addOpen}
                 handleOpen={handleAddOpen}
                 handleClose={handleAddClose}
-                form={<AddPartForm onAdd={onAddPart} handleClose={handleAddClose} categories={categories}/>}
+                form={<AddForm onAdd={onAddPart} handleClose={handleAddClose} categories={categories}/>}
                 title={"Add Part"}
             />
             <TransitionModal
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditPartForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose} categories={categories}/>}
+                form={<EditForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose} categories={categories}/>}
                 title={"Edit Part"}
             />
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeletePartForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} />}
+                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} buttonText={"Delete Part"} title={"Delete " + formData.name + " ?"}/>}
                 title={"Are You Sure?"}
             />
         </Container>

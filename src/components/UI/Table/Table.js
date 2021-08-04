@@ -1,9 +1,8 @@
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 import React, {useEffect, useState} from "react";
+import PropTypes from 'prop-types';
 
 import {withStyles} from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
+import Switch from "@material-ui/core/Switch";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -248,8 +247,8 @@ function EnhancedTable(props) {
                     count={rows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />}
             </Container>
     );

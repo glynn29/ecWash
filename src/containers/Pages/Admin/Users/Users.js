@@ -5,6 +5,7 @@ import EnhancedTable from "../../../../components/UI/Table/Table";
 import {firestore} from "../../../../firebase";
 import Edit from "./Forms/Edit/Edit";
 import Add from "./Forms/Add/Add";
+import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
 
 const headCells = [
@@ -132,6 +133,13 @@ const Users = () => {
                 handleClose={handleEditClose}
                 form={<Edit formData={formData} onEdit={onEdit} handleClose={handleEditClose}/>}
                 title={"Edit User"}
+            />
+            <TransitionModal
+                open={deleteOpen}
+                handleOpen={handleDeleteOpen}
+                handleClose={handleDeleteClose}
+                form={<DeleteForm onDelete={onDelete} handleClose={handleDeleteClose} title={"Delete User"} buttonText={"Delete User"} />}
+                title={"Delete User"}
             />
         </div>
     );

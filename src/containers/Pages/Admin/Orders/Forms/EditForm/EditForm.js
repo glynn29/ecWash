@@ -13,64 +13,25 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
 
-const EditPart = props => {
+const EditForm = props => {
     const styles = formStyles();
     const [name, setName] = useState(props.formData.name);
     const [code, setCode] = useState(props.formData.code);
     const [details, setDetails] = useState(props.formData.details);
     const [category, setCategory] = useState(props.formData.category);
-    const [picture, setPicture] = useState(props.formData.picture);
-
-    const handleUploadClick = event => {
-        console.log();
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onloadend = function(e) {
-            setPicture(reader.result);
-        };
-    };
-
-    const handleRemoveClick = () => {
-        setPicture(null);
-    };
 
     const submitFormHandler = (event) =>{
         event.preventDefault();
         const part = {
             name,
             code,
-            details,
+            details: details,
             category,
-            picture,
             amount: 1
         };
         props.onEdit(part, props.formData.id);
         console.log("part EDITED");
     };
-
-    const imageButton = (picture ?
-            <Fab component="span">
-                <HighlightOffIcon onClick={handleRemoveClick} color={"error"} fontSize={"large"}/>
-            </Fab>
-            :
-            <div>
-                <input
-                    accept="image/*"
-                    className={styles.input}
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    onChange={handleUploadClick}
-                />
-                <label htmlFor="contained-button-file">
-                    <Fab component="span">
-                        <AddPhotoAlternateIcon />
-                    </Fab>
-                </label>
-            </div>
-    );
 
     return (
         <Container component="main" maxWidth="sm" className={styles.Container}>
@@ -103,28 +64,25 @@ const EditPart = props => {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={3} sm={2}>
-                        {imageButton}
-                    </Grid>
-                    <Grid item xs={9} sm={10}>
-                        <FormControl variant="outlined" className={styles.formControl} >
+                    <Grid item xs={12}>
+                        <FormControl variant="outlined" className={styles.formControl} required>
                             <InputLabel required>Part Category</InputLabel>
                             <Select
                                 native
                                 value={category}
                                 onChange={event => setCategory(event.target.value) }
-                                label="Part Category"
+                                label="Status"
                             >
                                 <option aria-label="None" value="" />
-                                {props.categories.map( listItem => {
+                                {props.statusList.map( listItem => {
                                     return (
-                                        <option key={listItem.name} value={listItem.name}>{listItem.name}</option>
+                                        <option key={listItem} value={listItem}>{listItem}</option>
                                     );
                                 })}
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <FormControl variant="outlined" className={styles.formControl}>
                             <TextField
                                 value={details}
@@ -134,32 +92,12 @@ const EditPart = props => {
                                 multiline
                                 variant="outlined"
                                 fullWidth
-                                rows={4}
+                                rows={2}
                                 inputProps={{ className: styles.textarea }}
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
-                        {picture &&
-                        <img src={picture} alt={"error"} style={{
-                            margin: 'auto',
-                            display: 'block',
-                            padding: 'inherit',
-                            maxHeight: 129
-                        }}/>
-                        }
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Button
-                            onClick={props.handleClose}
-                            fullWidth
-                            className={styles.cancelButton}
-                            variant="outlined"
-                        >
-                            Cancel
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             type="submit"
                             fullWidth
@@ -175,4 +113,4 @@ const EditPart = props => {
     );
 };
 
-export default EditPart;
+export default EditForm;
