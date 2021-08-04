@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from "react";
-import {connect} from "react-redux";
+import React, {useState} from "react";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -17,7 +16,6 @@ const EditCategory = props => {
     const styles = formStyles();
     const [name, setName] = useState(props.formData.name);
     const [picture, setPicture] = useState(props.formData.picture);
-    const categoryList = [{name: 'Bearing'}, {name: 'Vacuum'}];
 
     const handleUploadClick = event => {
         console.log();
@@ -85,17 +83,17 @@ const EditCategory = props => {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={3} sm={2}>
+                    <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {imageButton}
                     </Grid>
-                    <Grid item xs={12} sm={6} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
+                    <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {picture &&
-                        <img src={picture} alt={"error"} style={{
-                            margin: 'auto',
-                            display: 'block',
-                            padding: 'inherit',
-                            maxHeight: 129
-                        }}/>
+                            <img src={picture} alt={"error"} style={{
+                                margin: 'auto',
+                                display: 'block',
+                                padding: 'inherit',
+                                maxHeight: 129
+                            }}/>
                         }
                     </Grid>
                     <Grid item xs={6}>
@@ -123,11 +121,5 @@ const EditCategory = props => {
         </Container>
     );
 };
-
-// const mapStateToProps = state => {
-//     return{
-//
-//     };
-// };
 
 export default EditCategory;

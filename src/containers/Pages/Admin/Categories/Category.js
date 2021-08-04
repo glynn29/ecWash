@@ -105,16 +105,14 @@ const Category = () => {
                 form={<EditPartForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose}/>}
                 title={"Edit Category"}
             />
-
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} title={"Delete this category?"} buttonText={"Delete Category"}/>}
+                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"}/>}
                 title={"Are You Sure?"}
             />
         </div>
-
     );
 };
 

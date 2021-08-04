@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from "react";
-import {connect} from "react-redux";
+import React, {useState} from "react";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -17,7 +16,6 @@ const AddCategory = props => {
     const styles = formStyles();
     const [name, setName] = useState("");
     const [picture, setPicture] = useState(null);
-    const categoryList = [{name: 'Bearing'}, {name: 'Vacuum'}];
 
     const handleUploadClick = event => {
         console.log();
@@ -85,10 +83,10 @@ const AddCategory = props => {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {imageButton}
                     </Grid>
-                    <Grid item xs={9} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
+                    <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {picture &&
                             <img src={picture} alt={"error"} style={{
                                 margin: 'auto',
@@ -123,12 +121,6 @@ const AddCategory = props => {
         </Container>
     );
 };
-
-// const mapStateToProps = state => {
-//     return{
-//
-//     };
-// };
 
 export default AddCategory;
 
