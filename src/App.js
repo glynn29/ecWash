@@ -2,7 +2,7 @@ import React, {useContext, useEffect} from 'react';
 import {Route, Switch, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import Orders from "./containers/Pages/Orders/Orders";
+import Orders from "./containers/Pages/Admin/Orders/Orders";
 import Page404 from "./components/UI/404/404";
 import Register from "./containers/Auth/Register/Register";
 import Login from "./containers/Auth/Login/Login";
@@ -118,8 +118,6 @@ const mapDispatchToProps = dispatch => {
     return{
         onFetchParts: () => dispatch(actions.onFetchParts()),
         onFetchCategories: () => dispatch(actions.onFetchCategories()),
-        // onFetchRoleList: () => dispatch(actions.fetchRoleList()),
-        // onFetchPositionList: () => dispatch(actions.fetchPositionList()),
         // getCurrentUser: () => dispatch(actions.getUser()),
     }
 };

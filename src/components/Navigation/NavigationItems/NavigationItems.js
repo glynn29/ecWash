@@ -55,10 +55,9 @@ const NavigationItems = (props) => {
             {currentUser && <NavigationItem link="/users" text="Users" icon={<PersonIcon/>}/>}
             {currentUser && <NavigationItem link="/parts" text="Parts" icon={<WorkOutlineIcon/>}/>}
             {currentUser && <NavigationItem link="/category" text="Category" icon={<CategoryIcon/>}/>}
-            {currentUser && <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>}
             {currentUser && <NavigationItem link="/kits" text="Kits" icon={<AccessAlarmIcon/>}/>}
             {currentUser && <NavigationItem link="/orders" text="Order History" icon={<ListAltIcon/>}/>}
-
+            {currentUser && <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>}
         </List>
     );
 

@@ -5,9 +5,12 @@ import image from "../../../assets/images/obi-wan.jpg"
 const Page404 = () => {
     const [error, setError] = useState(false);
     useEffect(() => {
-        setTimeout(() => {
+        const time = setTimeout(() => {
             setError(true);
-        }, 1000)
+        }, 1000);
+        return() => {
+            clearTimeout(time);
+        };
     }, []);
     return(
         error ?
