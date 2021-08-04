@@ -1,6 +1,9 @@
+import FormControl from "@material-ui/core/FormControl";
+import TextField from "@material-ui/core/TextField";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {useHistory} from "react-router-dom";
+import useStyles from "../../../../../components/UI/Styles/formStyle";
 import {firestore} from "../../../../../firebase";
 
 import Button from "@material-ui/core/Button";
@@ -12,6 +15,7 @@ import CartItem from "../../../../../components/Cart/CartItem/CartItem";
 import * as actions from "../../../../../store/actions";
 
 const Checkout = (props) => {
+    const styles = useStyles();
     const history = useHistory();
     const [name, setName] = useState();
     const {items} = props;
@@ -40,7 +44,13 @@ const Checkout = (props) => {
             return(item);
         });
 
+        const date = new Date().toLocaleDateString();
+        const time = new Date().toLocaleTimeString();
+
         firestore.collection("orders").add({
+            status: 'new',
+            date,
+            time,
             name,
             items: cleanedItems,
         }).then(() => {
@@ -51,10 +61,21 @@ const Checkout = (props) => {
 
     return(
         <Container style={{textAlign: 'center'}}>
-            Items yo
+            Items yo!
             {cartItems}
-            Name: <input value={name} onChange={(e) => setName(e.target.value)}/>
-            <Button onClick={handleOrderClick} color={"primary"}>Order</Button>
+            <FormControl className={styles.formControl}>
+                <TextField
+                    value={name}
+                    onChange={event => setName(event.target.value)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="name"
+                    label="Customer Name"
+                    autoFocus
+                />
+            </FormControl>
+            <Button onClick={handleOrderClick} color={"primary"} variant={"contained"}>Order</Button>
         </Container>
     );
 };
@@ -67,7 +88,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAddItem: (item) => dispatch(actions.onAddItem(item)),
+        onAddItem: (item, amount) => dispatch(actions.onAddItem(item, amount)),
         onRemoveItem: (id) => dispatch(actions.onRemoveItem(id)),
         clearItems: () => dispatch(actions.clearItems()),
     }

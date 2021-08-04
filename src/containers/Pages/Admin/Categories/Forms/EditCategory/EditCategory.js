@@ -71,7 +71,7 @@ const EditCategory = props => {
         <Container component="main" maxWidth="sm" className={styles.Container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <FormControl className={styles.formControl}>
                             <TextField
                                 value={name}
