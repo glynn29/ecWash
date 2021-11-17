@@ -1,56 +1,139 @@
-import React, {useEffect, useState} from "react";
-import EnhancedTable from "../../../../components/UI/Table/Table";
+import React, { useEffect, useState } from "react";
 
-import {firestore} from "../../../../firebase";
+import Container from "@material-ui/core/Container";
+import Divider from "@material-ui/core/Divider";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
+import AutoComplete from "@material-ui/lab/Autocomplete";
+
+import { firestore } from "../../../../firebase";
+import EnhancedTable from "../../../../components/UI/Table/Table";
+import CustomTabs from "../../../../components/UI/Tabs/Tabs";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 import EditForm from "./Forms/EditForm/EditForm";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
+import useStyles from "../../../../components/UI/Styles/formStyle";
+
 const headCells = [
-    {id:'name', label: 'Name'},
-    {id:'status', label: 'Status'},
-    {id:'date', label: 'Date'}
+    {id: 'date', label: 'Date'},
+    {id: 'name', label: 'Name'},
+    {id: 'status', label: 'Status'},
 ];
 
 const statusList = [
     'new',
-    'order sent',
+    'delivered',
     'billed',
     'paid'
 ];
 
 const Orders = (props) => {
-    const [addOpen, setAddOpen] = useState(false);
+    const styles = useStyles();
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState(null);
     const [userOrders, setUserOrders] = useState([]);
     const [tableData, setTableData] = useState([]);
-    const [filteredTableData, setFilteredTableData] = useState([]);
-    const [status, setStatus] = useState();
-    const [filter, setFilter] = useState(false);
-    const [filterValue, setFilterValue] = useState(null);
+    const [tabTableData, setTabTableData] = useState([]);
+    const [tabValue, setTabValue] = useState('All');
     const [formData, setFormData] = useState({});
+    const [labelCount, setLabelCount] = useState([]);
+    const [labelList, setLabelList] = useState([]);
+    const [status, setStatus] = useState();
+    const [filterActive, setFilterActive] = useState(false);
+    const [filterValue, setFilterValue] = useState(null);
+    const [filteredTableData, setFilteredTableData] = useState(null);
+    const [filteredTabTableData, setFilteredTabTableData] = useState([]);
 
     async function getOrders() {
         const orders = [];
-        const ordersRef = await firestore.collection("orders").orderBy("name", "desc").get();
+        const ordersRef = await firestore.collection("orders")
+            .orderBy("date", "desc")
+            .get();
         ordersRef.forEach(order => {
-            orders.push({...order.data(), id:order.id, status: statusList[0], date: '2020-01-16'});
+            const num = Math.floor(Math.random() * 4);
+            orders.push({...order.data(), id: order.id, status: statusList[num], statusStep: num});
         });
-        const groupedOrders = orders.reduce((hash, obj) => ({...hash, [obj['name']]:( hash[obj['name']] || [] ).concat(obj)}), []);
-        const arrayGrouped = Object.values(groupedOrders);
-        setOrders(arrayGrouped);
+        setOrders(orders);
         setTableData(orders);
+        setLabelCountHandler(orders);
         console.log(orders);
     }
 
+    const setLabelCountHandler = (data) => {
+        const tempLabels = [
+            'New ',
+            'Delivered ',
+            'Billed ',
+            'Paid '
+        ];
+        let tempLabelCount = [];
+        statusList.forEach(elm => {
+            const label = data.filter(row => row.status === elm);
+            tempLabelCount.push(label.length);
+        });
+        let tempLabelList = ['All'];
+        for (let i = 0; i < 4; i++) {
+            tempLabelList.push(tempLabels[i] + '(' + tempLabelCount[i] + ')');
+        }
+        setLabelList(tempLabelList);
+    };
+
     useEffect(() => {
-        getOrders().catch(error => console.log(error));
-    },[]);
+        getOrders()
+            .catch(error => console.log(error));
+    }, []);
+
+    useEffect(() => {
+        if (filterValue && filterActive) {
+            filterOrders();
+        }
+    },[filterValue, filterActive]);
+
+    useEffect(() => {
+        if (tabValue) {
+            filterTabData();
+        }
+    }, [tabValue]);
+
+    useEffect(() => {
+        if (filteredTableData && filterActive) {
+            console.log("filtering baby cakes");
+            setLabelCountHandler(filteredTableData);
+        } else if (orders){
+            setLabelCountHandler(orders);
+        }
+    }, [filteredTableData, filterActive]);
+
+    const filterOrders = () => {
+        let filteredOrders = orders.filter((order) => order.name === filterValue);
+        console.table(filteredOrders);
+        setFilteredTableData(filteredOrders);
+    };
+
+    const filterTabData = () => {
+        if (filteredTableData && filterActive) {
+            const tempTabTableDataToFilter = filteredTableData.filter(row => row.status === tabValue);
+            console.log(tempTabTableDataToFilter);
+            setFilteredTabTableData(tempTabTableDataToFilter);
+        }
+        const tempData = tableData.filter(row => row.status === tabValue);
+        setTabTableData(tempData);
+    };
+
+    const handleTabChange = (index) => {
+        setTabValue(statusList[index - 1]);
+    };
+
+    const handleFilterSwitch =() => {
+        setFilterActive(!filterActive);
+    };
 
     function handleSetUsers(index) {
         setUserOrders(orders[index]);
-        setFilteredTableData(orders[index]);
+        setTabTableData(orders[index]);
     }
 
     //edit modal functions
@@ -83,51 +166,107 @@ const Orders = (props) => {
         setDeleteOpen(false);
     };
 
-    return(
-        <div style={{textAlign: 'center'}}>
-            Orders:
-            {orders.map((order, index) => {
-                return (<p onClick={() => handleSetUsers(index)} style={{color: 'blue', textDecoration: 'underline', cursor: 'pointer'}}> Name: {order[0].name} </p>);
-            })}
+    const comp1 = (<EnhancedTable
+        data={(filteredTableData && filterActive) ? filteredTableData : tableData}
+        headCells={headCells}
+        actionEdit={handleEditOpen}
+        actionDelete={handleDeleteOpen}
+        actions
+    />);
+    const comp2 = (<EnhancedTable
+        data={(filteredTableData && filterActive) ? filteredTabTableData : tabTableData}
+        headCells={headCells}
+        actionEdit={handleEditOpen}
+        actionDelete={handleDeleteOpen}
+        actions
+    />);
+    const comp3 = (<EnhancedTable
+        data={(filteredTableData && filterActive) ? filteredTabTableData : tabTableData}
+        headCells={headCells}
+        actionEdit={handleEditOpen}
+        actionDelete={handleDeleteOpen}
+        actions
+    />);
+    const comp4 = (<EnhancedTable
+        data={(filteredTableData && filterActive) ? filteredTabTableData : tabTableData}
+        headCells={headCells}
+        actionEdit={handleEditOpen}
+        actionDelete={handleDeleteOpen}
+        actions
+    />);
+    const comp5 = (<EnhancedTable
+        data={(filteredTableData && filterActive) ? filteredTabTableData : tabTableData}
+        headCells={headCells}
+        actionEdit={handleEditOpen}
+        actionDelete={handleDeleteOpen}
+        actions
+    />);
 
-            {userOrders.length > 0 && <div>
-                {userOrders.map((order, index) => {
-                    return (
-                        <div>
-                            <p style={{color: 'red', textDecoration: 'underline'}}>Order number: {index} </p>
-                            <p>Name: {order.name}</p>
-                            <ul>
-                                {order.items.map(item => {
-                                    return (
-                                        <li key={item.id}>Name: {item.name}, Code: {item.code}, Category: {item.category}, Quantity: {item.amount}</li>
-                                    )
-                                })}
-                            </ul>
-                        </div>
-                    )})}
-            </div>}
-            <EnhancedTable
-                data={filter ? filteredTableData : tableData}
-                headCells={headCells}
-                actionEdit={handleEditOpen}
-                actionDelete={handleDeleteOpen}
-                actions
-            />
+    const componentList = [comp1, comp2, comp3, comp4, comp5];
+
+    // const labelList = [
+    //     'All',
+    //     'New',
+    //     'Order sent',
+    //     'Billed',
+    //     'Paid'
+    // ];
+
+
+
+    return (
+        <Container>
+            <div style={{display: 'flex', justifyContent: 'center'}} >
+                {orders &&<div className={styles.searchBar}>
+                    <FormControl className={styles.searchInput}>
+                        <AutoComplete
+                            freeSolo
+                            onChange={(event, value) => {
+                                if (value) {
+                                    setFilterValue(value.name);
+                                } else {
+                                    setFilterValue(null);
+                                }
+                            }}
+                            options={orders.sort((a, b) => -b.name.charAt(0)
+                                .localeCompare(a.name.charAt(0)))}
+                            groupBy={(option) => option.name.charAt(0)}
+                            getOptionLabel={(option) => (option.name)}
+                            renderInput={(params) => (
+                                <TextField {...params} key={params} variant="outlined" placeholder="Filter Order"/>
+                            )}
+                        />
+                    </FormControl>
+                </div>}
+                <p style={{padding: 10}}/>
+                <FormControlLabel
+                    disabled={filterValue === null}
+                    style={{float: 'right'}}
+                    control={<Switch checked={filterActive} onChange={handleFilterSwitch} />}
+                    label={filterActive ? "Disable Filter" : "Enable Filter"}
+                />
+            </div>
+            <br />
+            <Divider />
+            <br />
+            <CustomTabs tabLabelList={labelList} componentsList={componentList} handleTabChange={handleTabChange}/>
+            {/*//TODO filter by nickname*/}
             <TransitionModal
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose} statusList={statusList} />}
-                title={"Edit Part"}
+                form={<EditForm formData={formData} onEdit={onEditPart} statusList={statusList}/>}
+                title={"Edit Order"}
             />
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm formData={formData} onDelete={onDelete} cancel={handleDeleteClose} />}
+                form={<DeleteForm formData={formData} onDelete={onDelete} title={"Delete this order?"}
+                                  buttonText={"Delete Order"}/>}
                 title={"Are You Sure?"}
             />
-        </div>
+        </Container>
     );
 };
 
