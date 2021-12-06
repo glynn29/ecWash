@@ -10,8 +10,27 @@ import Select from "@material-ui/core/Select";
 import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Box from "@material-ui/core/Box";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import Typography from "@material-ui/core/Typography";
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
+import {storageRef} from "../../../../../../firebase";
+
+function LinearProgressWithLabel(props) {
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ width: '100%', mr: 1 }}>
+                <LinearProgress variant="determinate" {...props} />
+            </Box>
+            <Box sx={{ minWidth: 35 }}>
+                <Typography variant="body2">{`${Math.round(
+                    props.value,
+                )}%`}</Typography>
+            </Box>
+        </Box>
+    );
+}
 
 const AddForm = props => {
     const styles = formStyles();
@@ -19,40 +38,84 @@ const AddForm = props => {
     const [code, setCode] = useState("");
     const [details, setDetails] = useState("");
     const [category, setCategory] = useState("");
-    const [picture, setPicture] = useState(null);
+    const [pictureUrl, setPictureUrl] = useState(null);
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
-    const handleUploadClick = event => {
-        console.log();
+    //functions for showing a temporary photo before an actual upload
+    const handleAddPictureClick = event => {
         const file = event.target.files[0];
+        setFile(file);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
-        reader.onloadend = function(e) {
-            setPicture(reader.result);
+        reader.onloadend = function() {
+            setPictureUrl(reader.result);
         };
     };
 
-    const handleRemoveClick = () => {
-        setPicture(null);
+    const handleRemovePictureClick = () => {
+        setPictureUrl(null);
     };
 
-    const submitFormHandler = (event) =>{
+    //function to upload file to firebase
+    const handleFileUpload = () => {
+        setIsLoading(true);
+        try {
+            const uploadTask = storageRef.child('parts')
+                .child(category)
+                .child(file.name)
+                .put(file);
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', (snapshot) => {
+                                  let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                  setProgress(progress);
+                                  console.log('Upload is ' + progress + '% done');
+                              },
+                              (error) => {
+                                  setError(error.message);
+                                  setIsLoading(false);
+                                  reject(error.message);
+                              },
+                              () => {
+                                  uploadTask.snapshot.ref.getDownloadURL()
+                                      .then((downloadURL) => {
+                                          setPictureUrl(downloadURL);
+                                          setIsLoading(false);
+                                          resolve("complete");
+                                      });
+                              });
+            });
+        } catch (e) {
+            setError(e.message);
+            return Promise.reject();
+        }
+    };
+
+    const submitFormHandler = async (event) => {
         event.preventDefault();
+        if (file) {
+            await handleFileUpload();
+        }
+
         const part = {
             name,
             code,
             details,
             category,
-            picture,
+            pictureUrl,
             amount: 1
         };
+
         props.onAdd(part);
         console.log("part ADDED");
     };
 
-    const imageButton = (picture ?
+    const imageButton = (pictureUrl ?
         <Fab component="span">
-            <HighlightOffIcon onClick={handleRemoveClick} color={"error"} fontSize={"large"}/>
+            <HighlightOffIcon onClick={handleRemovePictureClick} color={"error"} fontSize={"large"}/>
         </Fab>
             :
         <div>
@@ -62,7 +125,7 @@ const AddForm = props => {
                 id="contained-button-file"
                 multiple
                 type="file"
-                onChange={handleUploadClick}
+                onChange={handleAddPictureClick}
             />
             <label htmlFor="contained-button-file">
                 <Fab component="span">
@@ -140,8 +203,8 @@ const AddForm = props => {
                         {imageButton}
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
-                        {picture &&
-                            <img src={picture} alt={"error"} style={{
+                        {pictureUrl &&
+                            <img src={pictureUrl} alt={"error"} style={{
                                 margin: 'auto',
                                 display: 'block',
                                 padding: 'inherit',
@@ -149,6 +212,14 @@ const AddForm = props => {
                             }}/>
                         }
                     </Grid>
+                    {(isLoading || progress === 100) &&
+                    <Grid item xs={12}>
+                        <LinearProgressWithLabel value={progress}/>
+                    </Grid>}
+                    {error &&
+                    <Grid item xs={12}>
+                        <Typography>{error}</Typography>
+                    </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             type="submit"
