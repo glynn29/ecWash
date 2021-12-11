@@ -110,7 +110,6 @@ const Parts = (props) => {
                         <AutoComplete
                             freeSolo
                             onChange={(event, value) => {
-                                console.log(value);
                                 setFilterValue(value.name);
                             }}
                             options={categories.sort((a, b) => -b.name.charAt(0)
@@ -153,14 +152,16 @@ const Parts = (props) => {
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose} categories={categories}/>}
+                form={<EditForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose}
+                                categories={categories}/>}
                 title={"Edit Part"}
             />
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose} buttonText={"Delete Part"} title={"Delete " + formData.name + " ?"}/>}
+                form={<DeleteForm formData={formData} onDelete={onDeletePart} cancel={handleDeleteClose}
+                                  buttonText={"Delete Part"} title={"Delete " + formData.name + "?"}/>}
                 title={"Are You Sure?"}
             />
         </Container>

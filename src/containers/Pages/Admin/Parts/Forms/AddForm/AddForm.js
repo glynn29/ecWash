@@ -64,8 +64,7 @@ const AddForm = props => {
     const handleFileUpload = () => {
         setIsLoading(true);
         try {
-            const uploadTask = storageRef.child('parts')
-                .child(category)
+            const uploadTask = storageRef.child(category)
                 .child(file.name)
                 .put(file);
             return new Promise((resolve, reject) => {
