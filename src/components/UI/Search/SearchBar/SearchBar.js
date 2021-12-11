@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {useHistory} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
@@ -12,7 +12,7 @@ import AutoComplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 
-import {firestore} from "../../../../firebase";
+import { firestore } from "../../../../firebase";
 import useStyles from "../../Styles/formStyle";
 import SearchModal from "../SearchModal/SearchModal";
 
@@ -24,13 +24,12 @@ const SearchBar = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [searchItem, setSearchItem] = useState(null);
     const [searchParam, setSearchParam] = useState("parts");
-    const [error, setError] = useState(null);
-    const [tableData, setTableData] = useState(parts);
+    const [tableData, setTableData] = useState([...parts]);
 
     useEffect(() => {
         if (searchParam) {
             reloadItems();
-            console.log("Got parts");
+            console.log("Got parts for search bar");
         }
     }, [searchParam]);
 
@@ -74,7 +73,7 @@ const SearchBar = (props) => {
         if (searchParam === "parts") {
             setModalOpen(true);
         } else {
-            history.push('/items/' + searchItem.name);
+            history.push('/shopping/categories/' + searchItem.name);
         }
     };
 
@@ -83,7 +82,7 @@ const SearchBar = (props) => {
             if (searchParam === "parts") {
                 setModalOpen(true);
             } else {
-                history.push('/items/' + searchItem.name);
+                history.push('/shopping/categories/' + value.name);
             }
         }
     };
@@ -113,7 +112,6 @@ const SearchBar = (props) => {
                     <AutoComplete
                         freeSolo
                         onChange={(event, value) => {
-                            setError(null);
                             setSearchItem(value);
                             handleSearchOnChange(value);
                         }}
@@ -139,7 +137,7 @@ const SearchBar = (props) => {
 };
 
 const mapStateToProps = state => {
-    return{
+    return {
         parts: state.parts.parts
     };
 };
