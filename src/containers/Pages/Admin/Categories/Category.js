@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
+import Container from "@material-ui/core/Container";
+
+import { firestore } from "../../../../firebase";
 import EnhancedTable from "../../../../components/UI/Table/Table";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
-import {firestore} from "../../../../firebase";
-
 import AddCategory from "./Forms/AddCategory/AddCategory";
 import EditPartForm from "./Forms/EditCategory/EditCategory";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
 const headCells = [
-    {id:'name', label: 'Name'},
+    {id: 'name', label: 'Name'},
 ];
 
 const Category = () => {
@@ -22,11 +23,12 @@ const Category = () => {
     useEffect(() => {
         reloadCategories();
         console.log("Got categories");
-    },[]);
+    }, []);
 
     async function getCategories() {
         let categories = [];
-        const partsRef = await firestore.collection('categories').get();
+        const partsRef = await firestore.collection('categories')
+            .get();
         partsRef.forEach((category) => {
             categories.push({...category.data(), id: category.id});
         });
@@ -34,11 +36,14 @@ const Category = () => {
     }
 
     const reloadCategories = () => {
-        getCategories().catch(error => {console.log(error)});
+        getCategories()
+            .catch(error => {
+                console.log(error)
+            });
     };
 
     //add modal functions
-    const onAddPart = () => {
+    const onAddCategory = () => {
         reloadCategories();
         handleAddClose();
     };
@@ -52,7 +57,7 @@ const Category = () => {
     };
 
     //edit modal functions
-    function onEditPart() {
+    function onEditCategory() {
         reloadCategories();
         handleEditClose();
     }
@@ -67,8 +72,10 @@ const Category = () => {
     };
 
     //delete modal functions
-    const onDeletePart = (id) => {
-        firestore.collection("categories").doc(id).delete()
+    const onDeleteCategory = (id) => {
+        firestore.collection("categories")
+            .doc(id)
+            .delete()
             .catch((error) => {
                 console.log(error);
             });
@@ -85,8 +92,8 @@ const Category = () => {
         setDeleteOpen(false);
     };
 
-    return(
-        <div>
+    return (
+        <Container>
             <EnhancedTable
                 data={tableData}
                 headCells={headCells}
@@ -99,24 +106,25 @@ const Category = () => {
                 open={addOpen}
                 handleOpen={handleAddOpen}
                 handleClose={handleAddClose}
-                form={<AddCategory onAdd={onAddPart}/>}
+                form={<AddCategory onAdd={onAddCategory}/>}
                 title={"Add Category"}
             />
             <TransitionModal
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditPartForm formData={formData} onEdit={onEditPart}/>}
+                form={<EditPartForm formData={formData} onEdit={onEditCategory}/>}
                 title={"Edit Category"}
             />
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm formData={formData} onDelete={onDeletePart} title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"}/>}
+                form={<DeleteForm formData={formData} onDelete={onDeleteCategory}
+                                  title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"}/>}
                 title={"Are You Sure?"}
             />
-        </div>
+        </Container>
     );
 };
 
