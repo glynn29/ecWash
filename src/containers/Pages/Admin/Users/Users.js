@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from "react";
-import TransitionModal from "../../../../components/UI/Modal/Modal";
+import React, { useEffect, useState } from "react";
 
+import Container from "@material-ui/core/Container";
+
+import { firestore } from "../../../../firebase";
+import TransitionModal from "../../../../components/UI/Modal/Modal";
 import EnhancedTable from "../../../../components/UI/Table/Table";
-import {firestore} from "../../../../firebase";
 import Edit from "./Forms/Edit/Edit";
 import Add from "./Forms/Add/Add";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
-
 const headCells = [
-    { id: 'first' , label: 'First Name' },
-    { id: 'last' , label: 'Last Name' },
-    { id: 'approved', label: 'Approved'},
+    {id: 'first', label: 'First Name'},
+    {id: 'last', label: 'Last Name'},
+    {id: 'approved', label: 'Approved'},
     {id: 'email', label: 'Email'}
 ];
 
@@ -30,24 +31,25 @@ const Users = () => {
         let AVList = [];
         let RVList = [];
         tableData.forEach(row => {
-            if (row.approved === "true"){
+            if (row.approved === "true") {
                 AVList.push(row);
-            }else {
+            } else {
                 RVList.push(row);
             }
         });
         setApprovedVolunteers(AVList);
         setRegisteredVolunteers(RVList)
-    },[tableData]);
+    }, [tableData]);
 
     useEffect(() => {
         reloadUsers();
         console.log("Got parts");
-    },[]);
+    }, []);
 
     async function getUsers() {
         let users = [];
-        const usersRef = await firestore.collection('users').get();
+        const usersRef = await firestore.collection('users')
+            .get();
         usersRef.forEach((user) => {
             users.push({...user.data(), id: user.id});
         });
@@ -55,7 +57,10 @@ const Users = () => {
     }
 
     const reloadUsers = () => {
-        getUsers().catch(error => {console.log(error)});
+        getUsers()
+            .catch(error => {
+                console.log(error)
+            });
     };
 
     const handleApprovedSwitch = () => {
@@ -105,14 +110,14 @@ const Users = () => {
         setDeleteOpen(false);
     };
 
-    const switchLabel = filterSwitch ? "Not Approved (" + registeredVolunteers.length  + ")" : "Approved";
+    const switchLabel = filterSwitch ? "Not Approved (" + registeredVolunteers.length + ")" : "Approved";
 
-    return(
-        <div style={{width:'90%', margin: 'auto'}}>
+    return (
+        <Container>
             <EnhancedTable
                 data={filterSwitch ? approvedVolunteers : registeredVolunteers}
                 headCells={headCells}
-                add={handleAddOpen}
+                add={() => alert("not implemented")}
                 actionEdit={handleEditOpen}
                 actionDelete={handleDeleteOpen}
                 approvedLabel={switchLabel}
@@ -138,10 +143,11 @@ const Users = () => {
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm onDelete={onDelete} handleClose={handleDeleteClose} title={"Delete User"} buttonText={"Delete User"} />}
+                form={<DeleteForm onDelete={onDelete} handleClose={handleDeleteClose} title={"Delete User"}
+                                  buttonText={"Delete User"}/>}
                 title={"Delete User"}
             />
-        </div>
+        </Container>
     );
 };
 
