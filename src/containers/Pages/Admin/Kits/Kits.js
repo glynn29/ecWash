@@ -1,19 +1,27 @@
 import React, {useState} from "react";
 import {firestore} from "../../../../firebase";
 
-const Kits = (props) => {
+const Kits = () => {
     const [jsonData, setJson] = useState(null);
+
+    function trim(thing) {
+        return thing.trim();
+    }
+
+     function lowerCase(thing) {
+        const firstLetter = thing.charAt(0);
+        const lowerCaseWord = thing.substring(1, thing.length).toLowerCase();
+        console.log(firstLetter + lowerCaseWord);
+        return firstLetter + lowerCaseWord;
+     }
+
     const insertRow = (row) => {
-        const name = row.name;
-        const code = row.code;
-        const details = row.details;
-        const category = row.category;
+        const name = trim(row.name);
+        const category = lowerCase(trim(row.category));
 
         firestore.collection('parts')
             .add({
                      name,
-                     code,
-                     details,
                      category,
                      amount: 1
                  })
@@ -32,9 +40,9 @@ const Kits = (props) => {
     }
 
     return (
-        < div style={{margin: 'auto', width: '200px'}}>
+        <div style={{margin: 'auto', width: '200px'}}>
             <ol>
-                <li>down load excel sheet</li>
+                <li>download excel sheet</li>
                 <li>Go to <a href={'https://beautifytools.com/excel-to-json-converter.php'}>https://beautifytools.com/excel-to-json-converter.php</a></li>
                 <li>click 'Browse' and select you excel sheet</li>
                 <li>select all (ctr + a) the JSON that appeared and copy it</li>
