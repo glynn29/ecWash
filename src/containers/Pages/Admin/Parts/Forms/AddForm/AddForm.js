@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -7,30 +7,12 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import Fab from "@material-ui/core/Fab";
-import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Box from "@material-ui/core/Box";
-import LinearProgress from "@material-ui/core/LinearProgress";
 import Typography from "@material-ui/core/Typography";
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
-import {storageRef} from "../../../../../../firebase";
-
-function LinearProgressWithLabel(props) {
-    return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ width: '100%', mr: 1 }}>
-                <LinearProgress variant="determinate" {...props} />
-            </Box>
-            <Box sx={{ minWidth: 35 }}>
-                <Typography variant="body2">{`${Math.round(
-                    props.value,
-                )}%`}</Typography>
-            </Box>
-        </Box>
-    );
-}
+import { storageRef } from "../../../../../../firebase";
+import CustomLinearProgress from "../../../../../../components/UI/LinearProgress/CustomLinearProgress";
+import PictureButton from "../../../../../../components/UI/Buttons/PictureButton";
 
 const AddForm = props => {
     const styles = formStyles();
@@ -38,7 +20,7 @@ const AddForm = props => {
     const [code, setCode] = useState("");
     const [details, setDetails] = useState("");
     const [category, setCategory] = useState("");
-    const [pictureUrl, setPictureUrl] = useState(null);
+    const [tempPicture, setTempPicture] = useState(null);
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -51,13 +33,13 @@ const AddForm = props => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
-        reader.onloadend = function() {
-            setPictureUrl(reader.result);
+        reader.onloadend = function () {
+            setTempPicture(reader.result);
         };
     };
 
     const handleRemovePictureClick = () => {
-        setPictureUrl(null);
+        setTempPicture(null);
     };
 
     //function to upload file to firebase
@@ -65,7 +47,7 @@ const AddForm = props => {
         setIsLoading(true);
         try {
             const uploadTask = storageRef.child(category)
-                .child(file.name)
+                .child(name)
                 .put(file);
             return new Promise((resolve, reject) => {
                 uploadTask.on('state_changed', (snapshot) => {
@@ -81,9 +63,8 @@ const AddForm = props => {
                               () => {
                                   uploadTask.snapshot.ref.getDownloadURL()
                                       .then((downloadURL) => {
-                                          setPictureUrl(downloadURL);
                                           setIsLoading(false);
-                                          resolve("complete");
+                                          resolve(downloadURL);
                                       });
                               });
             });
@@ -95,8 +76,17 @@ const AddForm = props => {
 
     const submitFormHandler = async (event) => {
         event.preventDefault();
+        let pictureUrl = null;
+        let pictureError = false;
+
         if (file) {
-            await handleFileUpload();
+            await handleFileUpload()
+                .then(function (url) {
+                    pictureUrl = url;
+                })
+                .catch(function (error) {
+                    pictureError = true;
+                });
         }
 
         const part = {
@@ -108,31 +98,11 @@ const AddForm = props => {
             amount: 1
         };
 
-        props.onAdd(part);
-        console.log("part ADDED");
+        if (!pictureError) {
+            props.onAdd(part);
+            console.log("part ADDED");
+        }
     };
-
-    const imageButton = (pictureUrl ?
-        <Fab component="span">
-            <HighlightOffIcon onClick={handleRemovePictureClick} color={"error"} fontSize={"large"}/>
-        </Fab>
-            :
-        <div>
-            <input
-                accept="image/*"
-                className={styles.input}
-                id="contained-button-file"
-                multiple
-                type="file"
-                onChange={handleAddPictureClick}
-            />
-            <label htmlFor="contained-button-file">
-                <Fab component="span">
-                    <AddPhotoAlternateIcon />
-                </Fab>
-            </label>
-        </div>
-    );
 
     return (
         <Container component="main" maxWidth="sm" className={styles.Container}>
@@ -154,8 +124,8 @@ const AddForm = props => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl className={styles.formControl}>
-                        <TextField
-                            value={code}
+                            <TextField
+                                value={code}
                                 onChange={event => setCode(event.target.value)}
                                 variant="outlined"
                                 required
@@ -171,11 +141,11 @@ const AddForm = props => {
                             <Select
                                 native
                                 value={category}
-                                onChange={event => setCategory(event.target.value) }
+                                onChange={event => setCategory(event.target.value)}
                                 label="Part Category"
                             >
-                                <option aria-label="None" value="" />
-                                {props.categories.map( listItem => {
+                                <option aria-label="None" value=""/>
+                                {props.categories.map(listItem => {
                                     return (
                                         <option key={listItem.name} value={listItem.name}>{listItem.name}</option>
                                     );
@@ -194,30 +164,31 @@ const AddForm = props => {
                                 variant="outlined"
                                 fullWidth
                                 rows={2}
-                                inputProps={{ className: styles.textarea }}
+                                inputProps={{className: styles.textarea}}
                             />
                         </FormControl>
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        {imageButton}
+                        <PictureButton tempPicture={tempPicture} handleRemovePictureClick={handleRemovePictureClick}
+                                       handleAddPictureClick={handleAddPictureClick}/>
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
-                        {pictureUrl &&
-                            <img src={pictureUrl} alt={"error"} style={{
-                                margin: 'auto',
-                                display: 'block',
-                                padding: 'inherit',
-                                maxHeight: 129
-                            }}/>
+                        {tempPicture &&
+                        <img src={tempPicture} alt={"error"} style={{
+                            margin: 'auto',
+                            display: 'block',
+                            padding: 'inherit',
+                            maxHeight: 129
+                        }}/>
                         }
                     </Grid>
                     {(isLoading || progress === 100) &&
                     <Grid item xs={12}>
-                        <LinearProgressWithLabel value={progress}/>
+                        <CustomLinearProgress value={progress}/>
                     </Grid>}
                     {error &&
                     <Grid item xs={12}>
-                        <Typography>{error}</Typography>
+                        <Typography color={"error"}>{error}</Typography>
                     </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button

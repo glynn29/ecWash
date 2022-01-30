@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -7,11 +7,12 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import Fab from "@material-ui/core/Fab";
-import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Typography from "@material-ui/core/Typography";
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
+import { storageRef } from "../../../../../../firebase";
+import CustomLinearProgress from "../../../../../../components/UI/LinearProgress/CustomLinearProgress";
+import PictureButton from "../../../../../../components/UI/Buttons/PictureButton";
 
 const EditForm = props => {
     const styles = formStyles();
@@ -19,59 +20,121 @@ const EditForm = props => {
     const [code, setCode] = useState(props.formData.code);
     const [details, setDetails] = useState(props.formData.details);
     const [category, setCategory] = useState(props.formData.category);
-    const [picture, setPicture] = useState(props.formData.picture);
+    const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictureUrl);
+    const [isPictureRemoved, setIsPictureRemoved] = useState(false);
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
-    const handleUploadClick = event => {
-        console.log();
+    //functions for showing a temporary photo before an actual upload
+    const handleAddPictureClick = event => {
         const file = event.target.files[0];
+        setFile(file);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
-        reader.onloadend = function(e) {
-            setPicture(reader.result);
+        reader.onloadend = function () {
+            setTempPictureUrl(reader.result);
         };
     };
 
-    const handleRemoveClick = () => {
-        setPicture(null);
+    const handleRemovePictureClick = () => {
+        setTempPictureUrl(null);
+        setIsPictureRemoved(true);
     };
 
-    const submitFormHandler = (event) =>{
+    const deletePhotoFromStorage = () => {
+        try {
+            const deleteRef = storageRef.child(category)
+                .child(undefined);
+            return new Promise((resolve, reject) => {
+                deleteRef.delete()
+                    .then(() => {
+                        resolve("success");
+                    })
+                    .catch((error) => {
+                        setError(error);
+                        reject(error);
+                    });
+            })
+        } catch (e) {
+            setError(e.message);
+            return Promise.reject();
+        }
+    };
+
+    //function to upload file to firebase
+    const handleFileUpload = () => {
+        setIsLoading(true);
+        try {
+            const uploadTask = storageRef.child(category)
+                .child(name)
+                .put(file);
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', (snapshot) => {
+                                  let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                  setProgress(progress);
+                                  console.log('Upload is ' + progress + '% done');
+                              },
+                              (error) => {
+                                  setError(error.message);
+                                  setIsLoading(false);
+                                  reject(error.message);
+                              },
+                              () => {
+                                  uploadTask.snapshot.ref.getDownloadURL()
+                                      .then((downloadURL) => {
+                                          setIsLoading(false);
+                                          resolve(downloadURL);
+                                      });
+                              });
+            });
+        } catch (e) {
+            setError(e.message);
+            return Promise.reject();
+        }
+    };
+
+    const submitFormHandler = async (event) => {
         event.preventDefault();
-        const submitPicture = picture ? picture : null;
+        let pictureUrl = tempPictureUrl;
+        let pictureError = false;
+
+        if (isPictureRemoved) {
+            await deletePhotoFromStorage()
+                .then(function () {
+                    pictureUrl = null;
+                })
+                .catch(function (error) {
+                    pictureError = true;
+                });
+        }
+
+        if (file && !pictureError) {
+            await handleFileUpload()
+                .then(function (url) {
+                    pictureUrl = url;
+                })
+                .catch(function (error) {
+                    pictureError = true;
+                });
+        }
+
         const part = {
+            ...props.formData,
             name,
             code,
-            details: details,
+            details,
             category,
-            picture: submitPicture,
-            amount: 1
+            pictureUrl,
         };
-        props.onEdit(part, props.formData.id);
-        console.log("part EDITED");
-    };
 
-    const imageButton = (picture ?
-            <Fab component="span">
-                <HighlightOffIcon onClick={handleRemoveClick} color={"error"} fontSize={"large"}/>
-            </Fab>
-            :
-            <div>
-                <input
-                    accept="image/*"
-                    className={styles.input}
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    onChange={handleUploadClick}
-                />
-                <label htmlFor="contained-button-file">
-                    <Fab component="span">
-                        <AddPhotoAlternateIcon />
-                    </Fab>
-                </label>
-            </div>
-    );
+        if (!pictureError) {
+            props.onEdit(part, props.formData.id);
+            console.log("part EDITED");
+        }
+    };
 
     return (
         <Container component="main" maxWidth="sm" className={styles.Container}>
@@ -110,11 +173,11 @@ const EditForm = props => {
                             <Select
                                 native
                                 value={category}
-                                onChange={event => setCategory(event.target.value) }
+                                onChange={event => setCategory(event.target.value)}
                                 label="Part Category"
                             >
-                                <option aria-label="None" value="" />
-                                {props.categories.map( listItem => {
+                                <option aria-label="None" value=""/>
+                                {props.categories.map(listItem => {
                                     return (
                                         <option key={listItem.name} value={listItem.name}>{listItem.name}</option>
                                     );
@@ -133,16 +196,17 @@ const EditForm = props => {
                                 variant="outlined"
                                 fullWidth
                                 rows={2}
-                                inputProps={{ className: styles.textarea }}
+                                inputProps={{className: styles.textarea}}
                             />
                         </FormControl>
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        {imageButton}
+                        <PictureButton tempPicture={tempPictureUrl} handleRemovePictureClick={handleRemovePictureClick}
+                                       handleAddPictureClick={handleAddPictureClick}/>
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
-                        {picture &&
-                        <img src={picture} alt={"error"} style={{
+                        {tempPictureUrl &&
+                        <img src={tempPictureUrl} alt={"error"} style={{
                             margin: 'auto',
                             display: 'block',
                             padding: 'inherit',
@@ -150,6 +214,14 @@ const EditForm = props => {
                         }}/>
                         }
                     </Grid>
+                    {(isLoading || progress === 100) &&
+                    <Grid item xs={12}>
+                        <CustomLinearProgress value={progress}/>
+                    </Grid>}
+                    {error &&
+                    <Grid item xs={12}>
+                        <Typography color={"error"}>{error}</Typography>
+                    </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             type="submit"
@@ -157,7 +229,7 @@ const EditForm = props => {
                             variant="contained"
                             color="primary"
                         >
-                            Edit Part
+                            Save Part
                         </Button>
                     </Grid>
                 </Grid>

@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
 import FormControl from "@material-ui/core/FormControl";
@@ -5,22 +8,19 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import AutoComplete from "@material-ui/lab/Autocomplete";
-import React, {useEffect, useState} from "react";
-import {connect} from "react-redux";
-import useStyles from "../../../../components/UI/Styles/formStyle";
 
+import useStyles from "../../../../components/UI/Styles/formStyle";
 import EnhancedTable from "../../../../components/UI/Table/Table";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
 import * as actions from "../../../../store/actions";
-
 import AddForm from "./Forms/AddForm/AddForm";
 import EditForm from "./Forms/EditForm/EditForm";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
 const headCells = [
-    {id:'name', label: 'Name'},
-    {id:'code', label: 'Part Code'},
-    {id:'category', label: 'Category'}
+    {id: 'name', label: 'Name'},
+    {id: 'code', label: 'Part Code'},
+    {id: 'category', label: 'Category'}
 ];
 
 const Parts = (props) => {
@@ -38,11 +38,11 @@ const Parts = (props) => {
     useEffect(() => {
         reloadParts();
         console.log("Got parts");
-    },[parts]);
+    }, [parts]);
 
     useEffect(() => {
         filterPart();
-    },[filterValue]);
+    }, [filterValue]);
 
     const reloadParts = () => {
         setTableData(parts);
@@ -64,7 +64,7 @@ const Parts = (props) => {
 
     //edit modal functions
     function onEditPart(part, id) {
-        props.onEditPart(part , id);
+        props.onEditPart(part, id);
         handleEditClose();
     }
 
@@ -98,13 +98,13 @@ const Parts = (props) => {
         setFilteredTableData(filteredParts);
     };
 
-    const handleApprovedSwitch =() => {
+    const handleApprovedSwitch = () => {
         setFilter(!filter);
     };
 
-    return(
+    return (
         <Container>
-            <div style={{display: 'flex', justifyContent: 'center'}} >
+            <div style={{display: 'flex', justifyContent: 'center'}}>
                 <div className={styles.searchBar}>
                     <FormControl className={styles.searchInput}>
                         <AutoComplete
@@ -126,13 +126,13 @@ const Parts = (props) => {
                 <FormControlLabel
                     disabled={filterValue === null}
                     style={{float: 'right'}}
-                    control={<Switch checked={filter} onChange={handleApprovedSwitch} />}
+                    control={<Switch checked={filter} onChange={handleApprovedSwitch}/>}
                     label={filter ? "Disable Filter" : "Enable Filter"}
                 />
             </div>
-            <br />
+            <br/>
             <Divider style={{width: "95%", margin: 'auto'}}/>
-            <br />
+            <br/>
             <EnhancedTable
                 data={filter ? filteredTableData : tableData}
                 headCells={headCells}
@@ -169,14 +169,14 @@ const Parts = (props) => {
 };
 
 const mapStateToProps = state => {
-    return{
+    return {
         parts: state.parts.parts,
         categories: state.categories.categories,
     };
 };
 
 const mapDispatchToProps = dispatch => {
-    return{
+    return {
         onAddPart: (part) => dispatch(actions.onAddPart(part)),
         onRemovePart: (id) => dispatch(actions.onRemovePart(id)),
         onEditPart: (part, id) => dispatch(actions.onEditPart(part, id))
