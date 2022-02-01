@@ -28,6 +28,7 @@ const Category = () => {
     async function getCategories() {
         let categories = [];
         const partsRef = await firestore.collection('categories')
+            .orderBy("name", "asc")
             .get();
         partsRef.forEach((category) => {
             categories.push({...category.data(), id: category.id});
@@ -76,11 +77,13 @@ const Category = () => {
         firestore.collection("categories")
             .doc(id)
             .delete()
+            .then(() => {
+                reloadCategories();
+                handleDeleteClose();
+            })
             .catch((error) => {
                 console.log(error);
             });
-        reloadCategories();
-        handleDeleteClose();
     };
 
     const handleDeleteOpen = (props) => {

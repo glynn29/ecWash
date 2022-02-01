@@ -17,7 +17,6 @@ import PictureButton from "../../../../../../components/UI/Buttons/PictureButton
 const AddForm = props => {
     const styles = formStyles();
     const [name, setName] = useState("");
-    const [code, setCode] = useState("");
     const [details, setDetails] = useState("");
     const [category, setCategory] = useState("");
     const [tempPicture, setTempPicture] = useState(null);
@@ -46,7 +45,8 @@ const AddForm = props => {
     const handleFileUpload = () => {
         setIsLoading(true);
         try {
-            const uploadTask = storageRef.child(category)
+            const uploadTask = storageRef.child('parts')
+                .child(category)
                 .child(name)
                 .put(file);
             return new Promise((resolve, reject) => {
@@ -91,12 +91,14 @@ const AddForm = props => {
 
         const part = {
             name,
-            code,
-            details,
             category,
             pictureUrl,
             amount: 1
         };
+
+        if (details) {
+            part.details = details;
+        }
 
         if (!pictureError) {
             props.onAdd(part);
@@ -108,7 +110,7 @@ const AddForm = props => {
         <Container component="main" maxWidth="sm" className={styles.Container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <FormControl className={styles.formControl}>
                             <TextField
                                 value={name}
@@ -119,19 +121,6 @@ const AddForm = props => {
                                 id="name"
                                 label="Part Name"
                                 autoFocus
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl className={styles.formControl}>
-                            <TextField
-                                value={code}
-                                onChange={event => setCode(event.target.value)}
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="code"
-                                label="Part Code"
                             />
                         </FormControl>
                     </Grid>
@@ -170,7 +159,7 @@ const AddForm = props => {
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <PictureButton tempPicture={tempPicture} handleRemovePictureClick={handleRemovePictureClick}
-                                       handleAddPictureClick={handleAddPictureClick}/>
+                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading}/>
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {tempPicture &&
@@ -192,6 +181,7 @@ const AddForm = props => {
                     </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
+                            disabled={isLoading}
                             type="submit"
                             fullWidth
                             variant="contained"

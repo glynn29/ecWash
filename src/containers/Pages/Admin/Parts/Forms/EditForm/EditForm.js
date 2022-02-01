@@ -17,8 +17,7 @@ import PictureButton from "../../../../../../components/UI/Buttons/PictureButton
 const EditForm = props => {
     const styles = formStyles();
     const [name, setName] = useState(props.formData.name);
-    const [code, setCode] = useState(props.formData.code);
-    const [details, setDetails] = useState(props.formData.details);
+    const [details, setDetails] = useState(props.formData.details ? props.formData.details : null);
     const [category, setCategory] = useState(props.formData.category);
     const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictureUrl);
     const [isPictureRemoved, setIsPictureRemoved] = useState(false);
@@ -46,15 +45,16 @@ const EditForm = props => {
 
     const deletePhotoFromStorage = () => {
         try {
-            const deleteRef = storageRef.child(category)
-                .child(undefined);
+            const deleteRef = storageRef.child('parts')
+                .child(category)
+                .child(name);
             return new Promise((resolve, reject) => {
                 deleteRef.delete()
                     .then(() => {
                         resolve("success");
                     })
                     .catch((error) => {
-                        setError(error);
+                        setError(error.message);
                         reject(error);
                     });
             })
@@ -68,7 +68,8 @@ const EditForm = props => {
     const handleFileUpload = () => {
         setIsLoading(true);
         try {
-            const uploadTask = storageRef.child(category)
+            const uploadTask = storageRef.child('parts')
+                .child(category)
                 .child(name)
                 .put(file);
             return new Promise((resolve, reject) => {
@@ -124,8 +125,7 @@ const EditForm = props => {
         const part = {
             ...props.formData,
             name,
-            code,
-            details,
+            details: details,
             category,
             pictureUrl,
         };
@@ -140,7 +140,7 @@ const EditForm = props => {
         <Container component="main" maxWidth="sm" className={styles.Container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <FormControl className={styles.formControl}>
                             <TextField
                                 value={name}
@@ -151,19 +151,6 @@ const EditForm = props => {
                                 id="name"
                                 label="Part Name"
                                 autoFocus
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl className={styles.formControl}>
-                            <TextField
-                                value={code}
-                                onChange={event => setCode(event.target.value)}
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="code"
-                                label="Part Code"
                             />
                         </FormControl>
                     </Grid>
@@ -202,7 +189,7 @@ const EditForm = props => {
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <PictureButton tempPicture={tempPictureUrl} handleRemovePictureClick={handleRemovePictureClick}
-                                       handleAddPictureClick={handleAddPictureClick}/>
+                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading}/>
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {tempPictureUrl &&
@@ -224,6 +211,7 @@ const EditForm = props => {
                     </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
+                            disabled={isLoading}
                             type="submit"
                             fullWidth
                             variant="contained"

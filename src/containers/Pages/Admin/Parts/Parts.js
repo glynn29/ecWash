@@ -19,7 +19,6 @@ import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
 
 const headCells = [
     {id: 'name', label: 'Name'},
-    {id: 'code', label: 'Part Code'},
     {id: 'category', label: 'Category'}
 ];
 
@@ -42,6 +41,7 @@ const Parts = (props) => {
 
     useEffect(() => {
         filterPart();
+
     }, [filterValue]);
 
     const reloadParts = () => {
@@ -94,12 +94,18 @@ const Parts = (props) => {
 
     //filter modal functions
     const filterPart = () => {
-        let filteredParts = parts.filter((part) => part.category === filterValue);
+        let filteredParts = parts.filter((part) => part.name === filterValue);
         setFilteredTableData(filteredParts);
     };
 
     const handleApprovedSwitch = () => {
         setFilter(!filter);
+    };
+
+    const handleSearchOnChange = (value) => {
+        if (value) {
+            setFilter(true);
+        }
     };
 
     return (
@@ -108,16 +114,22 @@ const Parts = (props) => {
                 <div className={styles.searchBar}>
                     <FormControl className={styles.searchInput}>
                         <AutoComplete
+                            onClick={() => alert("hi")}
                             freeSolo
                             onChange={(event, value) => {
-                                setFilterValue(value.name);
+                                if (value) {
+                                    setFilterValue(value.name);
+                                    handleSearchOnChange(value.name);
+                                } else {
+                                    setFilter(null);
+                                }
                             }}
-                            options={categories.sort((a, b) => -b.name.charAt(0)
+                            options={parts.sort((a, b) => -b.name.charAt(0)
                                 .localeCompare(a.name.charAt(0)))}
                             groupBy={(option) => option.name.charAt(0)}
                             getOptionLabel={(option) => (option.name)}
                             renderInput={(params) => (
-                                <TextField {...params} key={params} variant="outlined" placeholder="Filter Category"/>
+                                <TextField {...params} key={params} variant="outlined" placeholder="Filter Part Name"/>
                             )}
                         />
                     </FormControl>

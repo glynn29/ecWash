@@ -5,65 +5,99 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import Fab from "@material-ui/core/Fab";
-import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Typography from "@material-ui/core/Typography";
 
+import PictureButton from "../../../../../../components/UI/Buttons/PictureButton";
+import CustomLinearProgress from "../../../../../../components/UI/LinearProgress/CustomLinearProgress";
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
-import {firestore} from "../../../../../../firebase";
+import { firestore, storageRef } from "../../../../../../firebase";
 
 const AddCategory = props => {
     const styles = formStyles();
     const [name, setName] = useState("");
-    const [picture, setPicture] = useState(null);
+    const [tempPicture, setTempPicture] = useState(null);
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
-    const handleUploadClick = event => {
-        console.log();
-        var file = event.target.files[0];
+    //functions for showing a temporary photo before an actual upload
+    const handleAddPictureClick = event => {
+        const file = event.target.files[0];
+        setFile(file);
         const reader = new FileReader();
-        var url = reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
 
-        reader.onloadend = function(e) {
-            setPicture(reader.result);
+        reader.onloadend = function () {
+            setTempPicture(reader.result);
         };
-        console.log(url); // Would see a path?
     };
 
-    const handleRemoveClick = () => {
-        setPicture(null);
+    const handleRemovePictureClick = () => {
+        setTempPicture(null);
     };
 
-    const submitFormHandler = (event) =>{
+    const handleFileUpload = () => {
+        setIsLoading(true);
+        try {
+            const uploadTask = storageRef.child('categories')
+                .child(name)
+                .put(file);
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', (snapshot) => {
+                                  let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                  setProgress(progress);
+                                  console.log('Upload is ' + progress + '% done');
+                              },
+                              (error) => {
+                                  setError(error.message);
+                                  setIsLoading(false);
+                                  reject(error.message);
+                              },
+                              () => {
+                                  uploadTask.snapshot.ref.getDownloadURL()
+                                      .then((downloadURL) => {
+                                          setIsLoading(false);
+                                          resolve(downloadURL);
+                                      });
+                              });
+            });
+        } catch (e) {
+            setError(e.message);
+            return Promise.reject();
+        }
+    };
+
+    const submitFormHandler = async (event) => {
         event.preventDefault();
-        firestore.collection('categories').add({
-            name,
-            picture,
-        }).then(()=>{props.onAdd();})
-            .catch(error => {console.log(error)});
-        console.log("category ADDED");
-    };
+        let pictureUrl = null;
+        let pictureError = false;
 
-    const imageButton = (picture ?
-        <Fab component="span">
-            <HighlightOffIcon onClick={handleRemoveClick} color={"error"} fontSize={"large"}/>
-        </Fab>
-            :
-        <div>
-            <input
-                accept="image/*"
-                className={styles.input}
-                id="contained-button-file"
-                multiple
-                type="file"
-                onChange={handleUploadClick}
-            />
-            <label htmlFor="contained-button-file">
-                <Fab component="span">
-                    <AddPhotoAlternateIcon />
-                </Fab>
-            </label>
-        </div>
-    );
+        if (file) {
+            await handleFileUpload()
+                .then(function (url) {
+                    pictureUrl = url;
+                })
+                .catch(function (error) {
+                    pictureError = true;
+                });
+        }
+
+        if (!pictureError) {
+            firestore.collection('categories')
+                .add({
+                         name,
+                         pictureUrl: pictureUrl,
+                     })
+                .then(() => {
+                    props.onAdd();
+                })
+                .catch(error => {
+                    console.log(error)
+                });
+            console.log("category ADDED");
+        }
+    };
 
     return (
         <Container component="main" maxWidth="sm" className={styles.Container}>
@@ -84,11 +118,12 @@ const AddCategory = props => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        {imageButton}
+                        <PictureButton tempPicture={tempPicture} handleRemovePictureClick={handleRemovePictureClick}
+                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading}/>
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
-                        {picture &&
-                            <img src={picture} alt={"error"} style={{
+                        {tempPicture &&
+                            <img src={tempPicture} alt={"error"} style={{
                                 margin: 'auto',
                                 display: 'block',
                                 padding: 'inherit',
@@ -96,8 +131,17 @@ const AddCategory = props => {
                             }}/>
                         }
                     </Grid>
+                    {(isLoading || progress === 100) &&
+                    <Grid item xs={12}>
+                        <CustomLinearProgress value={progress}/>
+                    </Grid>}
+                    {error &&
+                    <Grid item xs={12}>
+                        <Typography color={"error"}>{error}</Typography>
+                    </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
+                            disabled={isLoading}
                             type="submit"
                             fullWidth
                             variant="contained"
