@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Compressor from 'compressorjs';
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -28,13 +29,28 @@ const AddForm = props => {
     //functions for showing a temporary photo before an actual upload
     const handleAddPictureClick = event => {
         const file = event.target.files[0];
-        setFile(file);
+        compressFile(file);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
         reader.onloadend = function () {
             setTempPicture(reader.result);
         };
+    };
+
+    const compressFile = (image) => {
+        setIsLoading(true);
+        new Compressor(image, {
+            quality: 0.8,
+            success: (compressedResult) => {
+                setFile(compressedResult);
+                setIsLoading(false);
+            },
+            error(err) {
+                setError(err.message);
+                setIsLoading(false);
+            },
+        });
     };
 
     const handleRemovePictureClick = () => {

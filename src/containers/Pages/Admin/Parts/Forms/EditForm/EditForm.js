@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Compressor from "compressorjs";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -17,7 +18,7 @@ import PictureButton from "../../../../../../components/UI/Buttons/PictureButton
 const EditForm = props => {
     const styles = formStyles();
     const [name, setName] = useState(props.formData.name);
-    const [details, setDetails] = useState(props.formData.details ? props.formData.details : null);
+    const [details, setDetails] = useState(props.formData.details ? props.formData.details : "");
     const [category, setCategory] = useState(props.formData.category);
     const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictureUrl);
     const [isPictureRemoved, setIsPictureRemoved] = useState(false);
@@ -29,13 +30,28 @@ const EditForm = props => {
     //functions for showing a temporary photo before an actual upload
     const handleAddPictureClick = event => {
         const file = event.target.files[0];
-        setFile(file);
+        compressFile(file);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
         reader.onloadend = function () {
             setTempPictureUrl(reader.result);
         };
+    };
+
+    const compressFile = (image) => {
+        setIsLoading(true);
+        new Compressor(image, {
+            quality: 0.8,
+            success: (compressedResult) => {
+                setFile(compressedResult);
+                setIsLoading(false);
+            },
+            error(err) {
+                setError(err.message);
+                setIsLoading(false);
+            },
+        });
     };
 
     const handleRemovePictureClick = () => {
@@ -99,7 +115,7 @@ const EditForm = props => {
 
     const submitFormHandler = async (event) => {
         event.preventDefault();
-        let pictureUrl = tempPictureUrl;
+        let pictureUrl = null;
         let pictureError = false;
 
         if (isPictureRemoved) {
