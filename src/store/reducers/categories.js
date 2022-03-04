@@ -1,5 +1,5 @@
 import * as actionTypes from '../actions/actionTypes';
-import {updateObject} from '../utility';
+import { updateObject } from '../utility';
 
 const initialState = {
     categories: [],
@@ -29,7 +29,7 @@ const categoriesFail = (state, action) => {
 };
 
 const setCategories = (state, action) => {
-    return updateObject( state, {
+    return updateObject(state, {
         categories: action.categories,
     });
 };

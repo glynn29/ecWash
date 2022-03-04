@@ -1,9 +1,11 @@
 import * as actionTypes from './actionTypes';
-import {firestore} from "../../firebase";
+import { firestore } from "../../firebase";
 
 async function getCategories() {
     let categories = [];
-    const categoriesRef = await firestore.collection('categories').get();
+    const categoriesRef = await firestore.collection('categories')
+        .orderBy('name', 'asc')
+        .get();
     categoriesRef.forEach((part) => {
         categories.push({...part.data(), id: part.id});
     });
@@ -18,24 +20,26 @@ export const onFetchCategories = () => {
                 dispatch(categoriesSuccess());
                 dispatch(setCategories(categories));
             })
-            .catch(error => {categoriesFail(error)});
+            .catch(error => {
+                categoriesFail(error)
+            });
     }
 };
 
 export const categoriesStart = () => {
-    return{
+    return {
         type: actionTypes.CATEGORIES_START
     };
 };
 
 export const categoriesSuccess = () => {
-    return{
+    return {
         type: actionTypes.CATEGORIES_SUCCESS
     };
 };
 
 export const categoriesFail = (error) => {
-    return{
+    return {
         type: actionTypes.CATEGORIES_FAIL,
         error: error
     };

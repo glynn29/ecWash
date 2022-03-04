@@ -3,6 +3,8 @@ import {updateObject} from '../utility';
 
 const initialState = {
     items: [],
+    removed: false,
+    added: false
 };
 
 const fetchItems = (state, action) => {
@@ -25,6 +27,7 @@ const addItem = (state, action) => {
 
     return updateObject( state, {
         items: updatedItems,
+        added: true
     });
 };
 
@@ -47,10 +50,11 @@ const removeItem = (state, action) => {
 
     return updateObject( state, {
         items: updatedItems,
+        removed: true
     });
 };
 
-const clearItems = (state , action) => {
+const clearItems = (state) => {
     return updateObject(state, {
         items: [],
     });

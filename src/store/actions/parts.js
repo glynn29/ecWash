@@ -1,9 +1,12 @@
 import * as actionTypes from './actionTypes';
-import {firestore} from "../../firebase";
+import { firestore } from "../../firebase";
 
 async function getParts() {
+    // let parts = [{name: 'poop', id: 1, category: 'Air', pictureUrl: 'https://firebasestorage.googleapis.com/v0/b/carwash-57347.appspot.com/o/parts%2FAir%2FAIR%3A1%2F4inch-PTF%20x%20%20MNPT%20Elbow?alt=media&token=d4a1da37-655d-40b1-a839-3dfd5ab4bb78'}];
     let parts = [];
-    const partsRef = await firestore.collection('parts').get();
+    const partsRef = await firestore.collection('parts')
+        .orderBy("name", "asc")
+        .get();
     partsRef.forEach((part) => {
         parts.push({...part.data(), id: part.id});
     });
@@ -18,24 +21,26 @@ export const onFetchParts = () => {
                 dispatch(partsSuccess());
                 dispatch(setParts(parts));
             })
-            .catch(error => {partsFail(error)});
+            .catch(error => {
+                partsFail(error)
+            });
     }
 };
 
 export const partsStart = () => {
-    return{
+    return {
         type: actionTypes.PARTS_START
     };
 };
 
 export const partsSuccess = () => {
-    return{
+    return {
         type: actionTypes.PARTS_SUCCESS
     };
 };
 
 export const partsFail = (error) => {
-    return{
+    return {
         type: actionTypes.PARTS_FAIL,
         error: error
     };
@@ -51,7 +56,8 @@ export const addPart = (part) => {
 export const onAddPart = (part) => {
     return dispatch => {
         dispatch(partsStart());
-        firestore.collection('parts').add(part)
+        firestore.collection('parts')
+            .add(part)
             .then((response) => {
                 part.id = response.id;
                 dispatch(partsSuccess());
@@ -74,7 +80,9 @@ export const editPart = (part, id) => {
 export const onEditPart = (part, id) => {
     return dispatch => {
         dispatch(partsStart());
-        firestore.collection('parts').doc(id).update(part)
+        firestore.collection('parts')
+            .doc(id)
+            .update(part)
             .then(() => {
                 dispatch(partsSuccess());
                 dispatch(editPart(part, id));
@@ -87,7 +95,7 @@ export const onEditPart = (part, id) => {
 
 
 export const removePart = (id) => {
-    return{
+    return {
         type: actionTypes.REMOVE_PART,
         id: id
     };
@@ -96,7 +104,9 @@ export const removePart = (id) => {
 export const onRemovePart = (id) => {
     return dispatch => {
         dispatch(partsStart());
-        firestore.collection('parts').doc(id).delete()
+        firestore.collection('parts')
+            .doc(id)
+            .delete()
             .then(() => {
                 dispatch(partsSuccess());
                 dispatch(removePart(id));

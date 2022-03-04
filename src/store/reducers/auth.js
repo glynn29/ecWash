@@ -1,20 +1,21 @@
 import * as actionTypes from '../actions/actionTypes';
-import {updateObject} from '../utility';
+import { updateObject } from '../utility';
 
 const initialState = {
     email: null,
-    userId: null,
-    userDocId: null,
+    first: null,
+    last: null,
+    nickName: null,
     city: null,
     state: null,
     zip: null,
-    error: null,
-    loading: false,
-    registered: false,
-    approved: false,
+    address: null,
     locationPhone: null,
     managerPhone: null,
-    washType: null,
+    approved: false,
+    registered: false,
+    error: null,
+    loading: false,
 };
 
 const authStart = (state, action) => {
@@ -49,32 +50,38 @@ const authFail = (state, action) => {
 const authLogout = (state, action) => {
     return updateObject(state, {
         email: null,
-        userId: null,
-        userDocId: null,
+        first: null,
+        last: null,
+        nickName: null,
         city: null,
         state: null,
         zip: null,
-        error: null,
-        loading: false,
-        registered: false,
-        approved: false,
+        address: null,
         locationPhone: null,
         managerPhone: null,
-        washType: null,
+        approved: false,
+        registered: false,
+        error: null,
+        loading: false,
     });
 };
 
 const getCurrentUser = (state, action) => {
     return updateObject(state, {
-        role: action.role,
-        positions: action.positions,
         email: action.email,
-        userId: action.userId,
-        name: action.name,
-        events: action.events,
-        userDocId: action.userDocId,
+        first: action.first,
+        last: action.last,
+        nickName: action.nickName,
+        city: action.city,
+        state: action.state,
+        zip: action.zip,
+        address: action.address,
+        locationPhone: action.locationPhone,
+        managerPhone: action.managerPhone,
         approved: action.approved,
-        language: action.language
+        registered: false,
+        error: action.error,
+        loading: false,
     })
 };
 

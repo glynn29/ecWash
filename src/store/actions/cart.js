@@ -22,13 +22,13 @@ export const removeItem = (id) => {
 };
 
 export const onAddItem = (item, amount) => {
-    return dispatch =>{
+    return dispatch => {
         dispatch(addItem(item, amount));
     }
 };
 
 export const onRemoveItem = (id) => {
-    return dispatch =>{
+    return dispatch => {
         dispatch(removeItem(id));
     }
 };

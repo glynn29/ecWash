@@ -1,5 +1,5 @@
 import * as actionTypes from '../actions/actionTypes';
-import {updateObject} from '../utility';
+import { updateObject } from '../utility';
 
 const initialState = {
     parts: [],
@@ -31,7 +31,7 @@ const partsFail = (state, action) => {
 const addPart = (state, action) => {
     const updatedParts = state.parts.concat(action.part);
 
-    return updateObject( state, {
+    return updateObject(state, {
         parts: updatedParts,
     });
 };
@@ -41,7 +41,7 @@ const editPart = (state, action) => {
     const partIndex = updatedParts.findIndex((part) => part.id === action.id);
     updatedParts[partIndex] = action.part;
 
-    return updateObject( state, {
+    return updateObject(state, {
         parts: updatedParts,
     });
 };
@@ -49,13 +49,13 @@ const editPart = (state, action) => {
 const removePart = (state, action) => {
     const updatedParts = state.parts.filter((part) => part.id !== action.id);
 
-    return updateObject( state, {
+    return updateObject(state, {
         parts: updatedParts,
     });
 };
 
 const setParts = (state, action) => {
-    return updateObject( state, {
+    return updateObject(state, {
         parts: action.parts,
     });
 };
