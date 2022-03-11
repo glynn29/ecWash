@@ -1,26 +1,27 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import formStyles from "../../../components/UI/Styles/formStyle";
 
-import {auth} from "../../../firebase";
+import formStyles from "../../../components/UI/Styles/formStyle";
+import { auth } from "../../../firebase";
 
 const Forgot = () => {
     const [email, setEmail] = useState("");
     const [result, setResult] = useState(null);
     const classes = formStyles();
 
-    const submitHandler = (event) =>{
+    const submitHandler = (event) => {
         event.preventDefault();
         const actionCodeSettings = {
-            url: 'https://jaydoc-4412a.web.app/login',
+            //TODO change this url
+            url: 'https://carwash-57347.web.app/login',
             handleCodeInApp: false
         };
 
-         auth.sendPasswordResetEmail(email,actionCodeSettings)
+        auth.sendPasswordResetEmail(email, actionCodeSettings)
             .then(() => setResult("Successfully sent reset email to: " + email))
             .catch(error => setResult("Error sending Email: " + error.message));
     };

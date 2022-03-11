@@ -1,6 +1,7 @@
-import React, {useState, useContext, useEffect} from 'react';
-import {connect} from "react-redux";
-import {Redirect} from "react-router-dom";
+import React, { useState, useContext, useEffect } from 'react';
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+import { withSnackbar } from 'notistack';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -12,12 +13,13 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import Slide from "@material-ui/core/Slide";
+import FormControl from "@material-ui/core/FormControl";
 
 import formStyles from "../../../components/UI/Styles/formStyle";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import * as actions from '../../../store/actions/index'
-import {AuthContext} from "../../../containers/Auth/Auth";
-import FormControl from "@material-ui/core/FormControl";
+import { AuthContext } from "../../../containers/Auth/Auth";
 
 const Login = (props) => {
     const {currentUser} = useContext(AuthContext);
@@ -27,42 +29,51 @@ const Login = (props) => {
     const classes = formStyles();
 
     useEffect(() => {
-        if (localStorage.getItem('rememberMe')){
+        if (props.registered) {
+            props.enqueueSnackbar('Registered Successfully', {
+                variant: "success",
+                autoHideDuration: 6000,
+                TransitionComponent: Slide,
+                anchorOrigin: {vertical: 'bottom', horizontal: 'right'}
+            });
+        }
+    }, []);
+    useEffect(() => {
+        if (localStorage.getItem('rememberMe')) {
             setRememberMe(true);
             setEmail(localStorage.getItem("email"));
             setPassword(localStorage.getItem("password"));
         }
-    },[]);
+    }, []);
 
     useEffect(() => {
-        if (rememberMe){
+        if (rememberMe) {
             localStorage.setItem("email", email);
             localStorage.setItem("password", password);
-            console.log("changed ", email, password);
         }
-    },[email, password]);
+    }, [email, password]);
 
-    const onChangeHandler = () =>{
-        if(!rememberMe){
+    const onChangeHandler = () => {
+        if (!rememberMe) {
             localStorage.setItem("rememberMe", true);
             localStorage.setItem("email", email);
             localStorage.setItem("password", password);
-        }else {
+        } else {
             localStorage.clear();
         }
         setRememberMe(!rememberMe);
     };
 
-    const submitHandler = (event) =>{
+    const submitHandler = (event) => {
         event.preventDefault();
         props.onLogin(email, password);
     };
 
-    if (currentUser){
+    if (currentUser) {
         return <Redirect to={"/"}/>;
     }
 
-    if (props.loading){
+    if (props.loading) {
         return <Spinner/>;
     }
 
@@ -70,7 +81,7 @@ const Login = (props) => {
         <Container component="main" maxWidth="sm">
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
+                    <LockOutlinedIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Login
@@ -112,12 +123,14 @@ const Login = (props) => {
                                     value={rememberMe}
                                     checked={rememberMe}
                                     onChange={onChangeHandler}
-                                    color="primary" />}
+                                    color="primary"/>}
                                 label="Remember me"
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            {props.error}
+                            <Typography color={"error"}>
+                                {props.error}
+                            </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Button
@@ -147,17 +160,18 @@ const Login = (props) => {
 };
 
 const mapStateToProps = state => {
-    return{
+    return {
         loading: state.auth.loading,
         error: state.auth.error,
         isAuthenticated: state.auth.token !== null,
+        registered: state.auth.registered
     };
 };
 
-const mapDispatchToProps = dispatch =>{
-    return{
+const mapDispatchToProps = dispatch => {
+    return {
         onLogin: (email, password) => dispatch(actions.login(email, password)),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(withSnackbar(Login));
