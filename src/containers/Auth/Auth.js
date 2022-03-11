@@ -1,5 +1,5 @@
-import React, {createContext, useEffect, useState} from "react";
-import {auth} from "../../firebase";
+import React, { createContext, useEffect, useState } from "react";
+import { auth } from "../../firebase";
 
 export const AuthContext = createContext(null);
 
@@ -9,16 +9,19 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         auth.onAuthStateChanged(user => {
-            if (user){
-                setCurrentUser(user);
-                user.getIdTokenResult().then(idTokenResult => {
-                    if (idTokenResult.claims.admin){
-                        setIsAdmin(true);
-                    }else {
-                        setIsAdmin(false);
-                    }
-                })
-            }else {
+            if (user) {
+                user.getIdTokenResult()
+                    .then(idTokenResult => {
+                        if (idTokenResult.claims.admin) {
+                            setIsAdmin(true);
+                        } else {
+                            setIsAdmin(false);
+                        }
+                    })
+                    .then(() => {
+                        setCurrentUser(user);
+                    })
+            } else {
                 setCurrentUser(null);
                 setIsAdmin(false);
             }
