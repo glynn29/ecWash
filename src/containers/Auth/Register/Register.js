@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {connect} from "react-redux";
-import {Redirect} from "react-router-dom";
+import React, { useState } from 'react';
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -11,25 +11,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import formStyles from "../../../components/UI/Styles/formStyle";
 import * as actions from "../../../store/actions";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
 
 const Register = (props) => {
     const [first, setFirst] = useState("");
@@ -40,12 +25,10 @@ const Register = (props) => {
     const [city, setCity] = useState("");
     const [state, setState] = useState("");
     const [zip, setZip] = useState("");
+    const [address, setAddress] = useState("");
     const [locationPhone, setLocationPhone] = useState("");
     const [managerPhone, setManagerPhone] = useState("");
-    const [washType, setWashType] = useState("");
-    const [otherWashType, setOtherWashType] = useState("");
     const [error, setError] = useState({});
-    const washTypeList = [{name: 'Tommy\'s'}, {name: 'Zips'}, {name: 'Other'}];
     const classes = formStyles();
 
     const formValidator = () => {
@@ -54,37 +37,37 @@ const Register = (props) => {
         const letters = /^[A-Za-z\s]+$/;
         const validEmail = /\S+@\S+\.\S+/;
 
-        if(!first.match(letters)){
+        if (!first.match(letters)) {
             tempErrors.first = "Name must only contain letters";
             isValid = false
         }
 
-        if(first.trim() === ""){
+        if (first.trim() === "") {
             tempErrors.first = "Name must not be empty";
             isValid = false
         }
 
-        if(!last.match(letters)){
+        if (!last.match(letters)) {
             tempErrors.last = "Name must only contain letters";
             isValid = false
         }
 
-        if(last.trim() === ""){
+        if (last.trim() === "") {
             tempErrors.last = "Name must not be empty";
             isValid = false
         }
 
-        if(!email.match(validEmail)){
+        if (!email.match(validEmail)) {
             tempErrors.email = "Poorly formatted email";
             isValid = false;
         }
 
-        if(password !== passwordConfirm){
+        if (password !== passwordConfirm) {
             tempErrors.password = "Passwords do not match";
             isValid = false;
         }
 
-        if(password.length < 6){
+        if (password.length < 6) {
             tempErrors.password = "Password must be at least 6 characters";
             isValid = false;
         }
@@ -93,39 +76,44 @@ const Register = (props) => {
         return isValid;
     };
 
-    const submitHandler = (event) =>{
+    const submitHandler = (event) => {
         event.preventDefault();
-        if(formValidator()) {
-            const tempFirst = first.trim().charAt(0).toUpperCase() + first.trim().slice(1);
-            const tempLast = last.trim().charAt(0).toUpperCase() + last.trim().slice(1);
+        if (formValidator()) {
+            const trimmedFirst = first.trim()
+                .charAt(0)
+                .toUpperCase() + first.trim()
+                .slice(1);
+            const trimmedLast = last.trim()
+                .charAt(0)
+                .toUpperCase() + last.trim()
+                .slice(1);
 
             const formData = {
-                email: email,
-                city: city,
-                state: state,
-                zip: zip,
-                locationPhone: locationPhone,
-                washType: washType,
-                first: tempFirst,
-                last: tempLast,
-                managerPhone: managerPhone,
+                email: email.trim(),
                 password: password,
+                city: city.trim(),
+                state: state.trim(),
+                zip: zip.trim(),
+                address: address.trim(),
+                locationPhone: locationPhone.trim(),
+                first: trimmedFirst,
+                last: trimmedLast,
+                managerPhone: managerPhone.trim(),
             };
 
             props.onRegister(formData);
         }
     };
 
-    if(props.isRegistered){
-        console.log("true REd");
-         return <Redirect to={"/login"}/>
+    if (props.isRegistered) {
+        return <Redirect to={"/login"}/>
     }
 
     const form = (
         <Container component="main" maxWidth="sm">
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
+                    <LockOutlinedIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Register
@@ -135,7 +123,7 @@ const Register = (props) => {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Typography>Credentials</Typography>
-                            <Divider />
+                            <Divider/>
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -149,6 +137,7 @@ const Register = (props) => {
                                 label="Email Address"
                                 autoFocus
                                 {...(error.email && {error: true, helperText: error.email})}
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -163,6 +152,7 @@ const Register = (props) => {
                                 type="password"
                                 id="password"
                                 {...(error.password && {error: true, helperText: error.password})}
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -176,11 +166,12 @@ const Register = (props) => {
                                 type="password"
                                 id="passwordConfirm"
                                 {...(error.password && {error: true, helperText: error.password})}
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography>Location ID</Typography>
-                            <Divider />
+                            <Typography>Car Wash Location Info</Typography>
+                            <Divider/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -192,6 +183,7 @@ const Register = (props) => {
                                 id="city"
                                 label="City"
                                 {...(error.email && {error: true, helperText: error.email})}
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12} sm={2}>
@@ -203,6 +195,7 @@ const Register = (props) => {
                                 fullWidth
                                 id="state"
                                 label="State"
+                                inputProps={{maxLength: 2}}
                             />
                         </Grid>
                         <Grid item xs={12} sm={4}>
@@ -214,6 +207,19 @@ const Register = (props) => {
                                 fullWidth
                                 id="zip"
                                 label="Zip Code"
+                                inputProps={{maxLength: 5}}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                value={address}
+                                onChange={event => setAddress(event.target.value)}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="address"
+                                label="Address"
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -225,43 +231,12 @@ const Register = (props) => {
                                 fullWidth
                                 id="phone"
                                 label="Phone Number"
+                                inputProps={{maxLength: 10}}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl variant="outlined" className={classes.formControl} required>
-                                <InputLabel>Wash Type</InputLabel>
-                                <Select
-                                    MenuProps={MenuProps}
-                                    value={washType}
-                                    onChange={event => setWashType(event.target.value)}
-                                    label="Wash Type"
-                                >
-                                    {washTypeList.map( listItem => {
-                                        return (
-                                            <MenuItem key={listItem.name} value={listItem.name}>{listItem.name}</MenuItem>
-                                        );
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        {washType === "Other" &&
-                        <Grid item xs={12}>
-                            <FormControl variant="outlined" className={classes.formControl} >
-                                <TextField
-                                    value={otherWashType}
-                                    onChange={event => setOtherWashType(event.target.value)}
-                                    label="Wash Type"
-                                    variant="outlined"
-                                    required
-                                    fullWidth
-                                    id="otherWashType"
-                                    {...(error.role && {error: true, helperText: error.role})}
-                                />
-                            </FormControl>
-                        </Grid>}
-                        <Grid item xs={12}>
-                            <Typography>General Manager Contact</Typography>
-                            <Divider />
+                            <Typography>General Manager Contact Info</Typography>
+                            <Divider/>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -273,6 +248,7 @@ const Register = (props) => {
                                 id="firstName"
                                 label="First Name"
                                 {...(error.first && {error: true, helperText: error.first})}
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -285,6 +261,7 @@ const Register = (props) => {
                                 id="lastName"
                                 label="Last Name"
                                 {...(error.last && {error: true, helperText: error.last})}
+                                inputProps={{maxLength: 63}}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -296,6 +273,7 @@ const Register = (props) => {
                                 fullWidth
                                 id="mobile"
                                 label="Phone Number"
+                                inputProps={{maxLength: 10}}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -311,7 +289,7 @@ const Register = (props) => {
                                 Sign Up
                             </Button>
                         </Grid>
-                        <Grid container justify="flex-end">
+                        <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link href="/login" variant="body2">
                                     Already have an account? Login
@@ -321,8 +299,8 @@ const Register = (props) => {
                     </Grid>
                 </form>
             </div>
-            <br />
-            <br />
+            <br/>
+            <br/>
         </Container>
     );
 
@@ -330,15 +308,15 @@ const Register = (props) => {
 };
 
 const mapStateToProps = state => {
-    return{
+    return {
         loading: state.auth.loading,
         error: state.auth.error,
         isRegistered: state.auth.registered,
     };
 };
 
-const mapDispatchToProps = dispatch =>{
-    return{
+const mapDispatchToProps = dispatch => {
+    return {
         onRegister: (registerData) => dispatch(actions.register(registerData)),
     };
 };
