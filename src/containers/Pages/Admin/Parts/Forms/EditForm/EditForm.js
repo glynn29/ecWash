@@ -43,6 +43,8 @@ const EditForm = props => {
         setIsLoading(true);
         new Compressor(image, {
             quality: 0.8,
+            maxWidth: 1080,
+            maxHeight: 1080,
             success: (compressedResult) => {
                 setFile(compressedResult);
                 setIsLoading(false);

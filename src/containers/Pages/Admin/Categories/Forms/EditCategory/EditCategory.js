@@ -38,7 +38,9 @@ const EditCategory = props => {
     const compressFile = (image) => {
         setIsLoading(true);
         new Compressor(image, {
-            quality: 0.65,
+            quality: 0.9,
+            maxWidth: 200,
+            maxHeight: 200,
             success: (compressedResult) => {
                 setFile(compressedResult);
                 setIsLoading(false);
