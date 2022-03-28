@@ -51,9 +51,8 @@ const OrderHistory = (props) => {
 
     return (
         <Container className={styles.Container}>
-            {
-                orders.map((order, index) =>
-                               <div key={order.id}>
+            {orders.map((order, index) =>
+                               <div key={order.id} style={{margin: '8px 0'}}>
                                    <Accordion style={{alignContent: 'center'}}>
                                        <AccordionSummary
                                            expandIcon={<ExpandMoreIcon/>}
