@@ -29,7 +29,6 @@ const OrderHistory = (props) => {
             .then((res) => {
                 let ordersList = [];
                 res.forEach(order => {
-                    console.log(order.data());
                     ordersList.push({...order.data(), id: order.id});
                 });
                 setOrders(ordersList);
