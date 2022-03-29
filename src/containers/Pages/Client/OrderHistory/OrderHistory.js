@@ -76,7 +76,7 @@ const OrderHistory = (props) => {
                                            <Grid container>
                                                {order.items.map(
                                                    item => <Grid item xs={12} sm={6} md={4} key={item.name}>{item.name}
-                                                       <span style={{fontWeight: 'bold'}}>X</span> {item.amount}</Grid>
+                                                       <span style={{fontWeight: 'bold'}}> X </span>{item.amount}</Grid>
                                                )}
                                            </Grid>
                                        </AccordionDetails>
