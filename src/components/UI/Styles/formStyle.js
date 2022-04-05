@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
         margin: theme.spacing(1),
-        backgroundColor: '#d8222b',
+        backgroundColor: '#d8222b !important',
     },
     form: {
         display: 'flex',
@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     },
     modal: {
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
         margin: theme.spacing(3),
     },
@@ -41,8 +40,6 @@ const useStyles = makeStyles((theme) => ({
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 0, 3),
-        maxHeight: '80vh',
-        overflow: 'auto',
         borderRadius: 15
     },
     deleteButton:{

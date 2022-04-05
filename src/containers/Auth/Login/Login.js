@@ -38,6 +38,7 @@ const Login = (props) => {
             });
         }
     }, []);
+
     useEffect(() => {
         if (localStorage.getItem('rememberMe')) {
             setRememberMe(true);
