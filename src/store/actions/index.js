@@ -11,6 +11,8 @@ export {
     onAddItem,
     onRemoveItem,
     clearItems,
+    orderComplete,
+    clearOrder,
 } from './cart'
 
 export {

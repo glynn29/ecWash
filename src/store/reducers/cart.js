@@ -4,7 +4,8 @@ import {updateObject} from '../utility';
 const initialState = {
     items: [],
     removed: false,
-    added: false
+    added: false,
+    orderComplete: false
 };
 
 const fetchItems = (state, action) => {
@@ -60,6 +61,18 @@ const clearItems = (state) => {
     });
 };
 
+const orderComplete = (state) => {
+    return updateObject(state, {
+        orderComplete: true
+    })
+};
+
+
+const clearOrder = (state) => {
+    return updateObject(state, {
+        orderComplete: false
+    })
+}
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
@@ -71,6 +84,10 @@ const reducer = (state = initialState, action) => {
             return removeItem(state, action);
         case actionTypes.CLEAR_ITEMS:
             return clearItems(state, action);
+        case actionTypes.ORDER_COMPLETE:
+            return orderComplete(state, action);
+        case actionTypes.CLEAR_ORDER:
+            return clearOrder(state, action);
         default:
             return state;
     }

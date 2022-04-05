@@ -38,3 +38,15 @@ export const clearItems = () => {
         type: actionTypes.CLEAR_ITEMS
     }
 };
+
+export const orderComplete = () => {
+    return {
+        type: actionTypes.ORDER_COMPLETE
+    }
+};
+
+export const clearOrder = () => {
+    return {
+        type: actionTypes.CLEAR_ORDER
+    }
+};
