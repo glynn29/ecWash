@@ -1,4 +1,4 @@
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -42,15 +42,15 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2, 0, 3),
         borderRadius: 15
     },
-    deleteButton:{
+    deleteButton: {
         backgroundColor: "red",
         color: "white"
     },
-    editButton:{
+    editButton: {
         backgroundColor: "green",
         color: "white"
     },
-    detailsButton:{
+    detailsButton: {
         backgroundColor: "blue",
         color: "white"
     },
@@ -113,6 +113,40 @@ const useStyles = makeStyles((theme) => ({
     searchIconButton: {
         padding: 10,
     },
+    homeTitle: {
+        fontWeight: 'bold !important',
+        fontSize: 26,
+        [theme.breakpoints.up("sm")]: {
+            fontSize: 35
+        },
+        [theme.breakpoints.up("md")]: {
+            fontSize: 40
+        },
+        [theme.breakpoints.up("lg")]: {
+            fontSize: 45
+        },
+        [theme.breakpoints.up("xl")]: {
+            fontSize: 50
+        }
+    },
+    homeTagLine: {
+        fontWeight: 'bold !important',
+        color: '#c12736',
+        fontStyle: 'italic',
+        fontSize: 17,
+        [theme.breakpoints.up("sm")]: {
+            fontSize: 22
+        },
+        [theme.breakpoints.up("md")]: {
+            fontSize: 28
+        },
+        [theme.breakpoints.up("lg")]: {
+            fontSize: 32
+        },
+        [theme.breakpoints.up("xl")]: {
+            fontSize: 38
+        }
+    }
 }));
 
 export default useStyles;
