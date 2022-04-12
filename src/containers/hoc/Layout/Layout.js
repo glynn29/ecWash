@@ -1,21 +1,22 @@
-import React from "react";
+import React, { Fragment } from "react";
+import { withSnackbar } from 'notistack';
 
 import CustomAppBar from "../../../components/Navigation/AppBar/AppBar";
 import Footer from "../../../components/UI/Footer/Footer";
 import classes from "./Layout.module.css"
 
 const Layout = props => (
-    <div>
-        <div className={classes.Box}>
+    <Fragment>
+        <div className={classes.MinHeight}>
             <div>
                 <CustomAppBar/>
             </div>
-            <main className={classes.Content}>
+            <main className={classes.MainContent}>
                 {props.children}
             </main>
         </div>
         <Footer/>
-    </div>
+    </Fragment>
 );
 
-export default Layout;
+export default withSnackbar(Layout);

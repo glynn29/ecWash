@@ -1,7 +1,9 @@
-.Content{
-    margin-top: 20px;
+.MainContent {
     align-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
-.Box{
+
+.MinHeight {
     min-height: calc(100vh - 40px);
 }
