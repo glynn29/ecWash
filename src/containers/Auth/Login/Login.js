@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { withSnackbar } from 'notistack';
@@ -22,7 +22,7 @@ import * as actions from '../../../store/actions/index'
 import { AuthContext } from "../../../containers/Auth/Auth";
 
 const Login = (props) => {
-    const {currentUser} = useContext(AuthContext);
+    const {currentUser, isAdmin} = useContext(AuthContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
@@ -71,7 +71,11 @@ const Login = (props) => {
     };
 
     if (currentUser) {
-        return <Redirect to={"/"}/>;
+        if (isAdmin) {
+            return <Redirect to={"/orders"}/>;
+        } else {
+            return <Redirect to={"/shopping"}/>;
+        }
     }
 
     if (props.loading) {
