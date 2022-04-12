@@ -1,4 +1,4 @@
-.Box{
+.Box {
     margin: auto;
     width: 70%;
     padding: 10px;
@@ -6,7 +6,20 @@
     font-size: 1.3rem;
 }
 
-.Line{
+.Line {
     margin: auto;
     text-align: center;
+}
+
+.Hero {
+    background-image: url("../../../assets/images/carwash-banner.jpg");
+
+    min-height: 300px;
+    height: auto;
+    width: 100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
 }
