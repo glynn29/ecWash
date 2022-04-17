@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
     },
+    formGridScroll: {
+        overflow: 'scroll',
+        maxHeight: '750px'
+    },
     submit: {
         margin: theme.spacing(3, 0, 2),
         minWidth: 200
@@ -72,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     menuPaper: {
         maxHeight: 300
     },
-    Container: {
+    container: {
         textAlign: 'center',
         alignItems: 'center',
     },
