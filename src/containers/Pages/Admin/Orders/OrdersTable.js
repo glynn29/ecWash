@@ -3,23 +3,16 @@ import React, { Fragment, useEffect, useState } from "react";
 import EnhancedTable from "../../../../components/UI/Table/Table";
 import CustomTabs from "../../../../components/UI/Tabs/Tabs";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
-import EditForm from "./Forms/EditForm/EditForm";
+import EditForm from "./Forms/EditForm";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
 
 const headCells = [
     {id: 'date', label: 'Date'},
-    {id: 'name', label: 'Name'},
+    {id: 'nickName', label: 'NickName'},
     {id: 'status', label: 'Status'},
 ];
 
-const statusList = [
-    'new',
-    'delivered',
-    'billed',
-    'paid'
-];
-
-const OrdersTable = (props) => {
+const OrdersTable = ({tableData, statusList, onEdit, onDelete}) => {
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [tabTableData, setTabTableData] = useState([]);
@@ -28,12 +21,13 @@ const OrdersTable = (props) => {
     const [labelList, setLabelList] = useState([]);
 
     //edit modal functions
-    function onEditPart(part, id) {
-        // props.onEditPart(part , id);
+    function handleEdit(row, id) {
+        onEdit(row , id);
         handleEditClose();
     }
 
     const handleEditOpen = (props) => {
+        console.log(props);
         setFormData({...props});
         setEditOpen(true);
     };
@@ -43,8 +37,8 @@ const OrdersTable = (props) => {
     };
 
     //delete modal functions
-    const onDelete = (id) => {
-        // props.onRemovePart(id);
+    const handleDelete = (id) => {
+        onDelete(id);
         handleDeleteClose();
     };
 
@@ -65,14 +59,14 @@ const OrdersTable = (props) => {
     const setLabelCountHandler = () => {
         let tempLabelList = ['All'];
         statusList.forEach((elm, i) => {
-            const labelCount = props.tableData.filter(row => row.status === elm).length;
+            const labelCount = tableData.filter(row => row.status === elm).length;
             tempLabelList.push(statusList[i] + ' (' + labelCount + ')');
         });
         setLabelList(tempLabelList);
     };
 
     const filterTabData = () => {
-        const tempData = props.tableData.filter(row => row.status === tabValue);
+        const tempData = tableData.filter(row => row.status === tabValue);
         setTabTableData(tempData);
     };
 
@@ -80,11 +74,11 @@ const OrdersTable = (props) => {
         if (tabValue) {
             filterTabData();
         }
-    }, [props.tableData, tabValue]);
+    }, [tableData, tabValue]);
 
     useEffect(() => {
         setLabelCountHandler();
-    },[props.tableData]);
+    },[tableData]);
 
     const straightCorners = {
         borderTopLeftRadius: 0,
@@ -92,7 +86,7 @@ const OrdersTable = (props) => {
     };
 
     const comp1 = (<EnhancedTable
-        data={props.tableData}
+        data={tableData}
         headCells={headCells}
         actionEdit={handleEditOpen}
         actionDelete={handleDeleteOpen}
@@ -141,14 +135,16 @@ const OrdersTable = (props) => {
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditForm formData={formData} onEdit={onEditPart} statusList={statusList}/>}
+                form={<EditForm formData={formData} onEdit={handleEdit} statusList={statusList}/>}
                 title={"Edit Order"}
             />
             <TransitionModal
                 open={deleteOpen}
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
-                form={<DeleteForm formData={formData} onDelete={onDelete} title={"Delete this order?"}
+                form={<DeleteForm formData={formData}
+                                  onDelete={handleDelete}
+                                  title={"Delete this order?"}
                                   buttonText={"Delete Order"}/>}
                 title={"Are You Sure?"}
             />
