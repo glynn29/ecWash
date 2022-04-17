@@ -1,8 +1,10 @@
-import React, {useContext, useEffect} from 'react';
-import {Route, Switch, withRouter} from 'react-router-dom';
-import {connect} from 'react-redux';
+import React, { useContext, useEffect } from 'react';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { SnackbarProvider } from 'notistack';
 
 import Orders from "./containers/Pages/Admin/Orders/Orders";
+import OrderHistory from "./containers/Pages/Client/OrderHistory/OrderHistory";
 import Page404 from "./components/UI/404/404";
 import Register from "./containers/Auth/Register/Register";
 import Login from "./containers/Auth/Login/Login";
@@ -16,23 +18,25 @@ import Shopping from "./containers/Pages/Client/Shopping/Shopping";
 import ItemView from "./containers/Pages/Client/Shopping/Views/ItemView";
 import Category from "./containers/Pages/Admin/Categories/Category";
 import Kits from "./containers/Pages/Admin/Kits/Kits";
+import QrCode from "./containers/Pages/Admin/QrCode/QrCode";
 import Checkout from "./containers/Pages/Client/Shopping/Checkout/Checkout";
-import {AuthContext} from "./containers/Auth/Auth";
+import { AuthContext } from "./containers/Auth/Auth";
 import * as actions from './store/actions/index';
 
-const App = (props) =>{
+const App = (props) => {
     const {currentUser, isAdmin} = useContext(AuthContext);
+    const {getCurrentUser, onFetchParts, onFetchCategories} = props;
 
-    // useEffect(() => {
-    //     if(!isAdmin && currentUser){
-    //         getCurrentUser();
-    //     }
-    // },[isAdmin, getCurrentUser, currentUser]);
+    useEffect(() => {
+        if (!isAdmin && currentUser) {
+            getCurrentUser();
+        }
+    }, [isAdmin, getCurrentUser, currentUser]);
 
     useEffect(() => {
         if (currentUser) {
-            props.onFetchParts();
-            props.onFetchCategories();
+            onFetchParts();
+            onFetchCategories();
         }
     }, [currentUser]);
 
@@ -43,83 +47,72 @@ const App = (props) =>{
             <Route path="/logout" component={Logout}/>
             <Route path="/forgot" component={Forgot}/>
             <Route path="/" exact component={Home}/>
-            <Route render={() => <Page404/>} />
+            <Route render={() => <Page404/>}/>
         </Switch>
     );
 
-    if(currentUser) {
-        routes = (
-            <Switch>
-                <Route path="/orders" component={Orders}/>
-                <Route path="/checkout" component={Checkout}/>
-                <Route path="/kits" component={Kits}/>
-                <Route path="/category" component={Category}/>
-                <Route path="/items/:item" component={ItemView}/>
-                <Route path="/shopping" component={Shopping}/>
-                <Route path="/register" component={Register}/>
-                <Route path="/login" component={Login}/>
-                <Route path="/logout" component={Logout}/>
-                <Route path="/forgot" component={Forgot}/>
-                <Route path="/users" component={Users}/>
-                <Route path="/parts" component={Parts}/>
-                <Route path="/" exact component={Home}/>
-                <Route render={() => <Page404/>} />
-            </Switch>
-        );
+    if (currentUser) {
+        if (isAdmin) {
+            routes = (
+                <Switch>
+                    <Route path="/orders" component={Orders}/>
+                    <Route path="/checkout" component={Checkout}/>
+                    <Route path="/kits" component={Kits}/>
+                    <Route path="/category" component={Category}/>
+                    <Route path="/qr" component={QrCode}/>
+                    <Route path="/shopping/categories/:category" component={ItemView}/>
+                    <Route path="/shopping" component={Shopping}/>
+                    <Route path="/register" component={Register}/>
+                    <Route path="/login" component={Login}/>
+                    <Route path="/logout" component={Logout}/>
+                    <Route path="/forgot" component={Forgot}/>
+                    <Route path="/users" component={Users}/>
+                    <Route path="/parts" component={Parts}/>
+                    <Route path="/" exact component={Home}/>
+                    <Route render={() => <Page404/>}/>
+                </Switch>
+            );
+        } else {
+            routes = (
+                <Switch>
+                    <Route path="/orderHistory" component={OrderHistory}/>
+                    <Route path="/checkout" component={Checkout}/>
+                    <Route path="/shopping/categories/:category" component={ItemView}/>
+                    <Route path="/shopping" component={Shopping}/>
+                    <Route path="/register" component={Register}/>
+                    <Route path="/login" component={Login}/>
+                    <Route path="/logout" component={Logout}/>
+                    <Route path="/forgot" component={Forgot}/>
+                    <Route path="/" exact component={Home}/>
+                    <Route render={() => <Page404/>}/>
+                </Switch>
+            );
+        }
     }
-    //
-    //     if (props.approved === "false"){
-    //         routes = (
-    //             <Switch>
-    //                 <Route path="/contactUs" component={ContactUs}/>
-    //                 <Route path="/comments" component={Comment}/>
-    //                 <Route path="/logout" component={Logout}/>
-    //                 <Route path="/login" component={Login}/>
-    //                 <Route path="/forgot" component={Forgot}/>
-    //                 <Route path="/" exact component={Error}/>
-    //             </Switch>
-    //         );
-    //     }
-    //
-    //     if(isAdmin) {
-    //         routes = (
-    //             <Switch>
-    //                 <Route path="/email" component={Email}/>
-    //                 <Route path="/report" component={Report}/>
-    //                 <Route path="/calendar" component={Calendar}/>
-    //                 <Route path="/eventList" component={EventList}/>
-    //                 <Route path="/volunteerList" component={Users}/>
-    //                 <Route path="/scheduledEventList" component={ScheduledEventList}/>
-    //                 <Route path="/logout" component={Logout}/>
-    //                 <Route path="/login" component={Login}/>
-    //                 <Route path="/forgot" component={Forgot}/>
-    //                 <Route path="/" exact component={Dashboard}/>
-    //             </Switch>
-    //         );
-    //     }
-    // }
 
     return (
-        <div>
-            <Layout currentUser={currentUser}>
+        <Layout currentUser={currentUser}>
+            <SnackbarProvider maxSnack={3}>
                 {routes}
-            </Layout>
-        </div>
+            </SnackbarProvider>
+        </Layout>
     );
 };
 
 const mapStateToProps = state => {
-    return{
-        approved: state.auth.approved
+    return {
+        approved: state.auth.approved,
+        added: state.cart.added,
+        removed: state.cart.removed
     };
 };
 
 const mapDispatchToProps = dispatch => {
-    return{
+    return {
         onFetchParts: () => dispatch(actions.onFetchParts()),
         onFetchCategories: () => dispatch(actions.onFetchCategories()),
-        // getCurrentUser: () => dispatch(actions.getUser()),
+        getCurrentUser: () => dispatch(actions.getUser()),
     }
 };
 
-export default withRouter(connect(mapStateToProps,mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
