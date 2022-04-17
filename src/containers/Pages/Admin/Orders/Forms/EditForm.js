@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -10,39 +10,40 @@ import Typography from "@material-ui/core/Typography";
 
 import Stepper from "../../../../../components/UI/Stepper/Stepper";
 import formStyles from "../../../../../components/UI/Styles/formStyle";
+import Item from "./Item";
 
 const EditForm = props => {
     const styles = formStyles();
-    const [name, setName] = useState(props.formData.name);
     const [statusStep, setStatusStep] = useState(props.formData.statusStep);
     const [note, setNote] = useState(props.formData.note ? props.formData.note : "");
     const [partialOrder, setPartialOrder] = useState(props.formData.partialOrder);
 
-    const submitFormHandler = (event) =>{
+    const submitFormHandler = (event) => {
         event.preventDefault();
         let order = {
             ...props.formData,
-            note,
-            partialOrder,
+            note: note,
+            partialOrder: partialOrder,
             statusStep,
             status: props.statusList[statusStep - 1]
         };
         props.onEdit(order, props.formData.id);
-        console.log("order EDITED");
     };
 
+    // TODO fix scroll of form
     return (
-        <Container component="main" maxWidth="sm" className={styles.Container}>
+
+        <Container component="main" maxWidth="sm" className={styles.container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={4}>
-                        <Typography>Mng name</Typography>
+                        <Typography>Mng name: {props.formData.name}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <Typography>Mng phone</Typography>
+                        <Typography>Mng phone: {props.formData.phoneNumber}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <Typography>City, ST</Typography>
+                        <Typography>Wash Zip: {props.formData.zip}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <Typography>Ordered on: {props.formData.date}</Typography>
@@ -50,8 +51,11 @@ const EditForm = props => {
                     <Grid item xs={12} sm={6}>
                         <Typography>Ordered at: {props.formData.time}</Typography>
                     </Grid>
+                    {props.formData.comment && <Grid item xs={12}>
+                        <TextField multiline rows={4} disabled={true} value={props.formData.comment} variant="outlined" fullWidth label="Customer Comments"/>
+                    </Grid>}
                     <Grid item xs={12}>
-                        <Stepper statusList={props.statusList} status={statusStep} setStatus={setStatusStep} />
+                        <Stepper statusList={props.statusList} status={statusStep} setStatus={setStatusStep}/>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
@@ -64,6 +68,7 @@ const EditForm = props => {
                             variant="outlined"
                             fullWidth
                             rows={4}
+                            inputProps={{className: styles.textarea}}
                         />
                     </Grid>
                     <Grid item xs={4}>
@@ -73,11 +78,13 @@ const EditForm = props => {
                                 checked={partialOrder}
                                 onChange={() => setPartialOrder((prevState) => !prevState)}
                                 color="primary"/>}
-                            label="Partial Order"
+                            label="Partially Complete Order"
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        {props.formData.items.map(item => <Typography key={item.id}>Name: {item.name}, Code: {item.code}, Category: {item.category}, Quantity: {item.amount}</Typography>)}
+                        <Grid container spacing={1} style={{maxHeight: '200px', overflow: 'auto'}}>
+                            {props.formData.items.map(item => <Grid item xs={12} key={item.id}><Item item={item}/></Grid>)}
+                        </Grid>
                     </Grid>
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
@@ -86,7 +93,7 @@ const EditForm = props => {
                             variant="contained"
                             color="primary"
                         >
-                            Edit Order
+                            Save Order
                         </Button>
                     </Grid>
                 </Grid>
