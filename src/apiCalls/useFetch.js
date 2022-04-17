@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function useFetch(firebaseRef) {
     const [data, setData] = useState([]);
@@ -9,8 +9,8 @@ export default function useFetch(firebaseRef) {
             let tempData = [];
             setLoading(true);
             const response = await firebaseRef.get();
-            response.forEach(order => {
-                tempData.push({...order.data(), id: order.id});
+            response.forEach(row => {
+                tempData.push({...row.data(), id: row.id});
             });
             setLoading(false);
             setData(tempData);
