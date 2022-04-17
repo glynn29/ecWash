@@ -8,6 +8,11 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import AutoComplete from "@material-ui/lab/Autocomplete";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Paper from "@material-ui/core/Paper";
 
 import useStyles from "../../../../components/UI/Styles/formStyle";
 import EnhancedTable from "../../../../components/UI/Table/Table";
@@ -16,11 +21,6 @@ import * as actions from "../../../../store/actions";
 import AddForm from "./Forms/AddForm/AddForm";
 import EditForm from "./Forms/EditForm/EditForm";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
-
-const headCells = [
-    {id: 'name', label: 'Name'},
-    {id: 'category', label: 'Category'}
-];
 
 const Parts = (props) => {
     const {parts, categories} = props;
@@ -33,19 +33,29 @@ const Parts = (props) => {
     const [formData, setFormData] = useState({});
     const [tableData, setTableData] = useState(parts);
     const [filteredTableData, setFilteredTableData] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [searchParam, setSearchParam] = useState("parts");
+    const [filterItems, setFilterItems] = useState(parts);
 
     useEffect(() => {
-        reloadParts();
-        console.log("Got parts");
-    }, [parts]);
+        if (searchParam) {
+            reloadItems();
+        }
+    }, [parts, categories, searchParam]);
 
     useEffect(() => {
-        filterPart();
-
+        if (filterValue) {
+            filterPart();
+        }
     }, [filterValue]);
 
-    const reloadParts = () => {
+    const reloadItems = () => {
         setTableData(parts);
+        if (searchParam === "parts") {
+            setFilterItems(parts);
+        } else if (searchParam === "categories") {
+            setFilterItems(categories);
+        }
     };
 
     //add modal functions
@@ -94,7 +104,15 @@ const Parts = (props) => {
 
     //filter modal functions
     const filterPart = () => {
-        let filteredParts = parts.filter((part) => part.name === filterValue);
+        let filteredParts = [];
+        if (searchParam === "parts") {
+            filteredParts = parts.filter((part) => part.name === filterValue);
+        } else if (searchParam === "categories") {
+            filteredParts = parts.filter((part) => part.category === filterValue);
+        }
+        filteredParts.sort(function (a, b) {
+            return ('' + a.name).localeCompare(b.name);
+        });
         setFilteredTableData(filteredParts);
     };
 
@@ -108,31 +126,71 @@ const Parts = (props) => {
         }
     };
 
+    //menu functions
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleMenuClick = (searchParam) => {
+        setSearchParam(searchParam);
+        setFilterValue("");
+        setFilter(false);
+        handleClose();
+    };
+
+    const headCells = [
+        {id: 'name', label: 'Name'},
+        {id: 'category', label: 'Category'},
+        {id: 'edit', label: 'Edit', click: handleEditOpen, buttonClass: 'editButton', noSort: true},
+        {id: 'delete', label: 'Delete', click: handleDeleteOpen, buttonClass: 'deleteButton', noSort: true}
+    ];
+
     return (
         <Container>
             <div style={{display: 'flex', justifyContent: 'center'}}>
                 <div className={styles.searchBar}>
-                    <FormControl className={styles.searchInput}>
-                        <AutoComplete
-                            onClick={() => alert("hi")}
-                            freeSolo
-                            onChange={(event, value) => {
-                                if (value) {
-                                    setFilterValue(value.name);
-                                    handleSearchOnChange(value.name);
-                                } else {
-                                    setFilter(null);
-                                }
-                            }}
-                            options={parts.sort((a, b) => -b.name.charAt(0)
-                                .localeCompare(a.name.charAt(0)))}
-                            groupBy={(option) => option.name.charAt(0)}
-                            getOptionLabel={(option) => (option.name)}
-                            renderInput={(params) => (
-                                <TextField {...params} key={params} variant="outlined" placeholder="Filter Part Name"/>
-                            )}
-                        />
-                    </FormControl>
+                    <Paper component="form" className={styles.searchBar}>
+                        <IconButton className={styles.iconButton} aria-label="menu" onClick={handleClick}>
+                            <MenuIcon/>
+                        </IconButton>
+                        <Menu
+                            id="simple-menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={() => handleMenuClick("parts")}>Filter Parts</MenuItem>
+                            <MenuItem onClick={() => handleMenuClick("categories")}>Filter Categories</MenuItem>
+                        </Menu>
+                        <FormControl className={styles.searchInput}>
+                            <AutoComplete
+                                value={filterValue}
+                                freeSolo
+                                onChange={(event, value) => {
+                                    if (value) {
+                                        setFilterValue(value.name);
+                                        handleSearchOnChange(value.name);
+                                    } else {
+                                        setFilter(false);
+                                    }
+                                }}
+                                options={filterItems.sort((a, b) => -b.name.charAt(0)
+                                    .localeCompare(a.name.charAt(0)))}
+                                groupBy={(option) => option.name.charAt(0)}
+                                getOptionLabel={(option) => option.name ? option.name : option}
+                                renderInput={(params) => (
+                                    <TextField {...params} key={params} variant="outlined"
+                                               placeholder={"Filter " + searchParam.charAt(0)
+                                                   .toUpperCase() + searchParam.substr(1)}/>
+                                )}
+                            />
+                        </FormControl>
+                    </Paper>
                 </div>
                 <p style={{padding: 10}}/>
                 <FormControlLabel
@@ -149,9 +207,6 @@ const Parts = (props) => {
                 data={filter ? filteredTableData : tableData}
                 headCells={headCells}
                 add={handleAddOpen}
-                actionEdit={handleEditOpen}
-                actionDelete={handleDeleteOpen}
-                actions
             />
             <TransitionModal
                 open={addOpen}
@@ -159,6 +214,7 @@ const Parts = (props) => {
                 handleClose={handleAddClose}
                 form={<AddForm onAdd={onAddPart} handleClose={handleAddClose} categories={categories}/>}
                 title={"Add Part"}
+                alignTop
             />
             <TransitionModal
                 open={editOpen}
@@ -167,6 +223,7 @@ const Parts = (props) => {
                 form={<EditForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose}
                                 categories={categories}/>}
                 title={"Edit Part"}
+                alignTop
             />
             <TransitionModal
                 open={deleteOpen}
