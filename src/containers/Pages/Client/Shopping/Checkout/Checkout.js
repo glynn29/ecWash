@@ -13,13 +13,19 @@ import useStyles from "../../../../../components/UI/Styles/formStyle";
 import { firestore } from "../../../../../firebase";
 import classes from "../../../../../components/Cart/Cart.module.css";
 import CartItem from "../../../../../components/Cart/CartItem/CartItem";
+import Spinner from "../../../../../components/UI/Spinner/Spinner";
 import * as actions from "../../../../../store/actions";
+// import * as firebase from "firebase";
 
 const Checkout = (props) => {
     const styles = useStyles();
     const history = useHistory();
     const [name, setName] = useState(props.managerFirst + " " + props.managerLast);
     const [phoneNumber, setPhoneNumber] = useState(props.locationPhone);
+    const [comment, setComment] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    //for testing
     const items2 = [{
         category: "Air",
         name: "AIR:1/2 x 3/8-PTFxMNPT Straight",
@@ -35,6 +41,7 @@ const Checkout = (props) => {
         pictureUrl: "https://firebasestorage.googleapis.com/v0/b/carwash-57347.appspot.com/o/parts%2FAir%2FAIR%3A1%2F2inch-PTF%20x%20MNPT%20Straight?alt=media&token=3b308f5d-b8be-4b8d-a1ed-2eb2deed389e",
         category: "Air"
     }];
+
     const {items, zip, email, nickName, address, city, state} = props;
     const cartItems = <ul className={`${classes.cartItems} ${classes.CheckOutHeight}`}>{items
         .map((item) => (
@@ -43,6 +50,7 @@ const Checkout = (props) => {
                 price={item.price}
                 amount={item.amount}
                 name={item.name}
+                isLoading={isLoading}
                 onAdd={() => props.onAddItem(item, 1)}
                 onRemove={() => props.onRemoveItem(item.id)}
             />
@@ -56,41 +64,103 @@ const Checkout = (props) => {
             delete cleanedItem.details;
             cleanedItems.push(cleanedItem)
         });
+        //TODO change date to a timestamp
+        //const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+
         const date = new Date().toLocaleDateString();
         const time = new Date().toLocaleTimeString();
 
         firestore.collection("orders")
-            .add(
-                {
-                    status: 'new',
-                    statusStep: 1,
-                    date,
-                    time,
-                    name,
-                    nickName,
-                    email,
-                    phoneNumber,
-                    address,
-                    city,
-                    state,
-                    zip,
-                    items: cleanedItems,
-                }
+            .add({
+                     status: 'new',
+                     statusStep: 1,
+                     date,
+                     time,
+                     name,
+                     nickName,
+                     email,
+                     phoneNumber,
+                     address,
+                     city,
+                     state,
+                     zip,
+                     comment,
+                     items: cleanedItems,
+                 }
             )
             .then(() => {
-                props.orderComplete();
-                props.clearItems();
-                history.replace('/');
+                setIsLoading(true);
+                const timeoutLength = (Math.random() * 700) + 300;
+                setTimeout(function () {
+                    props.orderComplete();
+                    props.clearItems();
+                    history.replace('/orderHistory');
+                }, timeoutLength);
             })
             .catch(error => console.log(error));
     };
 
-    return (
-        <Container style={{textAlign: 'center'}}>
+    const customerForm = (
+        <Container>
+            <form onSubmit={submitOrderHandler}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            value={name}
+                            onChange={event => setName(event.target.value)}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="name"
+                            label="Customer Name"
+                            autoFocus
+                            inputProps={{maxLength: 63}}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            value={phoneNumber}
+                            onChange={event => setPhoneNumber(event.target.value)}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="phoneNumber"
+                            label="Customer Phone Number"
+                            inputProps={{maxLength: 10}}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            autoFocus
+                            value={comment}
+                            onChange={event => setComment(event.target.value)}
+                            id="outlined-textarea"
+                            label="Comments"
+                            multiline
+                            variant="outlined"
+                            fullWidth
+                            rows={4}
+                            inputProps={{className: styles.textarea, maxLength: 1024}}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button
+                            type={"submit"}
+                            color={"primary"}
+                            variant={"contained"}
+                            className={styles.submit}
+                            disabled={items.length < 1}>Order</Button>
+                    </Grid>
+                </Grid>
+            </form>
+        </Container>
+    );
 
+    return (
+        <Container className={styles.container}>
             <Grid container spacing={3}>
                 <Grid item xs={12} sm={8}>
-                    <Card style={{border: "solid 1px black"}}>
+                    <Card style={{border: "solid 1px black", boxShadow: "5px 5px 5px lightgrey"}}>
                         <Typography variant={"h5"}>Order Summary</Typography>
                         <Container style={{overflow: 'auto'}}>
                             {cartItems}
@@ -98,45 +168,10 @@ const Checkout = (props) => {
                     </Card>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                    <Card style={{border: "solid 1px black"}}>
+                    <Card style={{border: "solid 1px black", boxShadow: "5px 5px 5px lightgrey"}}>
                         <Typography variant={"h5"}>Customer Information</Typography>
                         <br/>
-                        <Container>
-                            <form onSubmit={submitOrderHandler}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            value={name}
-                                            onChange={event => setName(event.target.value)}
-                                            variant="outlined"
-                                            required
-                                            fullWidth
-                                            id="name"
-                                            label="Customer Name"
-                                            autoFocus
-                                            inputProps={{maxLength: 63}}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            value={phoneNumber}
-                                            onChange={event => setPhoneNumber(event.target.value)}
-                                            variant="outlined"
-                                            required
-                                            fullWidth
-                                            id="phoneNumber"
-                                            label="Customer Phone Number"
-                                            inputProps={{maxLength: 10}}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Button type={"submit"} color={"primary"} variant={"contained"}
-                                                className={styles.submit}
-                                                disabled={items.length < 1}>Order</Button>
-                                    </Grid>
-                                </Grid>
-                            </form>
-                        </Container>
+                        {isLoading ? <Spinner/> : customerForm}
                     </Card>
                 </Grid>
             </Grid>
