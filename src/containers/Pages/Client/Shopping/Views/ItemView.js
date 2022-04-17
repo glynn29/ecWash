@@ -7,6 +7,7 @@ import Grow from '@material-ui/core/Grow';
 import Container from "@material-ui/core/Container";
 
 import ItemCard from "../Cards/ItemCard/ItemCard";
+import BackButton from "../../../../../components/UI/Buttons/BackButton";
 
 const ItemView = (props) => {
     const [tableData, setTableData] = useState([]);
@@ -25,6 +26,9 @@ const ItemView = (props) => {
     return (
         <Container>
             <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <BackButton/>
+                </Grid>
                 {tableData.map(item => {
                    delay += 100;
                     return (
