@@ -12,19 +12,18 @@ import AutoComplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 
-import { firestore } from "../../../../firebase";
 import useStyles from "../../Styles/formStyle";
 import SearchModal from "../SearchModal/SearchModal";
 
 const SearchBar = (props) => {
-    const {parts} = props;
+    const {parts, categories} = props;
     const history = useHistory();
     const styles = useStyles();
     const [modalOpen, setModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [searchItem, setSearchItem] = useState(null);
     const [searchParam, setSearchParam] = useState("parts");
-    const [tableData, setTableData] = useState([...parts]);
+    const [tableData, setTableData] = useState([]);
 
     useEffect(() => {
         if (searchParam) {
@@ -36,23 +35,14 @@ const SearchBar = (props) => {
     useEffect(() => {
         setTableData(parts);
         console.log("set parts");
-    },[parts]);
-
-    async function getItems() {
-        let items = [];
-        const partsRef = await firestore.collection(searchParam)
-            .get();
-        partsRef.forEach((part) => {
-            items.push({...part.data(), id: part.id});
-        });
-        setTableData(items);
-    }
+    }, [parts]);
 
     const reloadItems = () => {
-        getItems()
-            .catch(error => {
-                console.log(error)
-            });
+        if (searchParam === "parts") {
+            setTableData(parts);
+        } else if (searchParam === "categories") {
+            setTableData(categories);
+        }
     };
 
     const handleClick = (event) => {
@@ -81,7 +71,7 @@ const SearchBar = (props) => {
         if (value) {
             if (searchParam === "parts") {
                 setModalOpen(true);
-            } else {
+            } else if (searchParam === "categories") {
                 history.push('/shopping/categories/' + value.name);
             }
         }
@@ -89,6 +79,11 @@ const SearchBar = (props) => {
 
     const handleModalClose = () => {
         setModalOpen(false);
+        handleClearItem();
+    };
+
+    const handleClearItem = () => {
+        setSearchItem(null);
     };
 
     return (
@@ -106,11 +101,11 @@ const SearchBar = (props) => {
                 >
                     <MenuItem onClick={() => handleMenuClick("parts")}>Search Parts</MenuItem>
                     <MenuItem onClick={() => handleMenuClick("categories")}>Search Categories</MenuItem>
-                    <MenuItem onClick={() => handleMenuClick("kit")}>Search Kits</MenuItem>
                 </Menu>
                 <FormControl className={styles.searchInput}>
                     <AutoComplete
                         freeSolo
+                        value={searchItem}
                         onChange={(event, value) => {
                             setSearchItem(value);
                             handleSearchOnChange(value);
@@ -120,7 +115,8 @@ const SearchBar = (props) => {
                         groupBy={(option) => option.name.charAt(0)}
                         getOptionLabel={(option) => (option.name)}
                         renderInput={(params) => (
-                            <TextField {...params} key={params} variant="outlined" placeholder="Search Parts"/>
+                            <TextField {...params} key={params} variant="outlined" placeholder={"Search " + searchParam.charAt(0)
+                                .toUpperCase() + searchParam.substr(1)}/>
                         )}
                     />
                 </FormControl>
@@ -138,7 +134,8 @@ const SearchBar = (props) => {
 
 const mapStateToProps = state => {
     return {
-        parts: state.parts.parts
+        parts: state.parts.parts,
+        categories: state.categories.categories
     };
 };
 
