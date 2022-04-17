@@ -1,43 +1,32 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
+import { connect } from "react-redux";
 
 import Grid from "@material-ui/core/Grid";
+import Container from "@material-ui/core/Container";
 
-import {firestore} from "../../../../firebase";
 import CategoryCard from "./Cards/CategoryCard/CategoryCard";
 
-const Shopping = (props) => {
-    const [tableData, setTableData] = useState([{name: 'Bearings', id:1}, {name:'Vacuum', id:2}]);
+const Shopping = (props) => (
+    <Container>
+        <Grid container spacing={2}>
+            {props.categories.map(item => {
+                return (
+                    <Grid item xs={12} md={6} lg={4} key={item.id}>
+                        <CategoryCard
+                            name={item.name}
+                            pictureUrl={item.pictureUrl}
+                        />
+                    </Grid>
+                );
+            })}
+        </Grid>
+    </Container>
+);
 
-    useEffect(() => {
-        getCategories().catch(error => {console.log(error)});
-        console.log("Got categories");
-    },[]);
-
-    async function getCategories() {
-        let parts = [];
-        const partsRef = await firestore.collection('categories').orderBy('name', 'asc').get();
-        partsRef.forEach((part) => {
-            parts.push({...part.data(), id: part.id});
-        });
-        setTableData(parts);
-    }
-
-    return (
-        <div style={{ width: '80%', margin: 'auto'}}>
-            <Grid container spacing={2}>
-                {tableData.map(item => {
-                    return (
-                        <Grid item xs={12} md={6} key={item.id}>
-                            <CategoryCard
-                                name={item.name}
-                                picture={item.picture}
-                            />
-                        </Grid>
-                    );
-                })}
-            </Grid>
-        </div>
-    );
+const mapStateToProps = state => {
+    return {
+        categories: state.categories.categories,
+    };
 };
 
-export default Shopping;
+export default connect(mapStateToProps, null)(Shopping);
