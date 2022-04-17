@@ -1,12 +1,13 @@
+import React from "react";
+
 import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import React from "react";
 
 const PictureButton = (props) => {
     return (
         props.tempPicture ?
-            <Fab component="span">
+            <Fab component="span" disabled={props.disabled}>
                 <HighlightOffIcon onClick={props.handleRemovePictureClick} color={"error"} fontSize={"large"}/>
             </Fab>
             :
