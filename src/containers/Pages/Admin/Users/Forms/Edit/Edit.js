@@ -1,31 +1,16 @@
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import {bool} from "prop-types";
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
-import FormControl from "@material-ui/core/FormControl";
 import Grid from "@material-ui/core/Grid";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
+import { firestore, functions } from "../../../../../../firebase";
 
 const Edit = props => {
     const {formData} = props;
@@ -34,13 +19,12 @@ const Edit = props => {
     const [city, setCity] = useState(formData.city);
     const [state, setState] = useState(formData.state);
     const [zip, setZip] = useState(formData.zip);
+    const [address, setAddress] = useState(formData.address);
     const [locationPhone, setLocationPhone] = useState(formData.locationPhone);
     const [managerPhone, setManagerPhone] = useState(formData.managerPhone);
-    const [washType, setWashType] = useState(formData.washType);
-    const [otherWashType, setOtherWashType] = useState("");
-    const [error, setError] = useState({});
-    const washTypeList = [{name: 'Tommy\'s'}, {name: 'Zips'}, {name: 'Other'}];
-    const [approved, setApproved] = useState(formData.approved === 'true');
+    const [nickName, setNickName] = useState(formData.nickName ? formData.nickName : "");
+    const [approved, setApproved] = useState(formData.approved === "true");
+    const [isLoading, setLoading] = useState(false);
     const classes = formStyles();
 
     const submitHandler = (event) => {
@@ -55,26 +39,48 @@ const Edit = props => {
             .slice(1);
 
         const formData = {
-            city: city,
-            state: state,
-            zip: zip,
-            locationPhone: locationPhone,
-            washType: washType,
+            city,
+            state,
+            zip,
+            address,
+            locationPhone,
             first: tempFirst,
             last: tempLast,
-            managerPhone: managerPhone,
-            approved: approved
+            managerPhone,
+            nickName,
+            approved: `${approved}`
         };
 
-        props.onEdit(formData);
+        setLoading(true);
+        const updateUserApproval = functions.httpsCallable('updateUserApproval');
+        updateUserApproval({disabled: !approved, email: props.formData.email})
+            .then(() => {
+                firestore.collection('users')
+                    .doc(props.formData.id)
+                    .update(formData)
+                    .then(() => {
+                        setLoading(false);
+                        props.onEdit(formData);
+                    })
+                    .catch(error => {
+                        setLoading(false);
+                        console.log(error);
+                    });
 
+            })
+            .catch(() => {
+                setLoading(false);
+                console.log("error");
+            });
     };
+
+    // TODO fix scroll of form
     return (
         <Container component="main" maxWidth="sm">
             <form className={classes.form} onSubmit={submitHandler}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Typography>Location ID</Typography>
+                        <Typography>Car Wash Location Info</Typography>
                         <Divider/>
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -87,7 +93,6 @@ const Edit = props => {
                             id="city"
                             label="City"
                             autoFocus
-                            {...(error.email && {error: true, helperText: error.email})}
                         />
                     </Grid>
                     <Grid item xs={12} sm={2}>
@@ -114,6 +119,18 @@ const Edit = props => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
+                            value={address}
+                            onChange={event => setAddress(event.target.value)}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="address"
+                            label="Address"
+                            inputProps={{maxLength: 63}}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
                             value={locationPhone}
                             onChange={event => setLocationPhone(event.target.value)}
                             variant="outlined"
@@ -124,40 +141,7 @@ const Edit = props => {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <FormControl variant="outlined" className={classes.formControl} required>
-                            <InputLabel>Wash Type</InputLabel>
-                            <Select
-                                MenuProps={MenuProps}
-                                value={washType}
-                                onChange={event => setWashType(event.target.value)}
-                                label="Wash Type"
-                            >
-                                {washTypeList.map(listItem => {
-                                    return (
-                                        <MenuItem key={listItem.name}
-                                                  value={listItem.name}>{listItem.name}</MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    {washType === "Other" &&
-                    <Grid item xs={12}>
-                        <FormControl variant="outlined" className={classes.formControl}>
-                            <TextField
-                                value={otherWashType}
-                                onChange={event => setOtherWashType(event.target.value)}
-                                label="Wash Type"
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="otherWashType"
-                                {...(error.role && {error: true, helperText: error.role})}
-                            />
-                        </FormControl>
-                    </Grid>}
-                    <Grid item xs={12}>
-                        <Typography>General Manager Contact</Typography>
+                        <Typography>General Manager Contact Info</Typography>
                         <Divider/>
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -169,7 +153,6 @@ const Edit = props => {
                             fullWidth
                             id="firstName"
                             label="First Name"
-                            {...(error.first && {error: true, helperText: error.first})}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -181,7 +164,6 @@ const Edit = props => {
                             fullWidth
                             id="lastName"
                             label="Last Name"
-                            {...(error.last && {error: true, helperText: error.last})}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -196,11 +178,22 @@ const Edit = props => {
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <TextField
+                            value={nickName}
+                            onChange={event => setNickName(event.target.value)}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="nickname"
+                            label="Nickname"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
                         <FormControlLabel
                             className={classes.formControl}
                             checked={approved}
                             value={approved}
-                            onChange={event => setApproved(!approved)}
+                            onChange={() => setApproved(!approved)}
                             control={<Checkbox value={approved} color="primary"/>}
                             label="Approved"
                         />
@@ -210,6 +203,7 @@ const Edit = props => {
                     </Grid>
                     <Grid item xs={6}>
                         <Button
+                            disabled={isLoading}
                             onClick={props.handleClose}
                             fullWidth
                             className={classes.cancelButton}
@@ -220,12 +214,13 @@ const Edit = props => {
                     </Grid>
                     <Grid item xs={6}>
                         <Button
+                            disabled={isLoading}
                             type="submit"
                             fullWidth
                             variant="contained"
                             color="primary"
                         >
-                            Add User
+                            Save User
                         </Button>
                     </Grid>
                 </Grid>

@@ -97,6 +97,7 @@ const Users = () => {
 
     //delete modal functions
     const onDelete = () => {
+        //TODO doesnt actually delete user, need firebase function and firebase call
         reloadUsers();
         setDeleteOpen(false);
     };
@@ -118,6 +119,7 @@ const Users = () => {
                 data={filterSwitch ? approvedVolunteers : registeredVolunteers}
                 headCells={headCells}
                 add={() => alert("not implemented")}
+                addDisabled={true}
                 actionEdit={handleEditOpen}
                 actionDelete={handleDeleteOpen}
                 approvedLabel={switchLabel}
