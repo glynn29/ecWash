@@ -1,5 +1,5 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
 import Container from "@material-ui/core/Container";
 
@@ -12,7 +12,7 @@ const SearchModal = ({open, close, item, onAddItem}) => {
     const styles = formStyles();
 
     const form = (
-        <Container component="main" maxWidth="md" className={styles.Container}>
+        <Container component="main" maxWidth="sm" className={styles.container}>
             <AddToCartCard item={item && item} close={close} onAddItem={onAddItem}/>
         </Container>
     );
@@ -22,6 +22,7 @@ const SearchModal = ({open, close, item, onAddItem}) => {
             open={open}
             handleClose={close}
             form={form}
+            title={item && item.name}
         />
     );
 };
