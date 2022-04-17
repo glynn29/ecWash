@@ -15,8 +15,8 @@ const CartItem = (props) => (
             </div>
         </div>
         <div className={classes.actions}>
-            <button onClick={props.onRemove}>{props.amount === 1 ? <DeleteIcon/> : <RemoveIcon/>}</button>
-            <button onClick={props.onAdd}><AddIcon/></button>
+            <button onClick={props.onRemove} disabled={props.isLoading}>{props.amount === 1 ? <DeleteIcon/> : <RemoveIcon/>}</button>
+            <button onClick={props.onAdd} disabled={props.isLoading}><AddIcon/></button>
         </div>
     </li>
 );

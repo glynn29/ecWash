@@ -2,9 +2,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #8a2b06;
+    border-bottom: 2px solid black;
     padding: 1rem 0;
     margin: 1rem 0;
+}
+
+.cart-item:last-child {
+    border-bottom: none
 }
 
 .cart-item h2 {
@@ -49,10 +53,18 @@
     background-color: transparent;
     cursor: pointer;
     margin: 0.25rem 0.25rem 0.25rem 1rem;
+    box-shadow: 0 3px 1px -2px #00000033, 0 2px 2px 0 #00000024, 0 1px 5px 0 #0000001f
 }
 
 .cart-item button:hover,
 .cart-item button:active {
     background-color: #d8222b;
     color: white;
+}
+
+.cart-item button:disabled {
+    background-color: lightgray;
+    border-color: lightgray;
+    color: white;
+    cursor: default;
 }
