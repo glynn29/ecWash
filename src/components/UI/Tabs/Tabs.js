@@ -1,13 +1,12 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
 
     return (
         <div
@@ -39,16 +38,7 @@ function a11yProps(index) {
     };
 }
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        width: '100%',
-        backgroundColor: theme.palette.background.paper,
-    },
-}));
-
 export default function CustomTabs(props) {
-    const theme = useTheme();
     const [value, setValue] = React.useState(0);
     let panelIndex = -1;
     let tabIndex = -1;
@@ -71,14 +61,14 @@ export default function CustomTabs(props) {
                 >
                     {props.tabLabelList.map(label => {
                         tabIndex++;
-                        return(<Tab key={tabIndex} label={label} {...a11yProps(tabIndex)} />);
+                        return (<Tab key={tabIndex} label={label} {...a11yProps(tabIndex)} />);
                     })}
                 </Tabs>
             </AppBar>
             {props.componentsList.map(component => {
                 panelIndex++;
-                return(
-                    <TabPanel value={value} index={panelIndex} dir={theme.direction} key={panelIndex}>
+                return (
+                    <TabPanel value={value} index={panelIndex} key={panelIndex}>
                         {component}
                     </TabPanel>
                 );
