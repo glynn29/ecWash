@@ -1,8 +1,7 @@
-import React, {useContext} from "react";
-import {connect} from "react-redux";
-import {AuthContext} from "../../../containers/Auth/Auth";
+import React, { useContext } from "react";
+import { connect } from "react-redux";
+import { AuthContext } from "../../../containers/Auth/Auth";
 
-import Typography from "@material-ui/core/Typography";
 import List from '@material-ui/core/List';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
@@ -12,54 +11,57 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import CategoryIcon from '@material-ui/icons/Category';
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
-import ListAltIcon from '@material-ui/icons/ListAlt';
+import CropFreeIcon from '@material-ui/icons/CropFree';
+import HistoryIcon from '@material-ui/icons/History';
+import Divider from "@material-ui/core/Divider";
 
-import classes from "./NavigationItems.module.css";
 import NavigationItem from "./NavagationItem/NavigationItem";
 
-
-const NavigationItems = (props) => {
+const NavigationItems = () => {
     const {currentUser, isAdmin} = useContext(AuthContext);
-    const {approved} = props;
 
     const nav = currentUser ?
         <NavigationItem link="/logout" text="Logout" icon={<ArrowBackIosIcon/>}/>
         :
         <NavigationItem link="/login" text="Login" icon={<ArrowForwardIosIcon/>}/>;
 
-    // const adminLinks = (<ul className={classes.NavigationItems}>
-    //     <NavigationItem link="/" exact clicked={props.clicked}><Typography>Dashboard</Typography></NavigationItem>
-    //     <NavigationItem link="/volunteerList" clicked={props.clicked}><Typography>Volunteers</Typography></NavigationItem>
-    //     <NavigationItem link="/eventList" clicked={props.clicked}><Typography>Events</Typography></NavigationItem>
-    //     <NavigationItem link="/scheduledEventList" clicked={props.clicked}><Typography>Schedule Events</Typography></NavigationItem>
-    //     <NavigationItem link="/calendar" clicked={props.clicked}><Typography>Calendar</Typography></NavigationItem>
-    //     <NavigationItem link="/email" clicked={props.clicked}><Typography>Email</Typography></NavigationItem>
-    //     <NavigationItem link="/report" clicked={props.clicked}><Typography>Report</Typography></NavigationItem>
-    //     {nav}
-    // </ul>);
-    //
-    // const userLinks = (<ul className={classes.NavigationItems}>
-    //     <NavigationItem link="/" exact clicked={props.clicked}><Typography>Home</Typography></NavigationItem>
-    //     {currentUser && <NavigationItem link="/comments" clicked={props.clicked}><Typography>Mandatory Reporting</Typography></NavigationItem>}
-    //     {currentUser && <NavigationItem link="/contactUs" clicked={props.clicked}><Typography>Contact</Typography></NavigationItem>}
-    //     {(currentUser && approved === "true") && <NavigationItem link="/account" clicked={props.clicked}><Typography>Account</Typography></NavigationItem>}
-    //     {(currentUser && approved === "true") && <NavigationItem link="/calendar" clicked={props.clicked}><Typography>Calendar</Typography></NavigationItem>}
-    //     {nav}
-    // </ul>);
-
-    // return isAdmin ? adminLinks : userLinks;
-    const links = (
+    let links = (
         <List>
             {nav}
+            <Divider/>
             <NavigationItem link="/" exact text="Home" icon={<HomeIcon/>}/>
-            {currentUser && <NavigationItem link="/users" text="Users" icon={<PersonIcon/>}/>}
-            {currentUser && <NavigationItem link="/parts" text="Parts" icon={<WorkOutlineIcon/>}/>}
-            {currentUser && <NavigationItem link="/category" text="Category" icon={<CategoryIcon/>}/>}
-            {currentUser && <NavigationItem link="/kits" text="Kits" icon={<AccessAlarmIcon/>}/>}
-            {currentUser && <NavigationItem link="/orders" text="Order History" icon={<ListAltIcon/>}/>}
-            {currentUser && <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>}
         </List>
     );
+
+    if (currentUser) {
+        if (isAdmin) {
+            links = (
+                <List>
+                    {nav}
+                    <Divider/>
+                    <NavigationItem link="/orders" text="Orders" icon={<HistoryIcon/>}/>
+                    <NavigationItem link="/users" text="Users" icon={<PersonIcon/>}/>
+                    <NavigationItem link="/parts" text="Parts" icon={<WorkOutlineIcon/>}/>
+                    <NavigationItem link="/category" text="Category" icon={<CategoryIcon/>}/>
+                    <Divider/>
+                    <NavigationItem link="/" exact text="Home" icon={<HomeIcon/>}/>
+                    <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>
+                    <Divider/>
+                    <NavigationItem link="/qr" text="QR Manager" icon={<CropFreeIcon/>}/>
+                    <NavigationItem link="/kits" text="Kits" icon={<AccessAlarmIcon/>}/>
+                </List>
+            )
+        } else {
+            links = (
+                <List>
+                    {nav}
+                    <Divider/>
+                    <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>
+                    <NavigationItem link="/orderHistory" text="Orders History" icon={<HistoryIcon/>}/>
+                </List>
+            );
+        }
+    }
 
     return links;
 };
