@@ -111,6 +111,7 @@ const Category = () => {
                 handleClose={handleAddClose}
                 form={<AddCategory onAdd={onAddCategory}/>}
                 title={"Add Category"}
+                alignTop
             />
             <TransitionModal
                 open={editOpen}
@@ -118,6 +119,7 @@ const Category = () => {
                 handleClose={handleEditClose}
                 form={<EditPartForm formData={formData} onEdit={onEditCategory}/>}
                 title={"Edit Category"}
+                alignTop
             />
             <TransitionModal
                 open={deleteOpen}

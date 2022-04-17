@@ -1,5 +1,5 @@
 import Typography from "@material-ui/core/Typography";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Compressor from "compressorjs";
 
 import Container from "@material-ui/core/Container";
@@ -152,7 +152,7 @@ const EditCategory = props => {
     };
 
     return (
-        <Container component="main" maxWidth="sm" className={styles.Container}>
+        <Container component="main" maxWidth="sm" className={styles.container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
