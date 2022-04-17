@@ -2,8 +2,17 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    max-height: 20rem;
     overflow: auto;
+}
+
+.CartHeight {
+    max-height: 25rem;
+    padding-left: 0;
+}
+
+.CheckOutHeight {
+    max-height: 40rem;
+    padding-left: 0;
 }
 
 .total {
@@ -15,42 +24,11 @@
     margin: 1rem 0;
 }
 
-.actions {
-    /*text-align: right;*/
-}
-
-.actions button {
-    font: inherit;
-    cursor: pointer;
-    background-color: transparent;
-    border: 1px solid #d8222b;
-    padding: 0.2rem .8rem;
-    border-radius: 5px;
-    margin-left: .3rem;
-}
-
-.actions button:hover,
-.actions button:active {
-    background-color: black;
-    border-color: black;
-    color: white;
-}
-
-.actions .button--alt {
-    color: #d8222b;
-}
-
-.actions .button {
-    background-color: #d8222b;
-    color: white;
-}
-
 .Container {
     text-align: center;
 }
 
-.Center {
+.Bold {
     font-weight: bold;
     font-size: 1.5rem;
-    margin: 1rem 0;
 }

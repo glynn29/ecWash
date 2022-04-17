@@ -1,14 +1,14 @@
+import React, { useEffect, useState } from "react";
+import { connect } from 'react-redux';
+import { useHistory } from "react-router-dom";
+
+import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import React, {useEffect, useState} from "react";
-import {connect} from 'react-redux';
-import {useHistory} from "react-router-dom";
 
 import CartItem from "./CartItem/CartItem";
 import * as actions from '../../store/actions/index';
 import classes from "./Cart.module.css";
-
-import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
 
 const Cart = (props) => {
     const history = useHistory();
@@ -16,7 +16,7 @@ const Cart = (props) => {
     const hasItems = props.items.length > 0;
 
     useEffect(() => {
-        const cartItems = <ul className={classes['cart-items']}>{props.items
+        const cartItems = <ul className={`${classes.cartItems} ${classes.CartHeight}`}>{props.items
             .map((item) => (
                 <CartItem
                     key={item.id}
@@ -36,25 +36,29 @@ const Cart = (props) => {
     };
 
     return (
-        <Container component="main" className={classes.Container}>
-            {items && items}
-            {props.items.length <= 0 &&
-                <div className={classes.Center}>
-                    <span>Cart is empty</span>
-                </div>
-            }
-            <div>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={hasItems ? 6 : 12}>
-                        <Button onClick={props.close} variant={"outlined"} style={{width: '100%', color: '#d8222b'}}>Continue Shopping</Button>
-                    </Grid>
-                    {hasItems &&
-                        <Grid item xs={12} sm={6}>
-                            <Button variant={"contained"} style={{width: '100%', }} color={"primary"} onClick={handleCheckoutClick}>Check Out</Button>
-                        </Grid>
-                    }
+        <Container component="main" maxWidth={"md"} className={classes.container}>
+            <Grid container spacing={2}>
+                <Grid item xs={12} style={{overflow: 'auto'}}>
+                    {items && items}
                 </Grid>
-            </div>
+                {props.items.length <= 0 &&
+                <Grid item xs={12} className={classes.Bold}>
+                    <span>Cart is empty</span>
+                </Grid>
+                }
+                <Grid item xs={12} sm={hasItems ? 6 : 12}>
+                    <Button onClick={props.close} variant={"outlined"}
+                            style={{width: '100%', color: '#d8222b'}}><span
+                        style={{whiteSpace: 'nowrap', padding: '0 20px'}}>Continue
+                            Shopping</span></Button>
+                </Grid>
+                {hasItems &&
+                <Grid item xs={12} sm={6}>
+                    <Button variant={"contained"} style={{width: '100%', whiteSpace: 'nowrap'}} color={"primary"}
+                            onClick={handleCheckoutClick}>Check Out</Button>
+                </Grid>
+                }
+            </Grid>
         </Container>
     );
 };
