@@ -21,10 +21,27 @@ const OrderHistory = (props) => {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
+        fetchOrders();
+    });
+
+    useEffect(() => {
+        if (props.orderComplete) {
+            props.enqueueSnackbar('Order Complete', {
+                variant: "success",
+                autoHideDuration: 9000,
+                TransitionComponent: Slide,
+                anchorOrigin: {vertical: 'bottom', horizontal: 'right'}
+            });
+            props.clearOrder();
+        }
+    }, [props.orderComplete]);
+
+    const fetchOrders = () => {
         const ordersRef = firestore.collection("orders")
             .where("email", "==", props.email)
             .orderBy("date", "desc")
             .orderBy("time", "desc");
+
         ordersRef.get()
             .then((res) => {
                 let ordersList = [];
@@ -33,8 +50,8 @@ const OrderHistory = (props) => {
                 });
                 setOrders(ordersList);
             })
-            .catch();
-    }, [props.email]);
+            .catch((error) => console.log(error));
+    };
 
     const handleOrderAgain = (order, event) => {
         event.stopPropagation();
@@ -49,41 +66,48 @@ const OrderHistory = (props) => {
         });
     };
 
+    const ordersView = (
+        orders.map((order, index) =>
+                       <div key={order.id} style={{margin: '8px 0'}}>
+                           <Accordion style={{alignContent: 'center'}}>
+                               <AccordionSummary
+                                   expandIcon={<ExpandMoreIcon/>}
+                               >
+                                   <div style={{
+                                       justifyContent: 'space-between',
+                                       width: '100%',
+                                       display: 'flex'
+                                   }}>
+                                       <Typography
+                                           style={{alignSelf: 'center'}}>Order
+                                           #{index + 1}: {order.date}</Typography>
+                                       <Button onClick={(event) => {
+                                           handleOrderAgain(order, event);
+                                       }}>
+                                           Order Again
+                                       </Button>
+                                   </div>
+                               </AccordionSummary>
+                               <AccordionDetails>
+                                   <Grid container>
+                                       {order.items.map(
+                                           item => <Grid item xs={12} sm={6} md={4} key={item.name}>{item.name}
+                                               <span style={{fontWeight: 'bold'}}> X </span>{item.amount}</Grid>
+                                       )}
+                                   </Grid>
+                               </AccordionDetails>
+                           </Accordion>
+                       </div>
+        )
+    );
+
+    const noOrdersView = (
+        <Typography>No Orders</Typography>
+    );
+
     return (
-        <Container className={styles.Container}>
-            {orders.map((order, index) =>
-                               <div key={order.id} style={{margin: '8px 0'}}>
-                                   <Accordion style={{alignContent: 'center'}}>
-                                       <AccordionSummary
-                                           expandIcon={<ExpandMoreIcon/>}
-                                       >
-                                           <div style={{
-                                               justifyContent: 'space-between',
-                                               width: '100%',
-                                               display: 'flex'
-                                           }}>
-                                               <Typography
-                                                   style={{alignSelf: 'center'}}>Order
-                                                   #{index + 1}: {order.date}</Typography>
-                                               <Button onClick={(event) => {
-                                                   handleOrderAgain(order, event);
-                                               }}>
-                                                   Order Again
-                                               </Button>
-                                           </div>
-                                       </AccordionSummary>
-                                       <AccordionDetails>
-                                           <Grid container>
-                                               {order.items.map(
-                                                   item => <Grid item xs={12} sm={6} md={4} key={item.name}>{item.name}
-                                                       <span style={{fontWeight: 'bold'}}> X </span>{item.amount}</Grid>
-                                               )}
-                                           </Grid>
-                                       </AccordionDetails>
-                                   </Accordion>
-                               </div>
-                )
-            }
+        <Container className={styles.container}>
+            {orders.length < 1 ? noOrdersView : ordersView}
         </Container>
     );
 };
@@ -91,12 +115,14 @@ const OrderHistory = (props) => {
 const mapDispatchToProps = dispatch => {
     return {
         onAddItem: (item, amount) => dispatch(actions.onAddItem(item, amount)),
+        clearOrder: () => dispatch(actions.clearOrder()),
     }
 };
 
 const mapStateToProps = state => {
     return {
         email: state.auth.email,
+        orderComplete: state.cart.orderComplete
     };
 };
 
