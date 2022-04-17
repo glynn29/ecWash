@@ -92,7 +92,7 @@ const Register = (props) => {
                 email: email.trim(),
                 password: password,
                 city: city.trim(),
-                state: state.trim(),
+                state: state.trim().toUpperCase(),
                 zip: zip.trim(),
                 address: address.trim(),
                 locationPhone: locationPhone.trim(),
