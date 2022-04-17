@@ -1,58 +1,49 @@
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { connect } from "react-redux";
 
 import Grid from "@material-ui/core/Grid";
 import Grow from '@material-ui/core/Grow';
+import Container from "@material-ui/core/Container";
 
-import {firestore} from "../../../../../firebase";
 import ItemCard from "../Cards/ItemCard/ItemCard";
 
 const ItemView = (props) => {
     const [tableData, setTableData] = useState([]);
+    let { category } = useParams();
     let delay = 0;
-    let { item } = useParams();
 
     useEffect(() => {
         reloadParts();
-        console.log("Got parts with cate: ", item);
-    }, [item]);
-
-    async function getParts() {
-        let parts = [];
-        const partsRef = await firestore.collection('parts')
-            .where('category', '==',  item)
-            .get();
-        partsRef.forEach((part) => {
-            parts.push({...part.data(), id: part.id});
-        });
-        setTableData(parts);
-    }
+    }, [category, props.parts]);
 
     const reloadParts = () => {
-
-        getParts()
-            .catch(error => {
-                console.log(error)
-            });
+        let parts = props.parts.filter((part) => part.category === category);
+        setTableData(parts);
     };
 
     return (
-        <div style={{width: '80%', margin: 'auto'}}>
+        <Container>
             <Grid container spacing={2}>
                 {tableData.map(item => {
                    delay += 100;
                     return (
                         <Grow in={true} key={item.id} style={{ transformOrigin: '0 0 0' }} {...{timeout: delay}}>
-                            <Grid item xs={6} sm={3}>
+                            <Grid item xs={6} sm={4} md={3} lg={2} >
                                 <ItemCard item={item} />
                             </Grid>
                         </Grow>
                     );
                 })}
             </Grid>
-        </div>
+        </Container>
     );
 };
 
+const mapStateToProps = state => {
+    return {
+        parts: state.parts.parts,
+    };
+};
 
-export default ItemView;
+export default connect(mapStateToProps, null)(ItemView);
