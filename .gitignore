@@ -32,4 +32,7 @@ firestore.rules
 .env
 package-lock.json
 .firebase
-/functions
+
+#functions
+/functions/node_modules
+/functions/package-lock.json
