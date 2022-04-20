@@ -16,7 +16,7 @@ const EditForm = props => {
     const styles = formStyles();
     const [statusStep, setStatusStep] = useState(props.formData.statusStep);
     const [note, setNote] = useState(props.formData.note ? props.formData.note : "");
-    const [partialOrder, setPartialOrder] = useState(props.formData.partialOrder);
+    const [partialOrder, setPartialOrder] = useState(props.formData.partialOrder ? props.formData.partialOrder : false);
 
     const submitFormHandler = (event) => {
         event.preventDefault();
@@ -32,7 +32,6 @@ const EditForm = props => {
 
     // TODO fix scroll of form
     return (
-
         <Container component="main" maxWidth="sm" className={styles.container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
