@@ -27,7 +27,6 @@ const OrdersTable = ({tableData, statusList, onEdit, onDelete}) => {
     }
 
     const handleEditOpen = (props) => {
-        console.log(props);
         setFormData({...props});
         setEditOpen(true);
     };
