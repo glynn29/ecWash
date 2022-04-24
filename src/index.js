@@ -12,6 +12,7 @@ import * as serviceWorker from './serviceWorker';
 import authReducer from './store/reducers/auth';
 import cartReducer from './store/reducers/cart';
 import partReducer from './store/reducers/parts';
+import userReducer from './store/reducers/users';
 import categoryReducer from './store/reducers/categories'
 import { AuthProvider } from './containers/Auth/Auth';
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
     parts: partReducer,
     categories: categoryReducer,
+    users: userReducer,
 });
 
 const store = createStore(rootReducer, composeEnhancers(
