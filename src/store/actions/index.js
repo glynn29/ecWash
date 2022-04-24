@@ -5,7 +5,6 @@ export {
     getUser,
 } from './auth'
 
-
 export {
     fetchItems,
     onAddItem,
@@ -25,3 +24,7 @@ export {
 export {
     onFetchCategories,
 } from './categories'
+
+export {
+    onFetchUsers,
+} from './users'

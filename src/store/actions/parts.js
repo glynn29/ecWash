@@ -2,7 +2,6 @@ import * as actionTypes from './actionTypes';
 import { firestore } from "../../firebase";
 
 async function getParts() {
-    // let parts = [{name: 'poop', id: 1, category: 'Air', pictureUrl: 'https://firebasestorage.googleapis.com/v0/b/carwash-57347.appspot.com/o/parts%2FAir%2FAIR%3A1%2F4inch-PTF%20x%20%20MNPT%20Elbow?alt=media&token=d4a1da37-655d-40b1-a839-3dfd5ab4bb78'}];
     let parts = [];
     const partsRef = await firestore.collection('parts')
         .orderBy("name", "asc")

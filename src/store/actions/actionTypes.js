@@ -27,3 +27,11 @@ export const SET_CATEGORIES = 'SET_CATEGORIES';
 
 export const ORDER_COMPLETE = 'ORDER_COMPLETE';
 export const CLEAR_ORDER = 'CLEAR_ORDER';
+
+export const USERS_START = 'USERS_START';
+export const USERS_SUCCESS = 'USERS_SUCCESS';
+export const USERS_FAIL = 'USERS_FAIL';
+export const ADD_USER = 'ADD_USER';
+export const EDIT_USER = 'EDIT_USER';
+export const REMOVE_USER = 'REMOVE_USER';
+export const SET_USERS = 'SET_USERS';

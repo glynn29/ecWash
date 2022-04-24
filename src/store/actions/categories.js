@@ -6,8 +6,8 @@ async function getCategories() {
     const categoriesRef = await firestore.collection('categories')
         .orderBy('name', 'asc')
         .get();
-    categoriesRef.forEach((part) => {
-        categories.push({...part.data(), id: part.id});
+    categoriesRef.forEach((category) => {
+        categories.push({...category.data(), id: category.id});
     });
     return categories;
 }
@@ -44,7 +44,6 @@ export const categoriesFail = (error) => {
         error: error
     };
 };
-
 
 export const setCategories = (categories) => {
     return {
