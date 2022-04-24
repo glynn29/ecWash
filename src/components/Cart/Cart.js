@@ -36,7 +36,7 @@ const Cart = (props) => {
     };
 
     return (
-        <Container component="main" maxWidth={"md"} className={classes.container}>
+        <Container component="main" maxWidth={"md"} className={classes.Container}>
             <Grid container spacing={2}>
                 <Grid item xs={12} style={{overflow: 'auto'}}>
                     {items && items}
