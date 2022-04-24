@@ -1,17 +1,17 @@
-import React, {useContext, useState} from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
-import {AuthContext} from "../../../containers/Auth/Auth";
-import SideDrawer from "../SideDrawer/SideDrawer";
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
+import { AuthContext } from "../../../containers/Auth/Auth";
 import TransitionModal from "../../UI/Modal/Modal";
 import Cart from "../../Cart/Cart";
 import classes from './AppBar.module.css';
 import EcIcon from "../../../assets/icons/EcIcon/EcIcon"
 import SearchBar from "../../UI/Search/SearchBar/SearchBar";
+import SideDrawer from "../SideDrawer/SideDrawer";
 import HeaderCartButton from "../HeaderCartButton/HeaderCartButton";
 import formStyles from "../../../components/UI/Styles/formStyle";
 
@@ -30,9 +30,9 @@ export default function CustomAppBar() {
     };
 
     return (
-        <div >
+        <Fragment>
             <AppBar position="static" className={classes.Color}>
-                <Toolbar className={classes.Bar}>
+                <Toolbar className={classes.BarCenter}>
                     <IconButton className={styles.menuButton} edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
                         <MenuIcon fontSize={"large"} />
                     </IconButton>
@@ -54,6 +54,6 @@ export default function CustomAppBar() {
                 form={<Cart close={toggleModal}/>}
                 title={"Cart"}
             />
-        </div>
+        </Fragment>
     );
 }

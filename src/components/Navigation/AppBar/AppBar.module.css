@@ -12,7 +12,7 @@
 }
 
 .Search {
-    margin: auto;
+    margin: 5px 10px;
     flex: 2;
 }
 
@@ -20,17 +20,12 @@
     margin-right: 12px;
 }
 
-.Bar {
-    display: flex;
+.BarCenter {
     justify-content: space-between;
 }
 
 @media (max-width: 520px) {
     .Pic {
         display: none;
-    }
-    .Search {
-        flex: 1;
-        max-width: 9em;
     }
 }
