@@ -28,13 +28,11 @@ const SearchBar = (props) => {
     useEffect(() => {
         if (searchParam) {
             reloadItems();
-            console.log("Got parts for search bar");
         }
     }, [searchParam]);
 
     useEffect(() => {
         setTableData(parts);
-        console.log("set parts");
     }, [parts]);
 
     const reloadItems = () => {
