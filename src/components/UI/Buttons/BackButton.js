@@ -5,7 +5,7 @@ import Button from "@material-ui/core/Button";
 import Forward from '@material-ui/icons/Forward';
 
 export const BackButton = () => {
-    let history = useHistory();
+    const history = useHistory();
     return (
         <Button
             onClick={() => history.goBack()}
