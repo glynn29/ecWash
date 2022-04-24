@@ -25,13 +25,17 @@ import * as actions from './store/actions/index';
 
 const App = (props) => {
     const {currentUser, isAdmin} = useContext(AuthContext);
-    const {getCurrentUser, onFetchParts, onFetchCategories} = props;
+    const {getCurrentUser, onFetchParts, onFetchCategories, onFetchUsers} = props;
 
     useEffect(() => {
-        if (!isAdmin && currentUser) {
-            getCurrentUser();
+        if (currentUser) {
+            if (isAdmin) {
+                onFetchUsers();
+            } else {
+                getCurrentUser();
+            }
         }
-    }, [isAdmin, getCurrentUser, currentUser]);
+    }, [isAdmin, getCurrentUser, currentUser, onFetchUsers]);
 
     useEffect(() => {
         if (currentUser) {
@@ -75,7 +79,7 @@ const App = (props) => {
         } else {
             routes = (
                 <Switch>
-                    <Route path="/orderHistory" component={OrderHistory}/>
+                    <Route path="/orderhistory" component={OrderHistory}/>
                     <Route path="/checkout" component={Checkout}/>
                     <Route path="/shopping/categories/:category" component={ItemView}/>
                     <Route path="/shopping" component={Shopping}/>
@@ -111,6 +115,7 @@ const mapDispatchToProps = dispatch => {
     return {
         onFetchParts: () => dispatch(actions.onFetchParts()),
         onFetchCategories: () => dispatch(actions.onFetchCategories()),
+        onFetchUsers: () => dispatch(actions.onFetchUsers()),
         getCurrentUser: () => dispatch(actions.getUser()),
     }
 };
