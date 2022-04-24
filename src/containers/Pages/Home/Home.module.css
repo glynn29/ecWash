@@ -23,3 +23,8 @@
     background-size: cover;
     position: relative;
 }
+
+.Button {
+    text-decoration: none !important;
+    margin: 5px 20px !important;
+}
