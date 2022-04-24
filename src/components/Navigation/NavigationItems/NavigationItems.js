@@ -44,7 +44,6 @@ const NavigationItems = () => {
                     <NavigationItem link="/parts" text="Parts" icon={<WorkOutlineIcon/>}/>
                     <NavigationItem link="/category" text="Category" icon={<CategoryIcon/>}/>
                     <Divider/>
-                    <NavigationItem link="/" exact text="Home" icon={<HomeIcon/>}/>
                     <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>
                     <Divider/>
                     <NavigationItem link="/qr" text="QR Manager" icon={<CropFreeIcon/>}/>
@@ -57,7 +56,7 @@ const NavigationItems = () => {
                     {nav}
                     <Divider/>
                     <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon/>}/>
-                    <NavigationItem link="/orderHistory" text="Orders History" icon={<HistoryIcon/>}/>
+                    <NavigationItem link="/orderhistory" text="Orders History" icon={<HistoryIcon/>}/>
                 </List>
             );
         }
