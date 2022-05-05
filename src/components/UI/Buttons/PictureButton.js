@@ -13,7 +13,7 @@ const PictureButton = (props) => {
             :
             <div>
                 <input
-                    accept="image/*"
+                    accept="image/png, image/jpeg"
                     style={{display: "none"}}
                     id="contained-button-file"
                     multiple
