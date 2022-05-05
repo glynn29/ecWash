@@ -15,11 +15,15 @@ const ItemView = (props) => {
     let delay = 0;
 
     useEffect(() => {
-        reloadParts();
-    }, [category, props.parts]);
+        if (category && props.parts.length > 0 && props.categories.length > 0) {
+            reloadParts();
+        }
+    }, [category, props.parts, props.categories]);
 
     const reloadParts = () => {
-        let parts = props.parts.filter((part) => part.category === category);
+        const categoryIndex = props.categories.findIndex(tempCategory => tempCategory.name === category);
+        const categoryId = props.categories[categoryIndex].id;
+        const parts = props.parts.filter((part) => part.categoryId === categoryId);
         setTableData(parts);
     };
 
@@ -47,6 +51,7 @@ const ItemView = (props) => {
 const mapStateToProps = state => {
     return {
         parts: state.parts.parts,
+        categories: state.categories.categories,
     };
 };
 
