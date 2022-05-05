@@ -12,7 +12,7 @@ import * as classes from "./ItemCard.module.css";
 
 const ItemCard = ({item}) => {
     const [modalState, setModalState] = useState(false);
-    const pictureUrl = item.pictureUrl ? item.pictureUrl : alt_image;
+    const pictureUrl = item.pictures.length > 0 ? item.pictures[0].pictureUrl : alt_image;
 
     const toggleModal = () => {
         setModalState(!modalState);
