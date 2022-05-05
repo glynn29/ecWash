@@ -9,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import CartItem from "./CartItem/CartItem";
 import * as actions from '../../store/actions/index';
 import classes from "./Cart.module.css";
+import alt_image from "../../assets/images/alt_image.jpg";
 
 const Cart = (props) => {
     const history = useHistory();
@@ -16,11 +17,11 @@ const Cart = (props) => {
     const hasItems = props.items.length > 0;
 
     useEffect(() => {
-        const cartItems = <ul className={`${classes.cartItems} ${classes.CartHeight}`}>{props.items
+        const cartItems = <ul className={`${classes.CartItems} ${classes.CartHeight}`}>{props.items
             .map((item) => (
                 <CartItem
+                    pictureUrl={item.pictures.length > 0 ? item.pictures[0].pictureUrl : alt_image}
                     key={item.id}
-                    price={item.price}
                     amount={item.amount}
                     name={item.name}
                     onAdd={() => props.onAddItem(item, 1)}
@@ -38,13 +39,14 @@ const Cart = (props) => {
     return (
         <Container component="main" maxWidth={"md"} className={classes.Container}>
             <Grid container spacing={2}>
-                <Grid item xs={12} style={{overflow: 'auto'}}>
-                    {items && items}
-                </Grid>
-                {props.items.length <= 0 &&
-                <Grid item xs={12} className={classes.Bold}>
-                    <span>Cart is empty</span>
-                </Grid>
+                {props.items.length > 0 ?
+                    <Grid item xs={12}>
+                        {items}
+                    </Grid>
+                    :
+                    <Grid item xs={12} className={classes.Bold}>
+                        <span>Cart is empty</span>
+                    </Grid>
                 }
                 <Grid item xs={12} sm={hasItems ? 6 : 12}>
                     <Button onClick={props.close} variant={"outlined"}
@@ -53,10 +55,10 @@ const Cart = (props) => {
                             Shopping</span></Button>
                 </Grid>
                 {hasItems &&
-                <Grid item xs={12} sm={6}>
-                    <Button variant={"contained"} style={{width: '100%', whiteSpace: 'nowrap'}} color={"primary"}
-                            onClick={handleCheckoutClick}>Check Out</Button>
-                </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Button variant={"contained"} style={{width: '100%', whiteSpace: 'nowrap'}} color={"primary"}
+                                onClick={handleCheckoutClick}>Check Out</Button>
+                    </Grid>
                 }
             </Grid>
         </Container>
