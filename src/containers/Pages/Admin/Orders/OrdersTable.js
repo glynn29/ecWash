@@ -8,6 +8,7 @@ import TransitionModal from "../../../../components/UI/Modal/Modal";
 
 const headCells = [
     {id: 'date', label: 'Date'},
+    {id: 'time', label: 'Time'},
     {id: 'nickName', label: 'NickName'},
     {id: 'status', label: 'Status'},
 ];
