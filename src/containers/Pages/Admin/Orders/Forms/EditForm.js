@@ -22,7 +22,7 @@ const EditForm = props => {
     const [statusStep, setStatusStep] = useState(props.formData.statusStep);
     const [note, setNote] = useState(props.formData.note ? props.formData.note : "");
     const [partialOrder, setPartialOrder] = useState(props.formData.partialOrder ? props.formData.partialOrder : false);
-    const [items, setItems] = useState(props.formData.items);
+    const [items, setItems] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
 
     useEffect(() => {
