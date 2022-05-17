@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import Container from "@material-ui/core/Container";
 
-import { firestore } from "../../../../firebase";
+import { firestore, storageRef } from "../../../../firebase";
 import EnhancedTable from "../../../../components/UI/Table/Table";
 import TransitionModal from "../../../../components/UI/Modal/Modal";
 import AddCategory from "./Forms/AddCategory/AddCategory";
@@ -21,6 +21,7 @@ const Category = () => {
     const [tableData, setTableData] = useState([]);
 
     useEffect(() => {
+        //TODO use redux
         reloadCategories();
         console.log("Got categories");
     }, []);
@@ -74,16 +75,40 @@ const Category = () => {
 
     //delete modal functions
     const onDeleteCategory = (id) => {
-        firestore.collection("categories")
-            .doc(id)
-            .delete()
+        deletePhotoFromStorage(id)
             .then(() => {
-                reloadCategories();
-                handleDeleteClose();
+                firestore.collection("categories")
+                    .doc(id)
+                    .delete()
+                    .then(() => {
+                        reloadCategories();
+                        handleDeleteClose();
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
             })
             .catch((error) => {
                 console.log(error);
             });
+    };
+
+    const deletePhotoFromStorage = (id) => {
+        try {
+            const deleteRef = storageRef.child('categories')
+                .child(id);
+            return new Promise((resolve, reject) => {
+                deleteRef.delete()
+                    .then(() => {
+                        resolve("success");
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            })
+        } catch (e) {
+            return Promise.reject(e);
+        }
     };
 
     const handleDeleteOpen = (props) => {
@@ -109,7 +134,7 @@ const Category = () => {
                 open={addOpen}
                 handleOpen={handleAddOpen}
                 handleClose={handleAddClose}
-                form={<AddCategory onAdd={onAddCategory}/>}
+                form={<AddCategory onAdd={onAddCategory} />}
                 title={"Add Category"}
                 alignTop
             />
@@ -117,7 +142,7 @@ const Category = () => {
                 open={editOpen}
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
-                form={<EditPartForm formData={formData} onEdit={onEditCategory}/>}
+                form={<EditPartForm formData={formData} onEdit={onEditCategory} deletePhotoFromStorage={deletePhotoFromStorage} />}
                 title={"Edit Category"}
                 alignTop
             />
@@ -126,7 +151,7 @@ const Category = () => {
                 handleOpen={handleDeleteOpen}
                 handleClose={handleDeleteClose}
                 form={<DeleteForm formData={formData} onDelete={onDeleteCategory}
-                                  title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"}/>}
+                                  title={"Delete " + formData.name + " category?"} buttonText={"Delete Category"} />}
                 title={"Are You Sure?"}
             />
         </Container>
