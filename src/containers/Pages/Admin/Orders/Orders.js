@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
@@ -21,22 +22,30 @@ const statusList = [
     'invoiced'
 ];
 
-const Orders = () => {
+const Orders = (props) => {
+    const {users} = props;
     const styles = useStyles();
     const [tableData, setTableData] = useState([]);
     const [filterActive, setFilterActive] = useState(false);
     const [filterValue, setFilterValue] = useState(null);
     const [filteredTableData, setFilteredTableData] = useState([]);
 
-    //TODO order by time
     const ordersRef = firestore.collection("orders")
-        .orderBy("date", "desc")
-        .orderBy("time", "desc");
+        .orderBy("createdAt", "desc");
     const [result, isLoading] = useFetch(ordersRef);
 
     useEffect(() => {
-        setTableData(result);
-    }, [result]);
+        if (props.parts && result) {
+            let ordersList = [];
+            result.forEach(order => {
+                const currentDate = new Date(order.createdAt.seconds * 1000);
+                const date = currentDate.toLocaleDateString("fr-CA");
+                const time = currentDate.toLocaleTimeString([], {timeStyle: 'short'});
+                ordersList.push({...order, date: date, time: time});
+            });
+            setTableData(ordersList);
+        }
+    }, [result, props.parts]);
 
     useEffect(() => {
         if (filterValue && filterActive) {
@@ -55,14 +64,21 @@ const Orders = () => {
 
     const onEdit = (order, id) => {
         const tempOrder = {...order};
-        delete tempOrder.id;
         firestore.collection("orders")
             .doc(id)
-            .set(tempOrder, {merge: true})
+            .update(tempOrder)
             .then(() => {
                 let tempTableData = [...tableData];
                 const index = tableData.findIndex((row) => row.id === id);
-                tempTableData[index] = order;
+                const currentOrder = tableData[index];
+                tempTableData[index] = {
+                    ...currentOrder,
+                    updatedAt: order.timeStamp,
+                    note: order.note,
+                    partialOrder: order.partialOrder,
+                    statusStep: order.statusStep,
+                    status: statusList[order.statusStep - 1]
+                };
                 setTableData(tempTableData);
             })
             .catch(error => {
@@ -86,7 +102,7 @@ const Orders = () => {
     if (isLoading) {
         return (
             <Container>
-                <Skeleton animation={"wave"} variant={"rect"} width={'100%'} height={400}/>
+                <Skeleton animation={"wave"} variant={"rect"} width={'100%'} height={400} />
             </Container>
         );
     }
@@ -107,29 +123,37 @@ const Orders = () => {
                             groupBy={(option) => option.charAt(0)}
                             getOptionLabel={(option) => (option)}
                             renderInput={(params) => (
-                                <TextField {...params} key={params} variant="outlined" placeholder="Filter By NickName"/>
+                                <TextField {...params} key={params} variant="outlined" placeholder="Filter By NickName" />
                             )}
                         />
                     </FormControl>
                 </div>
-                <p style={{padding: 10}}/>
+                <p style={{padding: 10}} />
                 <FormControlLabel
                     disabled={filterValue === null}
                     style={{float: 'right'}}
-                    control={<Switch checked={filterActive} onChange={handleFilterSwitch}/>}
+                    control={<Switch checked={filterActive} onChange={handleFilterSwitch} />}
                     label={filterActive ? "Disable Filter" : "Enable Filter"}
                 />
             </div>
-            <br/>
-            <Divider/>
-            <br/>
+            <br />
+            <Divider />
+            <br />
             <OrdersTable
                 tableData={(filterValue && filterActive) ? filteredTableData : tableData}
                 statusList={statusList}
+                users={users}
                 onEdit={onEdit}
-                onDelete={onDelete}/>
+                onDelete={onDelete} />
         </Container>
     );
 };
 
-export default Orders;
+const mapStateToProps = state => {
+    return {
+        parts: state.parts.parts,
+        users: state.users.users,
+    };
+};
+
+export default connect(mapStateToProps)(Orders);
