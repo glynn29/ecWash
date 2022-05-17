@@ -65,11 +65,6 @@ const EditForm = props => {
         <Container component="main" maxWidth="sm" className={styles.container}>
             <form autoComplete="off" onSubmit={submitFormHandler}>
                 <Grid container spacing={2}>
-                    {/*TODO remove comment and move to just email*/}
-                    {props.formData.comment && <Grid item xs={12}>
-                        <TextField multiline minRows={4} disabled={true} value={props.formData.comment} variant="outlined" fullWidth
-                                   label="Customer Comments" />
-                    </Grid>}
                     <Grid item xs={12}>
                         <Stepper statusList={props.statusList} status={statusStep} setStatus={setStatusStep} />
                     </Grid>
