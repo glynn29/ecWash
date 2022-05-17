@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Compressor from "compressorjs";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -12,6 +11,7 @@ import PictureButton from "../../../../../../components/UI/Buttons/PictureButton
 import CustomLinearProgress from "../../../../../../components/UI/LinearProgress/CustomLinearProgress";
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
 import { firestore, storageRef } from "../../../../../../firebase";
+import { compressFile, handleFileUpload } from "../../../../../../components/UI/Helper/Helper";
 
 const AddCategory = props => {
     const styles = formStyles();
@@ -22,10 +22,14 @@ const AddCategory = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
 
-    //functions for showing a temporary photo before an actual upload
-    const handleAddPictureClick = event => {
+    //functions for showing a temporary photo before an actual upload, and compressing image
+    const handleAddPictureClick = async (event) => {
         const file = event.target.files[0];
-        compressFile(file);
+        setIsLoading(true);
+        await compressFile(file, false)
+            .then(compressedResult => setFile(compressedResult))
+            .catch(error => setError(error));
+        setIsLoading(false);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
@@ -34,86 +38,51 @@ const AddCategory = props => {
         };
     };
 
-    const compressFile = (image) => {
-        setIsLoading(true);
-        new Compressor(image, {
-            quality: 0.9,
-            maxWidth: 200,
-            maxHeight: 200,
-            success: (compressedResult) => {
-                setFile(compressedResult);
-                setIsLoading(false);
-            },
-            error(err) {
-                setError(err.message);
-                setIsLoading(false);
-            },
-        });
-    };
-
     const handleRemovePictureClick = () => {
         setTempPicture(null);
-    };
-
-    const handleFileUpload = () => {
-        setIsLoading(true);
-        try {
-            const uploadTask = storageRef.child('categories')
-                .child(name)
-                .put(file);
-            return new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', (snapshot) => {
-                                  let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                  setProgress(progress);
-                                  console.log('Upload is ' + progress + '% done');
-                              },
-                              (error) => {
-                                  setError(error.message);
-                                  setIsLoading(false);
-                                  reject(error.message);
-                              },
-                              () => {
-                                  uploadTask.snapshot.ref.getDownloadURL()
-                                      .then((downloadURL) => {
-                                          setIsLoading(false);
-                                          resolve(downloadURL);
-                                      });
-                              });
-            });
-        } catch (e) {
-            setError(e.message);
-            return Promise.reject();
-        }
     };
 
     const submitFormHandler = async (event) => {
         event.preventDefault();
         let pictureUrl = null;
+        let picName = null;
         let pictureError = false;
+        const categoryRef = firestore.collection('categories')
+            .doc();
 
         if (file) {
-            await handleFileUpload()
+            picName = file.name.substring(0, file.name.indexOf('.'));
+            const uploadTask = storageRef.child('categories')
+                .child(categoryRef.id)
+                .put(file);
+            setIsLoading(true);
+            await handleFileUpload(uploadTask, setProgress)
                 .then(function (url) {
                     pictureUrl = url;
                 })
                 .catch(function (error) {
+                    setError(error);
                     pictureError = true;
                 });
+            setIsLoading(false);
         }
 
         if (!pictureError) {
+            const category = {
+                name,
+                pictureUrl: pictureUrl,
+                pictureName: picName
+            };
             firestore.collection('categories')
-                .add({
-                         name,
-                         pictureUrl: pictureUrl,
-                     })
+                .doc(categoryRef.id)
+                .set(category)
                 .then(() => {
                     props.onAdd();
                 })
                 .catch(error => {
+                    setError(error);
                     console.log(error)
                 });
-            console.log("category ADDED");
         }
     };
 
@@ -137,7 +106,7 @@ const AddCategory = props => {
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <PictureButton tempPicture={tempPicture} handleRemovePictureClick={handleRemovePictureClick}
-                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading}/>
+                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading} />
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {tempPicture &&
@@ -146,17 +115,17 @@ const AddCategory = props => {
                                 display: 'block',
                                 padding: 'inherit',
                                 maxHeight: 129
-                            }}/>
+                            }} />
                         }
                     </Grid>
                     {(isLoading || progress === 100) &&
-                    <Grid item xs={12}>
-                        <CustomLinearProgress value={progress}/>
-                    </Grid>}
+                        <Grid item xs={12}>
+                            <CustomLinearProgress value={progress} />
+                        </Grid>}
                     {error &&
-                    <Grid item xs={12}>
-                        <Typography color={"error"}>{error}</Typography>
-                    </Grid>}
+                        <Grid item xs={12}>
+                            <Typography color={"error"}>{error}</Typography>
+                        </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             disabled={isLoading}
