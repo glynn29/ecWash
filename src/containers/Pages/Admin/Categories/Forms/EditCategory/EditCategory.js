@@ -1,6 +1,5 @@
 import Typography from "@material-ui/core/Typography";
 import React, { useState } from "react";
-import Compressor from "compressorjs";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -12,6 +11,7 @@ import CustomLinearProgress from "../../../../../../components/UI/LinearProgress
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
 import { firestore, storageRef } from "../../../../../../firebase";
+import { compressFile, handleFileUpload } from "../../../../../../components/UI/Helper/Helper";
 
 const EditCategory = props => {
     const styles = formStyles();
@@ -24,9 +24,13 @@ const EditCategory = props => {
     const [progress, setProgress] = useState(0);
 
     //functions for showing a temporary photo before an actual upload
-    const handleAddPictureClick = event => {
+    const handleAddPictureClick = async (event) => {
         const file = event.target.files[0];
-        compressFile(file);
+        setIsLoading(true);
+        await compressFile(file, false)
+            .then(compressedResult => setFile(compressedResult))
+            .catch(error => setError(error));
+        setIsLoading(false);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
@@ -35,119 +39,61 @@ const EditCategory = props => {
         };
     };
 
-    const compressFile = (image) => {
-        setIsLoading(true);
-        new Compressor(image, {
-            quality: 0.9,
-            maxWidth: 200,
-            maxHeight: 200,
-            success: (compressedResult) => {
-                setFile(compressedResult);
-                setIsLoading(false);
-            },
-            error(err) {
-                setError(err.message);
-                setIsLoading(false);
-            },
-        });
-    };
-
     const handleRemovePictureClick = () => {
         setTempPictureUrl(null);
         setIsPictureRemoved(true);
     };
 
-    const deletePhotoFromStorage = () => {
-        try {
-            const deleteRef = storageRef.child('categories')
-                .child(name);
-            return new Promise((resolve, reject) => {
-                deleteRef.delete()
-                    .then(() => {
-                        resolve("success");
-                    })
-                    .catch((error) => {
-                        setError(error);
-                        reject(error);
-                    });
-            })
-        } catch (e) {
-            setError(e.message);
-            return Promise.reject();
-        }
-    };
-
-    //function to upload file to firebase
-    const handleFileUpload = () => {
-        setIsLoading(true);
-        try {
-            const uploadTask = storageRef.child('categories')
-                .child(name)
-                .put(file);
-            return new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', (snapshot) => {
-                                  let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                  setProgress(progress);
-                                  console.log('Upload is ' + progress + '% done');
-                              },
-                              (error) => {
-                                  setError(error.message);
-                                  setIsLoading(false);
-                                  reject(error.message);
-                              },
-                              () => {
-                                  uploadTask.snapshot.ref.getDownloadURL()
-                                      .then((downloadURL) => {
-                                          setIsLoading(false);
-                                          resolve(downloadURL);
-                                      });
-                              });
-            });
-        } catch (e) {
-            setError(e.message);
-            return Promise.reject();
-        }
-    };
-
     const submitFormHandler = async (event) => {
         event.preventDefault();
         let pictureUrl = tempPictureUrl;
+        let picName = null;
         let pictureError = false;
 
         if (isPictureRemoved) {
-            await deletePhotoFromStorage()
+            await props.deletePhotoFromStorage(props.formData.id)
                 .then(function () {
                     pictureUrl = null;
                 })
                 .catch(function (error) {
+                    setError(error)
                     pictureError = true;
                 });
         }
 
         if (file && !pictureError) {
-            await handleFileUpload()
+            picName = file.name.substring(0, file.name.indexOf('.'));
+            const uploadTask = storageRef.child('categories')
+                .child(props.formData.id)
+                .put(file);
+            setIsLoading(true);
+            await handleFileUpload(uploadTask, setProgress)
                 .then(function (url) {
                     pictureUrl = url;
                 })
                 .catch(function (error) {
+                    setError(error);
                     pictureError = true;
                 });
+            setIsLoading(false);
         }
 
         if (!pictureError) {
+            const category = {
+                name,
+                pictureUrl: pictureUrl,
+                pictureName: picName
+            };
             firestore.collection('categories')
                 .doc(props.formData.id)
-                .update({
-                            name,
-                            pictureUrl: pictureUrl,
-                        })
+                .update(category)
                 .then(() => {
                     props.onEdit();
                 })
                 .catch(error => {
-                    console.log(error)
+                    setError(error);
+                    console.log(error);
                 });
-            console.log("category EDITED");
         }
     };
 
@@ -171,7 +117,7 @@ const EditCategory = props => {
                     </Grid>
                     <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <PictureButton tempPicture={tempPictureUrl} handleRemovePictureClick={handleRemovePictureClick}
-                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading}/>
+                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading} />
                     </Grid>
                     <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
                         {tempPictureUrl &&
@@ -180,17 +126,17 @@ const EditCategory = props => {
                                 display: 'block',
                                 padding: 'inherit',
                                 maxHeight: 129
-                            }}/>
+                            }} />
                         }
                     </Grid>
                     {(isLoading || progress === 100) &&
-                    <Grid item xs={12}>
-                        <CustomLinearProgress value={progress}/>
-                    </Grid>}
+                        <Grid item xs={12}>
+                            <CustomLinearProgress value={progress} />
+                        </Grid>}
                     {error &&
-                    <Grid item xs={12}>
-                        <Typography color={"error"}>{error}</Typography>
-                    </Grid>}
+                        <Grid item xs={12}>
+                            <Typography color={"error"}>{error}</Typography>
+                        </Grid>}
                     <Grid item xs={10} style={{margin: 'auto'}}>
                         <Button
                             disabled={isLoading}
