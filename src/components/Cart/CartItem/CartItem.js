@@ -10,21 +10,28 @@ import AddIcon from "@material-ui/icons/Add";
 import Box from "@material-ui/core/Box";
 
 import alt_image from '../../../assets/images/alt_image.jpg';
+import formStyle from "../../UI/Styles/formStyle";
 import classes from './CartItem.module.css';
 
 const CartItem = props => {
+    const styles = formStyle();
     const pic = props.pictureUrl ? props.pictureUrl : alt_image;
+    const cardStyle = `${classes['cart-item']} ${styles.cartItem}`;
 
     return (
-        <Card key={props.key} className={classes['cart-item']}>
+        <Card className={cardStyle}>
             <CardMedia
                 className={classes.cover}
                 component="img"
                 alt={props.name}
                 image={pic} />
             <Box className={classes.content}>
-                <CardContent style={{flex: '1 0 auto'}}>
+                <CardContent className={classes.description}>
                     <Typography variant="h6">{props.name}</Typography>
+                    <div className={classes.amountBox}>
+                        <Typography variant="h6" className={classes.x}> X </Typography>
+                        <Typography variant="h6" className={classes.amount}>{props.amount}</Typography>
+                    </div>
                 </CardContent>
                 <Box className={classes.actions}>
                     <button onClick={props.onRemove} disabled={props.isLoading}>{props.amount === 1 ? <DeleteIcon /> : <RemoveIcon />}</button>

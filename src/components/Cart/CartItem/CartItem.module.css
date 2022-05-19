@@ -4,10 +4,6 @@
     margin: 1rem 0;
 }
 
-.cart-item:last-child {
-    margin-bottom: 25px;
-}
-
 .content {
     display: flex;
     justify-content: center;
@@ -25,6 +21,31 @@
     align-items: center;
 }
 
+.amount {
+    font-weight: bold !important;
+    border: 1px solid #ccc;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    color: #363636;
+}
+
+.amountBox {
+    display: flex;
+    align-items: center;
+}
+
+.description {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.x {
+    font-weight: bolder !important;
+    margin: 0 4px !important;
+}
+
+
 .actions {
     display: flex;
     align-items: center;
@@ -34,6 +55,10 @@
 
 @media (max-width: 550px) {
     .cart-item {
+        flex-direction: column;
+    }
+
+    .description {
         flex-direction: column;
     }
 

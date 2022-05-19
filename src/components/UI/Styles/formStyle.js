@@ -150,6 +150,12 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up("xl")]: {
             fontSize: 38
         }
+    },
+    cartItem: {
+        boxShadow: theme.shadows[3],
+        width: '98%',
+        marginLeft: "auto",
+        marginRight: "auto"
     }
 }));
 
