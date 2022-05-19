@@ -13,10 +13,9 @@ const DeleteForm = props => {
 
     const handleDelete = () => {
         props.onDelete(formData.id);
-        console.log("deleted");
     };
 
-    return(
+    return (
         <Container component="main" maxWidth="sm" style={{textAlign: 'center'}}>
             <Grid container spacing={1}>
                 <Grid item xs={12}>
