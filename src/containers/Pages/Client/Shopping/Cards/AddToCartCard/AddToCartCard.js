@@ -16,7 +16,7 @@ import * as classes from "../ItemCard/ItemCard.module.css";
 const AddToCartCard = ({item, onAddItem, close}) => {
     const [amount, setAmount] = useState('1');
     const [intAmount, setIntAmount] = useState(1);
-    const pictureUrl = (item && item.pictureUrl) ? item.pictureUrl : alt_image;
+    const pictureUrl = (item && item.pictures.length > 0) ? item.pictures[0].pictureUrl : alt_image;
 
     const handleInputChange = (e) => {
         setAmount(e.target.value);
