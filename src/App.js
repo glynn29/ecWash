@@ -3,6 +3,8 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 
+import SheetsView from "./containers/Pages/Client/CutSheets/SheetsView";
+import CutSheets from "./containers/Pages/Client/CutSheets/CutSheets";
 import Orders from "./containers/Pages/Admin/Orders/Orders";
 import OrderHistory from "./containers/Pages/Client/OrderHistory/OrderHistory";
 import Page404 from "./components/UI/404/404";
@@ -59,6 +61,8 @@ const App = (props) => {
         if (isAdmin) {
             routes = (
                 <Switch>
+                    <Route path="/cutsheets/categories/:category" component={SheetsView}/>
+                    <Route path="/cutsheets" component={CutSheets}/>
                     <Route path="/orders" component={Orders}/>
                     <Route path="/checkout" component={Checkout}/>
                     <Route path="/kits" component={Kits}/>
@@ -79,6 +83,8 @@ const App = (props) => {
         } else {
             routes = (
                 <Switch>
+                    <Route path="/cutsheets/categories/:category" component={SheetsView}/>
+                    <Route path="/cutsheets" component={CutSheets}/>
                     <Route path="/orderhistory" component={OrderHistory}/>
                     <Route path="/checkout" component={Checkout}/>
                     <Route path="/shopping/categories/:category" component={ItemView}/>
