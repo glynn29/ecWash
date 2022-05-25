@@ -41,7 +41,7 @@ const CategoryCard = props => {
     const pic = props.pictureUrl ? props.pictureUrl : alt_image;
 
     return (
-        <Card key={props.key} style={{height: '100%'}}>
+        <Card key={props.key} style={{ height: '100%' }}>
             <CardActionArea component={Link} to={'/shopping/categories/' + props.name} className={styles.root}>
                 <CardContent className={styles.content}>
                     <Typography gutterBottom variant="h6">{props.name}</Typography>
@@ -50,7 +50,7 @@ const CategoryCard = props => {
                     className={styles.cover}
                     component="img"
                     alt={props.name}
-                    image={pic}/>
+                    image={pic} />
             </CardActionArea>
         </Card>
     );
