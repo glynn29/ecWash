@@ -21,27 +21,41 @@ import * as actions from "../../../../store/actions";
 import AddForm from "./Forms/AddForm/AddForm";
 import EditForm from "./Forms/EditForm/EditForm";
 import DeleteForm from "../../../../components/UI/Forms/DeleteForm/DeleteForm";
+import { storageRef } from "../../../../firebase";
 
 const Parts = (props) => {
-    const {parts, categories} = props;
+    const {categories} = props;
     const styles = useStyles();
+    const [parts, setParts] = useState([...props.parts]);
     const [addOpen, setAddOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [filter, setFilter] = useState(false);
     const [filterValue, setFilterValue] = useState(null);
     const [formData, setFormData] = useState({});
-    const [tableData, setTableData] = useState(parts);
+    const [tableData, setTableData] = useState(props.parts);
     const [filteredTableData, setFilteredTableData] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const [searchParam, setSearchParam] = useState("parts");
-    const [filterItems, setFilterItems] = useState(parts);
+    const [filterItems, setFilterItems] = useState(props.parts);
+
+    useEffect(() => {
+        if (props.parts.length > 0 && categories.length > 0) {
+            let completeParts = [];
+            props.parts.forEach(part => {
+                const categoryIndex = categories.findIndex(categoryItem => categoryItem.id === part.categoryId);
+                const category = categories[categoryIndex];
+                completeParts.push({...part, category: category.name})
+            });
+            setParts(completeParts);
+        }
+    }, [props.parts, categories]);
 
     useEffect(() => {
         if (searchParam) {
             reloadItems();
         }
-    }, [parts, categories, searchParam]);
+    }, [props.parts, categories, searchParam, parts]);
 
     useEffect(() => {
         if (filterValue) {
@@ -59,8 +73,8 @@ const Parts = (props) => {
     };
 
     //add modal functions
-    const onAddPart = (part) => {
-        props.onAddPart(part);
+    const onAddPart = (part, id) => {
+        props.onAddPart(part, id);
         handleAddClose();
     };
 
@@ -88,9 +102,39 @@ const Parts = (props) => {
     };
 
     //delete modal functions
-    const onDeletePart = (id) => {
-        props.onRemovePart(id);
-        handleDeleteClose();
+    const onDeletePart = async (id) => {
+        let pictureError = false;
+        if (formData.pictures.length > 0) {
+            await deletePhotoFromStorage(formData.categoryId, formData.id, formData.pictures[0].pictureName)
+                .catch((error) => {
+                    pictureError = true;
+                    console.log(error);
+                });
+        }
+        if (!pictureError) {
+            props.onRemovePart(id);
+            handleDeleteClose();
+        }
+    };
+
+    const deletePhotoFromStorage = (categoryId, partId, pictureName) => {
+        try {
+            const deleteRef = storageRef.child('parts')
+                .child(categoryId)
+                .child(partId)
+                .child(pictureName);
+            return new Promise((resolve, reject) => {
+                deleteRef.delete()
+                    .then(() => {
+                        resolve("success");
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            })
+        } catch (e) {
+            return Promise.reject();
+        }
     };
 
     const handleDeleteOpen = (props) => {
@@ -221,7 +265,7 @@ const Parts = (props) => {
                 handleOpen={handleEditOpen}
                 handleClose={handleEditClose}
                 form={<EditForm formData={formData} onEdit={onEditPart} handleClose={handleEditClose}
-                                categories={categories}/>}
+                                categories={categories} deletePhotoFromStorage={deletePhotoFromStorage} />}
                 title={"Edit Part"}
                 alignTop
             />
@@ -246,7 +290,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAddPart: (part) => dispatch(actions.onAddPart(part)),
+        onAddPart: (part, id) => dispatch(actions.onAddPart(part, id)),
         onRemovePart: (id) => dispatch(actions.onRemovePart(id)),
         onEditPart: (part, id) => dispatch(actions.onEditPart(part, id))
     }
