@@ -61,7 +61,7 @@ const AddCategory = props => {
                     pictureUrl = url;
                 })
                 .catch(function (error) {
-                    setError(error);
+                    setError(error.message);
                     pictureError = true;
                 });
             setIsLoading(false);
@@ -80,7 +80,7 @@ const AddCategory = props => {
                     props.onAdd();
                 })
                 .catch(error => {
-                    setError(error);
+                    setError(error.message);
                     console.log(error)
                 });
         }

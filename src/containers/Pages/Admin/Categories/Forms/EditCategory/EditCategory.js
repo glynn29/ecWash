@@ -56,7 +56,7 @@ const EditCategory = props => {
                     pictureUrl = null;
                 })
                 .catch(function (error) {
-                    setError(error)
+                    setError(error.message)
                     pictureError = true;
                 });
         }
@@ -72,7 +72,7 @@ const EditCategory = props => {
                     pictureUrl = url;
                 })
                 .catch(function (error) {
-                    setError(error);
+                    setError(error.message);
                     pictureError = true;
                 });
             setIsLoading(false);
