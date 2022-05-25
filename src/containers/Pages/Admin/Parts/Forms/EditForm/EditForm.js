@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Compressor from "compressorjs";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -11,16 +10,17 @@ import Select from "@material-ui/core/Select";
 import Typography from "@material-ui/core/Typography";
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
-import { storageRef } from "../../../../../../firebase";
+import { getTimestamp, storageRef } from "../../../../../../firebase";
 import CustomLinearProgress from "../../../../../../components/UI/LinearProgress/CustomLinearProgress";
 import PictureButton from "../../../../../../components/UI/Buttons/PictureButton";
+import { compressFile, handleFileUpload } from "../../../../../../components/UI/Helper/Helper";
 
 const EditForm = props => {
     const styles = formStyles();
     const [name, setName] = useState(props.formData.name);
     const [details, setDetails] = useState(props.formData.details ? props.formData.details : "");
-    const [category, setCategory] = useState(props.formData.category);
-    const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictureUrl);
+    const [categoryId, setCategoryId] = useState(props.formData.categoryId);
+    const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictures ? props.formData.pictures[0].pictureUrl : null);
     const [isPictureRemoved, setIsPictureRemoved] = useState(false);
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
@@ -28,9 +28,13 @@ const EditForm = props => {
     const [progress, setProgress] = useState(0);
 
     //functions for showing a temporary photo before an actual upload
-    const handleAddPictureClick = event => {
+    const handleAddPictureClick = async (event) => {
         const file = event.target.files[0];
-        compressFile(file);
+        setIsLoading(true);
+        await compressFile(file, true)
+            .then(compressedResult => setFile(compressedResult))
+            .catch(error => setError(error));
+        setIsLoading(false);
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
@@ -39,118 +43,62 @@ const EditForm = props => {
         };
     };
 
-    const compressFile = (image) => {
-        setIsLoading(true);
-        new Compressor(image, {
-            quality: 0.8,
-            maxWidth: 1080,
-            maxHeight: 1080,
-            success: (compressedResult) => {
-                setFile(compressedResult);
-                setIsLoading(false);
-            },
-            error(err) {
-                setError(err.message);
-                setIsLoading(false);
-            },
-        });
-    };
-
     const handleRemovePictureClick = () => {
         setTempPictureUrl(null);
         setIsPictureRemoved(true);
     };
 
-    const deletePhotoFromStorage = () => {
-        try {
-            const deleteRef = storageRef.child('parts')
-                .child(category)
-                .child(name);
-            return new Promise((resolve, reject) => {
-                deleteRef.delete()
-                    .then(() => {
-                        resolve("success");
-                    })
-                    .catch((error) => {
-                        setError(error.message);
-                        reject(error);
-                    });
-            })
-        } catch (e) {
-            setError(e.message);
-            return Promise.reject();
-        }
-    };
-
-    //function to upload file to firebase
-    const handleFileUpload = () => {
-        setIsLoading(true);
-        try {
-            const uploadTask = storageRef.child('parts')
-                .child(category)
-                .child(name)
-                .put(file);
-            return new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', (snapshot) => {
-                                  let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                  setProgress(progress);
-                                  console.log('Upload is ' + progress + '% done');
-                              },
-                              (error) => {
-                                  setError(error.message);
-                                  setIsLoading(false);
-                                  reject(error.message);
-                              },
-                              () => {
-                                  uploadTask.snapshot.ref.getDownloadURL()
-                                      .then((downloadURL) => {
-                                          setIsLoading(false);
-                                          resolve(downloadURL);
-                                      });
-                              });
-            });
-        } catch (e) {
-            setError(e.message);
-            return Promise.reject();
-        }
-    };
-
     const submitFormHandler = async (event) => {
         event.preventDefault();
-        let pictureUrl = null;
+        let pictures = props.formData.pictures;
         let pictureError = false;
+        let pictureName = null;
 
         if (isPictureRemoved) {
-            await deletePhotoFromStorage()
+            await props.deletePhotoFromStorage(props.formData.categoryId, props.formData.name, props.formData.pictures[0].pictureName)
                 .then(function () {
-                    pictureUrl = null;
+                    pictures[0] = {};
                 })
                 .catch(function (error) {
+                    console.log(error);
+                    setError(error.message);
                     pictureError = true;
                 });
         }
 
         if (file && !pictureError) {
-            await handleFileUpload()
-                .then(function (url) {
-                    pictureUrl = url;
+            pictureName = file.name.substring(0, file.name.indexOf('.'));
+            const uploadTask = storageRef.child('parts')
+                .child(categoryId)
+                .child(props.formData.id)
+                .child(pictureName)
+                .put(file);
+            setIsLoading(true);
+            await handleFileUpload(uploadTask, setProgress)
+                .then(function (pictureUrl) {
+                    pictures[0] = { pictureUrl, pictureName };
                 })
                 .catch(function (error) {
+                    console.log(error);
+                    setError(error.message);
                     pictureError = true;
                 });
+            setIsLoading(false);
         }
 
+        const timeStamp = getTimestamp();
         const part = {
             ...props.formData,
             name,
-            details: details,
-            category,
-            pictureUrl,
+            categoryId,
+            details,
+            pictures,
+            updatedAt: timeStamp
         };
 
+        console.log(part);
         if (!pictureError) {
             props.onEdit(part, props.formData.id);
-            console.log("part EDITED");
         }
     };
 
@@ -177,14 +125,14 @@ const EditForm = props => {
                             <InputLabel required>Part Category</InputLabel>
                             <Select
                                 native
-                                value={category}
-                                onChange={event => setCategory(event.target.value)}
+                                value={categoryId}
+                                onChange={event => setCategoryId(event.target.value)}
                                 label="Part Category"
                             >
-                                <option aria-label="None" value=""/>
+                                <option aria-label="None" value="" />
                                 {props.categories.map(listItem => {
                                     return (
-                                        <option key={listItem.name} value={listItem.name}>{listItem.name}</option>
+                                        <option key={listItem.name} value={listItem.id}>{listItem.name}</option>
                                     );
                                 })}
                             </Select>
@@ -200,34 +148,34 @@ const EditForm = props => {
                                 multiline
                                 variant="outlined"
                                 fullWidth
-                                rows={2}
-                                inputProps={{className: styles.textarea}}
+                                minRows={2}
+                                inputProps={{ className: styles.textarea }}
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Grid item xs={3} sm={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <PictureButton tempPicture={tempPictureUrl} handleRemovePictureClick={handleRemovePictureClick}
-                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading}/>
+                                       handleAddPictureClick={handleAddPictureClick} disabled={isLoading} />
                     </Grid>
-                    <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
+                    <Grid item xs={9} sm={10} style={{ outline: '1px dotted lightgray', outlineOffset: '-8px' }}>
                         {tempPictureUrl &&
-                        <img src={tempPictureUrl} alt={"error"} style={{
-                            margin: 'auto',
-                            display: 'block',
-                            padding: 'inherit',
-                            maxHeight: 129
-                        }}/>
+                            <img src={tempPictureUrl} alt={"error"} style={{
+                                margin: 'auto',
+                                display: 'block',
+                                padding: 'inherit',
+                                maxHeight: 129
+                            }} />
                         }
                     </Grid>
                     {(isLoading || progress === 100) &&
-                    <Grid item xs={12}>
-                        <CustomLinearProgress value={progress}/>
-                    </Grid>}
+                        <Grid item xs={12}>
+                            <CustomLinearProgress value={progress} />
+                        </Grid>}
                     {error &&
-                    <Grid item xs={12}>
-                        <Typography color={"error"}>{error}</Typography>
-                    </Grid>}
-                    <Grid item xs={10} style={{margin: 'auto'}}>
+                        <Grid item xs={12}>
+                            <Typography color={"error"}>{error}</Typography>
+                        </Grid>}
+                    <Grid item xs={10} style={{ margin: 'auto' }}>
                         <Button
                             disabled={isLoading}
                             type="submit"
