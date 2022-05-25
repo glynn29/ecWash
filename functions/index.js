@@ -84,6 +84,7 @@ exports.sendAutoMail = functions.firestore.document('orders/{orderId}')
                 subject: EC_ADMIN_SUBJECT,
                 text: adminText,
                 items: items,
+                comment: order.comment
             },
         };
 
