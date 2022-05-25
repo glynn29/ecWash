@@ -48,34 +48,32 @@ const AddForm = props => {
 
     const submitFormHandler = async (event) => {
         event.preventDefault();
-        let pictureUrl = null;
         let pictureError = false;
-        let picName = null;
+        let pictureName = null;
         let pictures = [];
         const partRef = firestore.collection('parts')
             .doc();
 
         if (file) {
-            picName = file.name.substring(0, file.name.indexOf('.'));
+            pictureName = file.name.substring(0, file.name.indexOf('.'));
             const uploadTask = storageRef.child('parts')
                 .child(categoryId)
                 .child(partRef.id)
-                .child(picName)
+                .child(pictureName)
                 .put(file);
             setIsLoading(true);
             await handleFileUpload(uploadTask, setProgress)
-                .then(function (url) {
-                    pictureUrl = url;
+                .then(function (pictureUrl) {
+                    pictures.push({ pictureUrl, pictureName });
                 })
                 .catch(function (error) {
-                    setError(error);
+                    setError(error.message);
                     pictureError = true;
                 });
             setIsLoading(false);
         }
 
         const timeStamp = getTimestamp();
-        pictures.push({pictureUrl, pictureName: picName});
         const part = {
             name,
             categoryId,
@@ -138,15 +136,15 @@ const AddForm = props => {
                                 variant="outlined"
                                 fullWidth
                                 minRows={2}
-                                inputProps={{className: styles.textarea}}
+                                inputProps={{ className: styles.textarea }}
                             />
                         </FormControl>
                     </Grid>
-                    <Grid item xs={3} sm={2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Grid item xs={3} sm={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <PictureButton tempPicture={tempPicture} handleRemovePictureClick={handleRemovePictureClick}
                                        handleAddPictureClick={handleAddPictureClick} disabled={isLoading} />
                     </Grid>
-                    <Grid item xs={9} sm={10} style={{outline: '1px dotted lightgray', outlineOffset: '-8px'}}>
+                    <Grid item xs={9} sm={10} style={{ outline: '1px dotted lightgray', outlineOffset: '-8px' }}>
                         {tempPicture &&
                             <img src={tempPicture} alt={"error"} style={{
                                 margin: 'auto',
@@ -164,7 +162,7 @@ const AddForm = props => {
                         <Grid item xs={12}>
                             <Typography color={"error"}>{error}</Typography>
                         </Grid>}
-                    <Grid item xs={10} style={{margin: 'auto'}}>
+                    <Grid item xs={10} style={{ margin: 'auto' }}>
                         <Button
                             disabled={isLoading}
                             type="submit"
