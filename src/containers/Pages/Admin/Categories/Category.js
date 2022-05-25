@@ -74,23 +74,27 @@ const Category = () => {
     };
 
     //delete modal functions
-    const onDeleteCategory = (id) => {
-        deletePhotoFromStorage(id)
-            .then(() => {
-                firestore.collection("categories")
-                    .doc(id)
-                    .delete()
-                    .then(() => {
-                        reloadCategories();
-                        handleDeleteClose();
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    const onDeleteCategory = async (id) => {
+        let pictureError = false;
+        if (formData.pictureUrl) {
+            await deletePhotoFromStorage(id)
+                .catch((error) => {
+                    pictureError = true;
+                    console.log(error);
+                });
+        }
+        if (!pictureError) {
+            firestore.collection("categories")
+                .doc(id)
+                .delete()
+                .then(() => {
+                    reloadCategories();
+                    handleDeleteClose();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     };
 
     const deletePhotoFromStorage = (id) => {
