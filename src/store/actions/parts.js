@@ -52,13 +52,13 @@ export const addPart = (part) => {
     };
 };
 
-export const onAddPart = (part) => {
+export const onAddPart = (part, id) => {
     return dispatch => {
         dispatch(partsStart());
         firestore.collection('parts')
-            .add(part)
-            .then((response) => {
-                part.id = response.id;
+            .doc(id)
+            .set(part)
+            .then(() => {
                 dispatch(partsSuccess());
                 dispatch(addPart(part));
             })
@@ -77,11 +77,15 @@ export const editPart = (part, id) => {
 };
 
 export const onEditPart = (part, id) => {
+    let cleanedPart = {...part};
+    delete cleanedPart.id;
+    delete cleanedPart.category;
+
     return dispatch => {
         dispatch(partsStart());
         firestore.collection('parts')
             .doc(id)
-            .update(part)
+            .update(cleanedPart)
             .then(() => {
                 dispatch(partsSuccess());
                 dispatch(editPart(part, id));
