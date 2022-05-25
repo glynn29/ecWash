@@ -23,12 +23,12 @@ const SheetsView = (props) => {
         <Container>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <BackButton/>
+                    <BackButton />
                 </Grid>
                 {sheets.map(item => {
-                   delay += 100;
+                    delay += 100;
                     return (
-                        <Grow in={true} key={item} style={{ transformOrigin: '0 0 0' }} {...{timeout: delay}}>
+                        <Grow in={true} key={item.name} style={{ transformOrigin: '0 0 0' }} {...{ timeout: delay }}>
                             <Grid item xs={6} sm={4} md={3} lg={2}>
                                 <ItemCard item={item} />
                             </Grid>
