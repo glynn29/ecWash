@@ -20,7 +20,7 @@ const EditForm = props => {
     const [name, setName] = useState(props.formData.name);
     const [details, setDetails] = useState(props.formData.details ? props.formData.details : "");
     const [categoryId, setCategoryId] = useState(props.formData.categoryId);
-    const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictures ? props.formData.pictures[0].pictureUrl : null);
+    const [tempPictureUrl, setTempPictureUrl] = useState(props.formData.pictures.length > 0 ? props.formData.pictures[0].pictureUrl : null);
     const [isPictureRemoved, setIsPictureRemoved] = useState(false);
     const [file, setFile] = useState(null);
     const [error, setError] = useState(null);
@@ -55,9 +55,9 @@ const EditForm = props => {
         let pictureName = null;
 
         if (isPictureRemoved) {
-            await props.deletePhotoFromStorage(props.formData.categoryId, props.formData.name, props.formData.pictures[0].pictureName)
+            await props.deletePhotoFromStorage(props.formData.categoryId, props.formData.id, props.formData.pictures[0].pictureName)
                 .then(function () {
-                    pictures[0] = {};
+                    pictures = [];
                 })
                 .catch(function (error) {
                     console.log(error);
