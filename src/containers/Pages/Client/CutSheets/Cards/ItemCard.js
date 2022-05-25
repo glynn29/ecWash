@@ -5,6 +5,10 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from "@material-ui/core/Typography";
 import CardActionArea from "@material-ui/core/CardActionArea";
+import CardMedia from "@material-ui/core/CardMedia";
+
+import alt_image from "../../../../../assets/images/alt_image.jpg";
+import * as classes from "../../Shopping/Cards/ItemCard/ItemCard.module.css";
 
 function importAll(r) {
     return r.keys().map(r);
@@ -12,8 +16,9 @@ function importAll(r) {
 
 const pdfs = importAll(require.context('../../../../../assets/files/Backroom Cut Sheets', false, /\.(pdf)$/));
 
-const ItemCard = ({item}) => {
-    const [pdf, setPdf] = useState(null);
+const ItemCard = ({ item }) => {
+    const [pdf, setPdf] = useState("");
+    const itemPicture = item.itemPicture ? item.itemPicture : alt_image;
 
     useEffect(() => {
         if (item) {
@@ -24,11 +29,18 @@ const ItemCard = ({item}) => {
     }, [item]);
 
     return (
-        <Card key={item.name} style={{height: '100%',maxHeight: '400px',boxShadow: '5px 5px 5px lightgrey'}}>
-            <CardActionArea component={Link} to={pdf} target={'_blank'} rel={"noopener noreferrer"} style={{display: 'flex', flexDirection: 'column'}}>
-                <div>
+        <Card key={item.name} className={classes.Card}>
+            <CardActionArea className={classes.CardActionArea} component={Link} to={pdf} target={'_blank'} rel={"noopener noreferrer"}>
+                <div className={classes.Pic}>
+                    <CardMedia
+                        component={"img"}
+                        alt={item.name}
+                        image={itemPicture}
+                    />
+                </div>
+                <div className={classes.Title}>
                     <CardContent>
-                        <Typography gutterBottom variant="h6" style={{textAlign: 'center', wordBreak: 'break-word'}}>{item.name}</Typography>
+                        <Typography gutterBottom variant="h6" style={{ textAlign: 'center', wordBreak: 'break-word' }}>{item.name}</Typography>
                     </CardContent>
                 </div>
             </CardActionArea>
