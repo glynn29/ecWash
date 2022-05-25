@@ -10,14 +10,10 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import alt_image from '../../../../../../assets/images/alt_image.jpg';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         height: '100%'
-    },
-    details: {
-        display: 'flex',
-        flexDirection: 'column',
     },
     content: {
         flex: '1',
@@ -27,12 +23,6 @@ const useStyles = makeStyles((theme) => ({
     cover: {
         width: 100,
         height: '100%'
-    },
-    controls: {
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
     },
 }));
 

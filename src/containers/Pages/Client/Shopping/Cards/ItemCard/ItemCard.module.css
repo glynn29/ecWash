@@ -4,6 +4,11 @@
     box-shadow: 5px 5px 5px lightgrey !important;
 }
 
+.CardActionArea {
+    display: flex;
+    flex-direction: column;
+}
+
 .Title {
     flex: 1;
 }

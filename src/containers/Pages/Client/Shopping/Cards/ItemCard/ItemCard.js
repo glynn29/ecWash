@@ -21,7 +21,7 @@ const ItemCard = ({item}) => {
     return (
         <Fragment>
             <Card key={item.key} className={classes.Card}>
-                <CardActionArea className={classes.Card} onClick={toggleModal} style={{display: 'flex', flexDirection: 'column'}}>
+                <CardActionArea className={classes.CardActionArea} onClick={toggleModal}>
                     <div className={classes.Pic}>
                         <CardMedia
                             component={"img"}
