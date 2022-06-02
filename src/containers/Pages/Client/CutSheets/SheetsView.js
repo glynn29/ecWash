@@ -9,6 +9,12 @@ import Container from "@material-ui/core/Container";
 import ItemCard from "./Cards/ItemCard";
 import BackButton from "../../../../components/UI/Buttons/BackButton";
 
+function importAll(r) {
+    return r.keys().map(r);
+}
+
+const pdfs = importAll(require.context('../../../../assets/files/Backroom Cut Sheets', false, /\.(pdf)$/));
+
 const SheetsView = (props) => {
     const [sheets, setSheets] = useState([]);
     let { category } = useParams();
@@ -30,7 +36,7 @@ const SheetsView = (props) => {
                     return (
                         <Grow in={true} key={item.name} style={{ transformOrigin: '0 0 0' }} {...{ timeout: delay }}>
                             <Grid item xs={6} sm={4} md={3} lg={2}>
-                                <ItemCard item={item} />
+                                <ItemCard item={item} pdfs={pdfs} />
                             </Grid>
                         </Grow>
                     );
