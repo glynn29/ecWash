@@ -32,7 +32,7 @@ const CategoryCard = props => {
 
     return (
         <Card key={props.key} style={{ height: '100%' }}>
-            <CardActionArea component={Link} to={'/cutsheets/categories/' + props.name} className={styles.root}>
+            <CardActionArea component={Link} to={'/supportdocuments/categories/' + props.name} className={styles.root}>
                 <CardContent className={styles.content}>
                     <Typography gutterBottom variant="h6">{props.name}</Typography>
                 </CardContent>
