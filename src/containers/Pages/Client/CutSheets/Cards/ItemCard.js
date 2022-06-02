@@ -10,13 +10,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import alt_image from "../../../../../assets/images/alt_image.jpg";
 import * as classes from "../../Shopping/Cards/ItemCard/ItemCard.module.css";
 
-function importAll(r) {
-    return r.keys().map(r);
-}
-
-const pdfs = importAll(require.context('../../../../../assets/files/Backroom Cut Sheets', false, /\.(pdf)$/));
-
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item, pdfs }) => {
     const [pdf, setPdf] = useState("");
     const itemPicture = item.itemPicture ? item.itemPicture : alt_image;
 
