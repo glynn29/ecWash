@@ -1,22 +1,26 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
+
+import Typography from "@material-ui/core/Typography";
 
 import image from "../../../assets/images/obi-wan.jpg"
 
 const Page404 = () => {
     const [error, setError] = useState(false);
+
     useEffect(() => {
         const time = setTimeout(() => {
             setError(true);
         }, 1000);
-        return() => {
+        return () => {
             clearTimeout(time);
         };
     }, []);
-    return(
+
+    return (
         error ?
-            <div style={{textAlign: 'center'}}>
-                <h1>This is not the page you are looking for</h1>
-                <img src={image} alt={"Jedi"}/>
+            <div style={{ textAlign: 'center' }}>
+                <Typography variant={"h4"}>This is not the page you are looking for...</Typography>
+                <img src={image} alt={"Oops"} />
             </div>
             :
             <div> </div>
