@@ -87,7 +87,7 @@ function stableSort(array, comparator) {
 }
 
 function EnhancedTableHead(props) {
-    const {classes, order, orderBy, onRequestSort} = props;
+    const { classes, order, orderBy, onRequestSort } = props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
@@ -102,23 +102,23 @@ function EnhancedTableHead(props) {
                     >
                         {headCell.noSort ?
                             headCell.label :
-                        <StyledSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
-                            {orderBy === headCell.id
-                                ?
-                                (<span className={classes.visuallyHidden}>
+                            <StyledSortLabel
+                                active={orderBy === headCell.id}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                            >
+                                {headCell.label}
+                                {orderBy === headCell.id
+                                    ?
+                                    (<span className={classes.visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </span>)
-                                :
-                                null}
-                        </StyledSortLabel>}
+                                    :
+                                    null}
+                            </StyledSortLabel>}
                     </StyledTableCell>
                 ))}
-                {props.edit &&<StyledTableCell align="left">Edit</StyledTableCell>}
+                {props.edit && <StyledTableCell align="left">Edit</StyledTableCell>}
                 {props.accept && <StyledTableCell align="left">Accept</StyledTableCell>}
                 {props.delete && <StyledTableCell align="left">Delete</StyledTableCell>}
                 {props.actions && <StyledTableCell align="left">Actions</StyledTableCell>}
@@ -142,11 +142,13 @@ function EnhancedTable(props) {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [rows, setRows] = useState(props.data);
 
-    const {data} = props;
+    const { data } = props;
     useEffect(() => {
-        setRows(data);
-        setRowsPerPage(data.length >= 25 && !props.noPagination ? 25 : -1);
-    },[data, props.noPagination]);
+        if (data.length > 0) {
+            setRows(data);
+            setRowsPerPage(data.length >= 25 && !props.noPagination ? 25 : data.length);
+        }
+    }, [data, props.noPagination]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -167,13 +169,13 @@ function EnhancedTable(props) {
 
     return (
         <Fragment>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 {props.add && <Button className={classes.addButton} disabled={props.addDisabled} variant="contained" onClick={() => props.add()}>Add</Button>}
                 {props.handleApprovedSwitch &&
-                    <span>{props.approvedLabel} <Switch checked={props.approvedSwitch} onChange={props.handleApprovedSwitch}/></span>
+                    <span>{props.approvedLabel} <Switch checked={props.approvedSwitch} onChange={props.handleApprovedSwitch} /></span>
                 }
             </div>
-            <TableContainer component={Paper} style={{...props.straightCorners,maxHeight: 550}}>
+            <TableContainer component={Paper} style={{ ...props.straightCorners, maxHeight: 550 }}>
                 <Table
                     stickyHeader
                     aria-labelledby="tableTitle"
@@ -191,23 +193,24 @@ function EnhancedTable(props) {
                     />
                     <TableBody>
                         {(rowsPerPage > 0 ? stableSort(rows, getComparator(order, orderBy))
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : stableSort(rows, getComparator(order, orderBy)))
                             .map((row, index) => {
                                 return (
                                     <StyledTableRow
-                                        style={row.partialOrder ? {backgroundColor: "lightyellow"} : null}
+                                        style={row.partialOrder ? { backgroundColor: "lightyellow" } : null}
                                         hover
                                         key={index}
                                     >
                                         {/*go through all the normal cells in the head cells array*/}
                                         {props.headCells.map((cell, index) => {
-
                                             if (cell.noSort) {
                                                 const buttonStyle = cell.buttonClass;
                                                 return (
                                                     <StyledTableCell key={index} align="left">
-                                                        <Button onClick={() => {cell.click(row, index)}} variant="contained" className={classes[buttonStyle]}>{cell.label}</Button>
+                                                        <Button onClick={() => {
+                                                            cell.click(row, index)
+                                                        }} variant="contained" className={classes[buttonStyle]}>{cell.label}</Button>
                                                     </StyledTableCell>
                                                 );
                                             } else {
@@ -223,27 +226,37 @@ function EnhancedTable(props) {
                                         })}
                                         {/*special columns for specific tables*/}
                                         {props.accept &&
-                                        <StyledTableCell align="left">
-                                            <Button onClick={() => {props.accept(row)}} variant="contained" className={classes.detailsButton}>Accept</Button>
-                                        </StyledTableCell>
+                                            <StyledTableCell align="left">
+                                                <Button onClick={() => {
+                                                    props.accept(row)
+                                                }} variant="contained" className={classes.detailsButton}>Accept</Button>
+                                            </StyledTableCell>
                                         }
                                         {props.edit &&
                                             <StyledTableCell align="left">
-                                                <Button onClick={() => {props.edit(row, index)}} variant="contained" className={classes.editButton}>Edit</Button>
+                                                <Button onClick={() => {
+                                                    props.edit(row, index)
+                                                }} variant="contained" className={classes.editButton}>Edit</Button>
                                             </StyledTableCell>
                                         }
                                         {props.delete &&
                                             <StyledTableCell align="left">
-                                                <Button onClick={() => {props.delete(row)}} variant="contained" className={classes.deleteButton}>Delete</Button>
+                                                <Button onClick={() => {
+                                                    props.delete(row)
+                                                }} variant="contained" className={classes.deleteButton}>Delete</Button>
                                             </StyledTableCell>
                                         }
                                         {props.actions &&
-                                        <StyledTableCell align="left">
-                                            <span style={{display: 'flex'}}>
-                                                <Button onClick={() => {props.actionEdit(row)}} variant="contained" className={classes.editButton} style={{marginRight: 10}}>Edit</Button>
-                                                <Button onClick={() => {props.actionDelete(row)}} variant="contained" className={classes.deleteButton}>Delete</Button>
+                                            <StyledTableCell align="left">
+                                            <span style={{ display: 'flex' }}>
+                                                <Button onClick={() => {
+                                                    props.actionEdit(row)
+                                                }} variant="contained" className={classes.editButton} style={{ marginRight: 10 }}>Edit</Button>
+                                                <Button onClick={() => {
+                                                    props.actionDelete(row)
+                                                }} variant="contained" className={classes.deleteButton}>Delete</Button>
                                             </span>
-                                        </StyledTableCell>
+                                            </StyledTableCell>
                                         }
                                     </StyledTableRow>
                                 );
@@ -257,7 +270,7 @@ function EnhancedTable(props) {
                 </Table>
             </TableContainer>
             {!props.noPagination && <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: rows.length }]}
                 component="div"
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
@@ -268,4 +281,5 @@ function EnhancedTable(props) {
         </Fragment>
     );
 }
+
 export default EnhancedTable;
