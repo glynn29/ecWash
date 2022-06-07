@@ -19,3 +19,4 @@ export const storageRef = storage.ref();
 export const getTimestamp = () => {
     return firebase.firestore.FieldValue.serverTimestamp();
 };
+export const passwordResetUrl = firebaseConfig.passwordResetUrl;
