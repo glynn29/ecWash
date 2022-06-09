@@ -16,6 +16,7 @@ import HistoryIcon from '@material-ui/icons/History';
 import DescriptionIcon from '@material-ui/icons/Description';
 import BuildIcon from '@material-ui/icons/Build';
 import Divider from "@material-ui/core/Divider";
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 import NavigationItem from "./NavagationItem/NavigationItem";
 
@@ -45,6 +46,7 @@ const NavigationItems = () => {
                     <NavigationItem link="/users" text="Users" icon={<PersonIcon />} />
                     <NavigationItem link="/parts" text="Parts" icon={<WorkOutlineIcon />} />
                     <NavigationItem link="/category" text="Categories" icon={<CategoryIcon />} />
+                    <NavigationItem link="/filters" text="Filters" icon={<FilterListIcon />} />
                     <Divider />
                     <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon />} />
                     <NavigationItem link="/supportdocuments" text="Tech Support Documents" icon={<DescriptionIcon />} />

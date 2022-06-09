@@ -16,7 +16,7 @@ const navigationItem = (props) => (
             exact
         >
             <ListItemIcon>{props.icon}</ListItemIcon>
-            <ListItemText primary={props.text}/>
+            <ListItemText primary={props.text} />
         </NavLink>
     </ListItem>
 );
