@@ -10,7 +10,7 @@ const CutSheets = (props) => {
     const [cutSheetCategories, setCutSheetCategories] = useState([]);
 
     useEffect(() => {
-        const unique = [...new Set(props.cutSheets.sort((a, b) => a.category > b.category ? 1 : -1).map(item => item.category))];
+        const unique = [...new Set(props.cutSheets.sort((a, b) => a.category > b.category ? 1 : -1).map(item => item.category.trim()))];
         setCutSheetCategories(unique);
     }, [props.cutSheets]);
 
