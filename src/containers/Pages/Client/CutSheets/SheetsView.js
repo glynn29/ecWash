@@ -21,7 +21,7 @@ const SheetsView = (props) => {
     let delay = 0;
 
     useEffect(() => {
-        const tempSheets = props.cutSheets.filter(item => item.category === category);
+        const tempSheets = props.cutSheets.filter(item => item.category.trim() === category);
         setSheets(tempSheets)
     }, [props.cutSheets, category]);
 
