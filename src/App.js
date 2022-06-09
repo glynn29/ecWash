@@ -3,6 +3,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 
+import Filters from "./containers/Pages/Admin/Filters/Filters";
 import ManagerResources from "./containers/Pages/Client/ManagerResources/ManagerResources";
 import SheetsView from "./containers/Pages/Client/CutSheets/SheetsView";
 import CutSheets from "./containers/Pages/Client/CutSheets/CutSheets";
@@ -27,8 +28,8 @@ import { AuthContext } from "./containers/Auth/Auth";
 import * as actions from './store/actions/index';
 
 const App = (props) => {
-    const {currentUser, isAdmin} = useContext(AuthContext);
-    const {getCurrentUser, onFetchParts, onFetchCategories, onFetchUsers} = props;
+    const { currentUser, isAdmin } = useContext(AuthContext);
+    const { getCurrentUser, onFetchParts, onFetchCategories, onFetchUsers } = props;
 
     useEffect(() => {
         if (currentUser) {
@@ -49,12 +50,12 @@ const App = (props) => {
 
     let routes = (
         <Switch>
-            <Route path="/register" component={Register}/>
-            <Route path="/login" component={Login}/>
-            <Route path="/logout" component={Logout}/>
-            <Route path="/forgot" component={Forgot}/>
-            <Route path="/" exact component={Home}/>
-            <Route render={() => <Page404/>}/>
+            <Route path="/register" component={Register} />
+            <Route path="/login" component={Login} />
+            <Route path="/logout" component={Logout} />
+            <Route path="/forgot" component={Forgot} />
+            <Route path="/" exact component={Home} />
+            <Route render={() => <Page404 />} />
         </Switch>
     );
 
@@ -62,42 +63,43 @@ const App = (props) => {
         if (isAdmin) {
             routes = (
                 <Switch>
-                    <Route path="/maintenance" component={ManagerResources}/>
-                    <Route path="/supportdocuments/categories/:category" component={SheetsView}/>
-                    <Route path="/supportdocuments" component={CutSheets}/>
-                    <Route path="/orders" component={Orders}/>
-                    <Route path="/checkout" component={Checkout}/>
-                    <Route path="/kits" component={Kits}/>
-                    <Route path="/category" component={Category}/>
-                    <Route path="/qr" component={QrCode}/>
-                    <Route path="/shopping/categories/:category" component={ItemView}/>
-                    <Route path="/shopping" component={Shopping}/>
-                    <Route path="/register" component={Register}/>
-                    <Route path="/login" component={Login}/>
-                    <Route path="/logout" component={Logout}/>
-                    <Route path="/forgot" component={Forgot}/>
-                    <Route path="/users" component={Users}/>
-                    <Route path="/parts" component={Parts}/>
-                    <Route path="/" exact component={Home}/>
-                    <Route render={() => <Page404/>}/>
+                    <Route path="/filters" component={Filters} />
+                    <Route path="/maintenance" component={ManagerResources} />
+                    <Route path="/supportdocuments/categories/:category" component={SheetsView} />
+                    <Route path="/supportdocuments" component={CutSheets} />
+                    <Route path="/orders" component={Orders} />
+                    <Route path="/checkout" component={Checkout} />
+                    <Route path="/kits" component={Kits} />
+                    <Route path="/category" component={Category} />
+                    <Route path="/qr" component={QrCode} />
+                    <Route path="/shopping/categories/:category" component={ItemView} />
+                    <Route path="/shopping" component={Shopping} />
+                    <Route path="/register" component={Register} />
+                    <Route path="/login" component={Login} />
+                    <Route path="/logout" component={Logout} />
+                    <Route path="/forgot" component={Forgot} />
+                    <Route path="/users" component={Users} />
+                    <Route path="/parts" component={Parts} />
+                    <Route path="/" exact component={Home} />
+                    <Route render={() => <Page404 />} />
                 </Switch>
             );
         } else {
             routes = (
                 <Switch>
-                    <Route path="/maintenance" component={ManagerResources}/>
-                    <Route path="/supportdocuments/categories/:category" component={SheetsView}/>
-                    <Route path="/supportdocuments" component={CutSheets}/>
-                    <Route path="/orderhistory" component={OrderHistory}/>
-                    <Route path="/checkout" component={Checkout}/>
-                    <Route path="/shopping/categories/:category" component={ItemView}/>
-                    <Route path="/shopping" component={Shopping}/>
-                    <Route path="/register" component={Register}/>
-                    <Route path="/login" component={Login}/>
-                    <Route path="/logout" component={Logout}/>
-                    <Route path="/forgot" component={Forgot}/>
-                    <Route path="/" exact component={Home}/>
-                    <Route render={() => <Page404/>}/>
+                    <Route path="/maintenance" component={ManagerResources} />
+                    <Route path="/supportdocuments/categories/:category" component={SheetsView} />
+                    <Route path="/supportdocuments" component={CutSheets} />
+                    <Route path="/orderhistory" component={OrderHistory} />
+                    <Route path="/checkout" component={Checkout} />
+                    <Route path="/shopping/categories/:category" component={ItemView} />
+                    <Route path="/shopping" component={Shopping} />
+                    <Route path="/register" component={Register} />
+                    <Route path="/login" component={Login} />
+                    <Route path="/logout" component={Logout} />
+                    <Route path="/forgot" component={Forgot} />
+                    <Route path="/" exact component={Home} />
+                    <Route render={() => <Page404 />} />
                 </Switch>
             );
         }
