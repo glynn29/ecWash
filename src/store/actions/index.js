@@ -27,4 +27,7 @@ export {
 
 export {
     onFetchUsers,
+    onAddUser,
+    onEditUser,
+    onRemoveUser
 } from './users'
