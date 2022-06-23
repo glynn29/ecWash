@@ -72,7 +72,7 @@ const Register = (props) => {
             isValid = false;
         }
 
-        setError({...tempErrors});
+        setError({ ...tempErrors });
         return isValid;
     };
 
@@ -106,24 +106,24 @@ const Register = (props) => {
     };
 
     if (props.isRegistered) {
-        return <Redirect to={"/login"}/>
+        return <Redirect to={"/login"} />
     }
 
     const form = (
         <Container component="main" maxWidth="sm">
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon/>
+                    <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Register
                 </Typography>
-                <br/>
+                <br />
                 <form className={classes.form} onSubmit={submitHandler}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Typography>Credentials</Typography>
-                            <Divider/>
+                            <Divider />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -136,8 +136,8 @@ const Register = (props) => {
                                 id="email"
                                 label="Email Address"
                                 autoFocus
-                                {...(error.email && {error: true, helperText: error.email})}
-                                inputProps={{maxLength: 63}}
+                                {...(error.email && { error: true, helperText: error.email })}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -151,8 +151,8 @@ const Register = (props) => {
                                 label="Password"
                                 type="password"
                                 id="password"
-                                {...(error.password && {error: true, helperText: error.password})}
-                                inputProps={{maxLength: 63}}
+                                {...(error.password && { error: true, helperText: error.password })}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -165,13 +165,13 @@ const Register = (props) => {
                                 label="Password Confirm"
                                 type="password"
                                 id="passwordConfirm"
-                                {...(error.password && {error: true, helperText: error.password})}
-                                inputProps={{maxLength: 63}}
+                                {...(error.password && { error: true, helperText: error.password })}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <Typography>Car Wash Location Info</Typography>
-                            <Divider/>
+                            <Divider />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -182,8 +182,8 @@ const Register = (props) => {
                                 fullWidth
                                 id="city"
                                 label="City"
-                                {...(error.email && {error: true, helperText: error.email})}
-                                inputProps={{maxLength: 63}}
+                                {...(error.email && { error: true, helperText: error.email })}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={2}>
@@ -195,7 +195,7 @@ const Register = (props) => {
                                 fullWidth
                                 id="state"
                                 label="State"
-                                inputProps={{maxLength: 2}}
+                                inputProps={{ maxLength: 2 }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={4}>
@@ -207,7 +207,7 @@ const Register = (props) => {
                                 fullWidth
                                 id="zip"
                                 label="Zip Code"
-                                inputProps={{maxLength: 5}}
+                                inputProps={{ maxLength: 5 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -219,7 +219,7 @@ const Register = (props) => {
                                 fullWidth
                                 id="address"
                                 label="Address"
-                                inputProps={{maxLength: 63}}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -231,12 +231,12 @@ const Register = (props) => {
                                 fullWidth
                                 id="phone"
                                 label="Phone Number"
-                                inputProps={{maxLength: 10}}
+                                inputProps={{ maxLength: 10 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <Typography>General Manager Contact Info</Typography>
-                            <Divider/>
+                            <Divider />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -247,8 +247,8 @@ const Register = (props) => {
                                 fullWidth
                                 id="firstName"
                                 label="First Name"
-                                {...(error.first && {error: true, helperText: error.first})}
-                                inputProps={{maxLength: 63}}
+                                {...(error.first && { error: true, helperText: error.first })}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -260,8 +260,8 @@ const Register = (props) => {
                                 fullWidth
                                 id="lastName"
                                 label="Last Name"
-                                {...(error.last && {error: true, helperText: error.last})}
-                                inputProps={{maxLength: 63}}
+                                {...(error.last && { error: true, helperText: error.last })}
+                                inputProps={{ maxLength: 63 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -273,7 +273,7 @@ const Register = (props) => {
                                 fullWidth
                                 id="mobile"
                                 label="Phone Number"
-                                inputProps={{maxLength: 10}}
+                                inputProps={{ maxLength: 10 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -299,12 +299,12 @@ const Register = (props) => {
                     </Grid>
                 </form>
             </div>
-            <br/>
-            <br/>
+            <br />
+            <br />
         </Container>
     );
 
-    return props.loading ? <Spinner/> : form;
+    return props.loading ? <Spinner /> : form;
 };
 
 const mapStateToProps = state => {

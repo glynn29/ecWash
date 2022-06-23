@@ -9,20 +9,20 @@ import useStyles from "../../Styles/formStyle";
 
 const DeleteForm = props => {
     const classes = useStyles();
-    const formData = props.formData;
 
     const handleDelete = () => {
-        props.onDelete(formData.id);
+        props.onDelete(props.formData.id);
     };
 
     return (
-        <Container component="main" maxWidth="sm" style={{textAlign: 'center'}}>
+        <Container component="main" maxWidth="sm" style={{ textAlign: 'center' }}>
             <Grid container spacing={1}>
                 <Grid item xs={12}>
                     <Typography>{props.title}</Typography>
                 </Grid>
-                <Grid item xs={10} style={{margin: 'auto'}}>
+                <Grid item xs={10} style={{ margin: 'auto' }}>
                     <Button
+                        disabled={props.loading}
                         variant="contained"
                         className={classes.detailsButton}
                         onClick={handleDelete}
