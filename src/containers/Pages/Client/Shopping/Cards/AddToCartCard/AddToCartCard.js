@@ -55,11 +55,11 @@ const AddToCartCard = ({item, onAddItem, close}) => {
                                            InputProps={{inputProps: {min: 1, max: 5000, step: 1}}}/>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item md={6} xs={12}>
                             <Button onClick={() => close()} variant={"outlined"}
                                     style={{width: '100%', color: '#d8222b'}}>Close</Button>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item md={6} xs={12}>
                             <Button type={"submit"} variant={"contained"} color={"primary"} style={{width: '100%'}}>Add
                                 to Cart</Button>
                         </Grid>
