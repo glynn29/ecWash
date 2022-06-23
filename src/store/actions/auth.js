@@ -1,34 +1,34 @@
 import * as actionTypes from './actionTypes';
-import {auth, firestore, functions} from "../../firebase";
+import { auth, firestore, functions } from "../../firebase";
 
 export const authStart = () => {
-    return{
+    return {
         type: actionTypes.AUTH_START
     };
 };
 
 export const authSuccess = () => {
-    return{
+    return {
         type: actionTypes.AUTH_SUCCESS,
     };
 };
 
 export const registerSuccess = () => {
-    return{
+    return {
         type: actionTypes.REGISTER_SUCCESS,
         registered: true
     }
 };
 
 export const authFail = (error) => {
-    return{
+    return {
         type: actionTypes.AUTH_FAIL,
         error: error
     };
 };
 
 export const getCurrentUser = (user) => {
-    return{
+    return {
         type: actionTypes.FETCH_CURRENT_USER,
         first: user.first,
         last: user.last,
@@ -46,28 +46,29 @@ export const getCurrentUser = (user) => {
 };
 
 export const logout = () => {
-    auth.signOut().then(() => console.log("user signed out"));
-    return{
-      type: actionTypes.AUTH_LOGOUT
+    auth.signOut()
+        .then(() => console.log("user signed out"));
+    return {
+        type: actionTypes.AUTH_LOGOUT
     };
 };
 
 export const login = (email, password) => {
-  return dispatch =>{
-      dispatch(authStart());
-      auth.signInWithEmailAndPassword(email,password)
-          .then(()=>{
-              dispatch(authSuccess());
-          })
-          .catch(error => dispatch(authFail(error.message)))
-  }
+    return dispatch => {
+        dispatch(authStart());
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                dispatch(authSuccess());
+            })
+            .catch(error => dispatch(authFail(error.message)))
+    }
 };
 
 export const register = (registerData) => {
     return dispatch => {
         dispatch(authStart());
         const createNewUser = functions.httpsCallable('createNewUser');
-        createNewUser({email: registerData.email, password: registerData.password})
+        createNewUser({ email: registerData.email, password: registerData.password })
             .then(() => {
                 dispatch(registerSuccess());
                 createUser(registerData)
@@ -77,8 +78,9 @@ export const register = (registerData) => {
     }
 };
 
-async function createUser({first, last, email, city, state, zip, address,locationPhone, managerPhone}) {
-    const userRef = firestore.collection('users').doc(email);
+async function createUser({ first, last, email, city, state, zip, address, locationPhone, managerPhone }) {
+    const userRef = firestore.collection('users')
+        .doc(email);
     await userRef.set(
         {
             first: first,
@@ -96,9 +98,11 @@ async function createUser({first, last, email, city, state, zip, address,locatio
 }
 
 export const getUser = () => {
-     return dispatch => {
-        const {email} = auth.currentUser;
-        firestore.collection('users').doc(email).get()
+    return dispatch => {
+        const { email } = auth.currentUser;
+        firestore.collection('users')
+            .doc(email)
+            .get()
             .then((user) => {
                 dispatch(getCurrentUser(user.data()));
             });

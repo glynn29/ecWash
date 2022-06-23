@@ -6,7 +6,7 @@ async function getUsers() {
     const usersRef = await firestore.collection('users')
         .get();
     usersRef.forEach((user) => {
-        users.push({...user.data(), id: user.id});
+        users.push({ ...user.data(), id: user.id });
     });
     return users;
 }
@@ -55,9 +55,10 @@ export const onAddUser = (user) => {
     return dispatch => {
         dispatch(usersStart());
         firestore.collection('users')
-            .add(user)
-            .then((response) => {
-                user.id = response.id;
+            .doc(user.email)
+            .set(user)
+            .then(() => {
+                user.id = user.email;
                 dispatch(usersSuccess());
                 dispatch(addUser(user));
             })

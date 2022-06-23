@@ -7,7 +7,7 @@ async function getCategories() {
         .orderBy('name', 'asc')
         .get();
     categoriesRef.forEach((category) => {
-        categories.push({...category.data(), id: category.id});
+        categories.push({ ...category.data(), id: category.id });
     });
     return categories;
 }
