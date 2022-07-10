@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { withSnackbar } from "notistack";
 
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
@@ -9,11 +10,13 @@ import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import AutoComplete from "@material-ui/lab/Autocomplete";
 import Skeleton from "@material-ui/lab/Skeleton";
+import Slide from "@material-ui/core/Slide";
 
 import { firestore } from "../../../../firebase";
 import OrdersTable from "./OrdersTable";
 import useStyles from "../../../../components/UI/Styles/formStyle";
 import useFetch from "../../../../apiCalls/useFetch";
+import * as actions from "../../../../store/actions";
 
 const statusList = [
     'new',
@@ -33,6 +36,18 @@ const Orders = (props) => {
     const ordersRef = firestore.collection("orders")
         .orderBy("createdAt", "desc");
     const [result, isLoading] = useFetch(ordersRef);
+
+    useEffect(() => {
+        if (props.orderComplete) {
+            props.enqueueSnackbar('Order Complete', {
+                variant: "success",
+                autoHideDuration: 9000,
+                TransitionComponent: Slide,
+                anchorOrigin: {vertical: 'bottom', horizontal: 'right'}
+            });
+            props.clearOrder();
+        }
+    }, [props.orderComplete]);
 
     useEffect(() => {
         if (props.parts && result) {
@@ -149,11 +164,18 @@ const Orders = (props) => {
     );
 };
 
+const mapDispatchToProps = dispatch => {
+    return {
+        clearOrder: () => dispatch(actions.clearOrder()),
+    }
+};
+
 const mapStateToProps = state => {
     return {
+        orderComplete: state.cart.orderComplete,
         parts: state.parts.parts,
         users: state.users.users,
     };
 };
 
-export default connect(mapStateToProps)(Orders);
+export default connect(mapStateToProps, mapDispatchToProps)(withSnackbar(Orders));
