@@ -8,6 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import TextField from '@material-ui/core/TextField';
 import FormControl from "@material-ui/core/FormControl";
 import Container from "@material-ui/core/Container";
+import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+import CloseIcon from '@material-ui/icons/Close';
 
 import alt_image from "../../../../../../assets/images/alt_image.jpg";
 import * as actions from "../../../../../../store/actions";
@@ -36,14 +38,14 @@ const AddToCartCard = ({item, onAddItem, close}) => {
                 <Grid container spacing={2}>
                     <Grid item xs={12} className={classes.Pic}>
                         <CardMedia
+                            style={{borderRadius: '5px'}}
                             component="img"
                             alt={item && item.name}
                             image={pictureUrl}/>
                     </Grid>
                     <Grid container spacing={2} style={{margin: '0 auto', alignItems: 'end'}}>
                         <Grid item xs={12}>
-                            <Typography variant={"body2"}
-                                        style={{textAlign: 'left'}}>Description: {item && item.details}</Typography>
+                            <Typography variant={"body1"} style={{textAlign: 'left'}}>Description: {item && item.details}.</Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <FormControl style={{width: '100%'}}>
@@ -52,16 +54,21 @@ const AddToCartCard = ({item, onAddItem, close}) => {
                                            value={amount}
                                            variant={"outlined"}
                                            label={"Quantity"}
-                                           InputProps={{inputProps: {min: 1, max: 5000, step: 1}}}/>
+                                           onInput = {(e) => {
+                                               e.target.value = Math.max(0, parseInt(e.target.value) ).toString().slice(0,5)
+                                           }}
+                                           InputProps={{inputProps: {min: 1, max: 100, step: 1}}}/>
                             </FormControl>
                         </Grid>
                         <Grid item md={6} xs={12}>
-                            <Button onClick={() => close()} variant={"outlined"}
-                                    style={{width: '100%', color: '#d8222b'}}>Close</Button>
+                            <Button startIcon={<CloseIcon />} onClick={() => close()} variant={"outlined"} color={"secondary"} style={{width: '100%'}}>
+                                Close
+                            </Button>
                         </Grid>
                         <Grid item md={6} xs={12}>
-                            <Button type={"submit"} variant={"contained"} color={"primary"} style={{width: '100%'}}>Add
-                                to Cart</Button>
+                            <Button startIcon={<AddShoppingCartIcon />} type={"submit"} variant={"contained"} color={"primary"} style={{width: '100%'}}>
+                                Add to Cart
+                            </Button>
                         </Grid>
                     </Grid>
                 </Grid>

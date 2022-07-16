@@ -25,10 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 
 #firebase
-firebase.json
-firestore.indexes.json
-firestore.rules
-.firebaserc
 .env
 package-lock.json
 .firebase

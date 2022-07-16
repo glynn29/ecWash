@@ -39,14 +39,14 @@ const App = (props) => {
                 getCurrentUser();
             }
         }
-    }, [isAdmin, getCurrentUser, currentUser, onFetchUsers]);
+    }, [currentUser, isAdmin, getCurrentUser, onFetchUsers]);
 
     useEffect(() => {
         if (currentUser) {
-            onFetchParts();
+            onFetchParts(currentUser.email, isAdmin);
             onFetchCategories();
         }
-    }, [currentUser]);
+    }, [currentUser, isAdmin, onFetchParts, onFetchCategories]);
 
     let routes = (
         <Switch>
@@ -124,7 +124,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onFetchParts: () => dispatch(actions.onFetchParts()),
+        onFetchParts: (email, isAdmin) => dispatch(actions.onFetchParts(email, isAdmin)),
         onFetchCategories: () => dispatch(actions.onFetchCategories()),
         onFetchUsers: () => dispatch(actions.onFetchUsers()),
         getCurrentUser: () => dispatch(actions.getUser()),

@@ -6,7 +6,9 @@ import "firebase/functions";
 import "firebase/analytics";
 import "firebase/storage";
 
-const firebaseConfig = JSON.parse(process.env.REACT_APP_PROD_CONFIG);
+// const firebaseConfig = JSON.parse(process.env.REACT_APP_PROD_CONFIG);
+// const firebaseConfig = JSON.parse(process.env.REACT_APP_STAGING_CONFIG);
+const firebaseConfig = JSON.parse(process.env.REACT_APP_INSTALL_CONFIG);
 firebase.initializeApp(firebaseConfig);
 
 export default firebase;

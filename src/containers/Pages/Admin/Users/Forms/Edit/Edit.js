@@ -10,7 +10,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import formStyles from "../../../../../../components/UI/Styles/formStyle";
-import { firestore, functions } from "../../../../../../firebase";
+import { functions } from "../../../../../../firebase";
 
 const Edit = props => {
     const {formData} = props;
@@ -39,6 +39,7 @@ const Edit = props => {
             .slice(1);
 
         const formData = {
+            ...props.formData,
             city,
             state,
             zip,
@@ -51,26 +52,17 @@ const Edit = props => {
             approved: `${approved}`
         };
 
+        console.log(formData);
+        console.log(props.formData);
         setLoading(true);
         const updateUserApproval = functions.httpsCallable('updateUserApproval');
         updateUserApproval({disabled: !approved, email: props.formData.email})
             .then(() => {
-                firestore.collection('users')
-                    .doc(props.formData.id)
-                    .update(formData)
-                    .then(() => {
-                        setLoading(false);
-                        props.onEdit(formData);
-                    })
-                    .catch(error => {
-                        setLoading(false);
-                        console.log(error);
-                    });
-
+                props.onEdit(formData, props.formData.email);
             })
-            .catch(() => {
+            .catch((error) => {
                 setLoading(false);
-                console.log("error");
+                console.log(error);
             });
     };
 

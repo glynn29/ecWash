@@ -1,6 +1,6 @@
 const sendGrid = require('@sendgrid/mail');
 const functions = require('firebase-functions');
-const {debug} = require("firebase-functions/lib/logger");
+const { debug } = require("firebase-functions/lib/logger");
 const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
@@ -11,6 +11,7 @@ const userTemplate = functions.config().sendgrid.usertemplate;
 
 const EC_FROM = 'sales.expresscarwash@gmail.com';
 const EC_ORDER = 'orders@expresscarwash.com';
+// const EC_ORDER = 'gll46960@ucmo.edu'
 const EC_ADMIN_SUBJECT = 'New Order';
 const EC_USER_SUBJECT = 'Order Confirmation';
 const EC_ADMIN_TEXT = 'You have received a new order from %s';
@@ -54,7 +55,7 @@ exports.sendAutoMail = functions.firestore.document('orders/{orderId}')
             const partSnap = await db.collection('parts')
                 .doc(item.itemId)
                 .get();
-            const part = {...partSnap.data(), amount: item.amount};
+            const part = { ...partSnap.data(), amount: item.amount };
             debug(part);
             items.push(part);
         }
@@ -93,25 +94,58 @@ exports.sendAutoMail = functions.firestore.document('orders/{orderId}')
         const adminMessage = await sendGrid.send(adminMsg);
         debug(adminMessage);
 
-        return {userMessage: userMessage, adminMessage: adminMessage};
+        return { userMessage: userMessage, adminMessage: adminMessage };
     });
 
-exports.createNewUser = functions.https.onCall((data, context) => {
+exports.createNewUser = functions.https.onCall((data) => {
+    let disabled = true;
+    if (data.isAdmin) {
+        disabled = false;
+    }
     admin.auth()
         .createUser({
                         email: data.email,
                         emailVerified: true,
                         password: data.password,
-                        disabled: true,
+                        disabled: disabled,
                     })
         .then((userRecord) => {
             debug('Successfully created new user:', userRecord.uid);
-            return 'success';
+            return Promise.resolve('success');
         })
         .catch((error) => {
             debug('Error creating new user:', error);
-            return 'error';
+            return Promise.reject(error);
         });
+});
+
+exports.deleteUser = functions.https.onCall(async (data) => {
+    debug("Attempting to delete user with email:", data.email);
+    const userRecord = await admin.auth()
+        .getUserByEmail(data.email)
+        .catch(error => {
+            debug('Error getting user record:', error);
+            return error;
+        });
+    debug(userRecord);
+    const uid = userRecord.uid;
+
+    await admin.auth()
+        .deleteUser(uid)
+        .catch(error => {
+            debug('Error deleting user:', error);
+            return error;
+        });
+    debug('Successfully deleted user:', uid);
+    await db.collection("users")
+        .doc(data.email)
+        .delete()
+        .catch(error => {
+            debug('Error deleting user doc:', error);
+            return error;
+        });
+    debug('Successfully deleted user doc:', uid);
+    return 'success';
 });
 
 exports.updateUserApproval = functions.https.onCall((data, context) => {
@@ -128,11 +162,11 @@ exports.updateUserApproval = functions.https.onCall((data, context) => {
                 })
                 .catch((error) => {
                     debug('Error setting user approval:', error);
-                    return 'error';
+                    return error;
                 });
         })
         .catch((error) => {
             debug('Error setting user approval:', error);
-            return 'error';
+            return error;
         });
 });

@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Provider } from "react-redux";
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { SnackbarProvider } from "notistack";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import './index.css';
 import App from './App';
@@ -32,12 +33,37 @@ const store = createStore(rootReducer, composeEnhancers(
     applyMiddleware(thunk)
 ));
 
+const theme = createTheme({
+    typography: {
+        fontFamily: "Roboto , sans-serif"
+    },
+    palette: {
+        primary: {
+            // main: '#0050A4',
+            main: '#036DDF',
+            contrastText: '#fff'
+        },
+        secondary: {
+            main: '#D8222B',
+            contrastText: '#fff'
+        },
+        green: {
+            main: '#50A65B',
+            contrastText: '#fff',
+            dark: '#489552',
+            light: '#66B669'
+        }
+    },
+});
+
 const app = (
     <AuthProvider>
         <Provider store={store}>
             <BrowserRouter>
                 <SnackbarProvider maxSnack={3}>
-                    <App/>
+                    <ThemeProvider theme={theme}>
+                        <App/>
+                    </ThemeProvider>
                 </SnackbarProvider>
             </BrowserRouter>
         </Provider>

@@ -13,6 +13,10 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import Button from "@material-ui/core/Button";
+import GetAppIcon from '@material-ui/icons/GetApp';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 import useStyles from "../../../components/UI/Styles/formStyle";
 
@@ -144,10 +148,8 @@ function EnhancedTable(props) {
 
     const { data } = props;
     useEffect(() => {
-        if (data.length > 0) {
-            setRows(data);
-            setRowsPerPage(data.length >= 25 && !props.noPagination ? 25 : data.length);
-        }
+        setRows(data);
+        setRowsPerPage(data.length >= 25 && !props.noPagination ? 25 : data.length > 0 ? data.length : 5);
     }, [data, props.noPagination]);
 
     const handleRequestSort = (event, property) => {
@@ -170,7 +172,10 @@ function EnhancedTable(props) {
     return (
         <Fragment>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {props.add && <Button className={classes.addButton} disabled={props.addDisabled} variant="contained" onClick={() => props.add()}>Add</Button>}
+                {props.add && <Button startIcon={<AddIcon />} className={classes.addButton} color={"primary"} disabled={props.addDisabled} variant="contained"
+                                      onClick={() => props.add()}>Add</Button>}
+                {props.download && <Button startIcon={<GetAppIcon />} color={"primary"} disabled={props.downloadDisabled} variant="contained"
+                                           onClick={() => props.download()}>Download</Button>}
                 {props.handleApprovedSwitch &&
                     <span>{props.approvedLabel} <Switch checked={props.approvedSwitch} onChange={props.handleApprovedSwitch} /></span>
                 }
@@ -178,9 +183,7 @@ function EnhancedTable(props) {
             <TableContainer component={Paper} style={{ ...props.straightCorners, maxHeight: 550 }}>
                 <Table
                     stickyHeader
-                    aria-labelledby="tableTitle"
                     size={'small'}
-                    aria-label="enhanced table"
                 >
                     {props.caption && <caption>{props.caption}</caption>}
                     <EnhancedTableHead
@@ -210,7 +213,7 @@ function EnhancedTable(props) {
                                                     <StyledTableCell key={index} align="left">
                                                         <Button onClick={() => {
                                                             cell.click(row, index)
-                                                        }} variant="contained" className={classes[buttonStyle]}>{cell.label}</Button>
+                                                        }} variant="contained" className={classes[buttonStyle]} startIcon={cell.icon}>{cell.label}</Button>
                                                     </StyledTableCell>
                                                 );
                                             } else {
@@ -234,14 +237,14 @@ function EnhancedTable(props) {
                                         }
                                         {props.edit &&
                                             <StyledTableCell align="left">
-                                                <Button onClick={() => {
+                                                <Button startIcon={<EditIcon />} onClick={() => {
                                                     props.edit(row, index)
                                                 }} variant="contained" className={classes.editButton}>Edit</Button>
                                             </StyledTableCell>
                                         }
                                         {props.delete &&
                                             <StyledTableCell align="left">
-                                                <Button onClick={() => {
+                                                <Button startIcon={<DeleteIcon />} onClick={() => {
                                                     props.delete(row)
                                                 }} variant="contained" className={classes.deleteButton}>Delete</Button>
                                             </StyledTableCell>
@@ -249,10 +252,10 @@ function EnhancedTable(props) {
                                         {props.actions &&
                                             <StyledTableCell align="left">
                                             <span style={{ display: 'flex' }}>
-                                                <Button onClick={() => {
+                                                <Button startIcon={<EditIcon />} onClick={() => {
                                                     props.actionEdit(row)
                                                 }} variant="contained" className={classes.editButton} style={{ marginRight: 10 }}>Edit</Button>
-                                                <Button onClick={() => {
+                                                <Button startIcon={<DeleteIcon />} onClick={() => {
                                                     props.actionDelete(row)
                                                 }} variant="contained" className={classes.deleteButton}>Delete</Button>
                                             </span>

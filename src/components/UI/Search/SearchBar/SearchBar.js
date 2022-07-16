@@ -57,14 +57,6 @@ const SearchBar = (props) => {
         handleClose();
     };
 
-    const handleSearchClick = () => {
-        if (searchParam === "parts") {
-            setModalOpen(true);
-        } else {
-            history.push('/shopping/categories/' + searchItem.name);
-        }
-    };
-
     const handleSearchOnChange = (value) => {
         if (value) {
             if (searchParam === "parts") {
@@ -87,7 +79,7 @@ const SearchBar = (props) => {
     return (
         <div>
             <Paper component="form" className={styles.searchBar}>
-                <IconButton className={styles.iconButton} aria-label="menu" onClick={handleClick}>
+                <IconButton className={styles.searchIconButton} onClick={handleClick}>
                     <MenuIcon/>
                 </IconButton>
                 <Menu
@@ -113,16 +105,17 @@ const SearchBar = (props) => {
                         groupBy={(option) => option.name.charAt(0)}
                         getOptionLabel={(option) => (option.name)}
                         renderInput={(params) => (
-                            <TextField {...params} key={params} variant="outlined" placeholder={"Search " + searchParam.charAt(0)
-                                .toUpperCase() + searchParam.substr(1)}/>
+                            <TextField
+                                {...params}
+                                variant="outlined"
+                                style={{border: 'none !important'}}
+                                placeholder={"Search " + searchParam.charAt(0).toUpperCase() + searchParam.slice(1, searchParam.length)}
+                            />
                         )}
                     />
                 </FormControl>
-                <IconButton className={styles.searchIconButton}
-                            aria-label="search"
-                            disabled={searchItem === null}
-                            onClick={handleSearchClick}>
-                    <SearchIcon/>
+                <IconButton className={styles.searchIconButton}>
+                    <SearchIcon />
                 </IconButton>
             </Paper>
             <SearchModal open={modalOpen} close={handleModalClose} item={searchItem}/>

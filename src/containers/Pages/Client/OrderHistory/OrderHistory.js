@@ -19,10 +19,16 @@ import * as actions from "../../../../store/actions";
 const OrderHistory = (props) => {
     const styles = formStyles();
     const [orders, setOrders] = useState([]);
+    const { email } = props;
 
     useEffect(() => {
-        fetchOrders();
-    });
+        if (props.parts.length > 0) {
+            fetchOrders()
+                .then(response => {
+                    setOrders(response);
+                });
+        }
+    }, [email, props.parts]);
 
     useEffect(() => {
         if (props.orderComplete) {
@@ -30,27 +36,35 @@ const OrderHistory = (props) => {
                 variant: "success",
                 autoHideDuration: 9000,
                 TransitionComponent: Slide,
-                anchorOrigin: {vertical: 'bottom', horizontal: 'right'}
+                anchorOrigin: { vertical: 'bottom', horizontal: 'right' }
             });
             props.clearOrder();
         }
     }, [props.orderComplete]);
 
-    const fetchOrders = () => {
+    const extractItems = (order) => {
+        let items = [];
+        order.items.forEach(item => {
+            const partIndex = props.parts.findIndex(part => part.id === item.itemId);
+            let part = { ...props.parts[partIndex], amount: item.amount };
+            items.push(part);
+        });
+        return { ...order, items: items };
+    };
+
+    const fetchOrders = async () => {
         const ordersRef = firestore.collection("orders")
             .where("email", "==", props.email)
-            .orderBy("date", "desc")
-            .orderBy("time", "desc");
-
-        ordersRef.get()
+            .orderBy("createdAt", "desc");
+        let ordersList = [];
+        await ordersRef.get()
             .then((res) => {
-                let ordersList = [];
                 res.forEach(order => {
-                    ordersList.push({...order.data(), id: order.id});
+                    ordersList.push({ ...extractItems(order.data()), id: order.id });
                 });
-                setOrders(ordersList);
             })
             .catch((error) => console.log(error));
+        return ordersList;
     };
 
     const handleOrderAgain = (order, event) => {
@@ -62,25 +76,25 @@ const OrderHistory = (props) => {
             variant: "success",
             autoHideDuration: 3000,
             TransitionComponent: Slide,
-            anchorOrigin: {vertical: 'bottom', horizontal: 'right'}
+            anchorOrigin: { vertical: 'bottom', horizontal: 'right' }
         });
     };
 
     const ordersView = (
         orders.map((order, index) =>
-                       <div key={order.id} style={{margin: '8px 0'}}>
-                           <Accordion style={{alignContent: 'center'}}>
+                       <div key={order.id} style={{ margin: '8px 0' }}>
+                           <Accordion style={{ alignContent: 'center' }}>
                                <AccordionSummary
-                                   expandIcon={<ExpandMoreIcon/>}
+                                   expandIcon={<ExpandMoreIcon />}
                                >
                                    <div style={{
                                        justifyContent: 'space-between',
                                        width: '100%',
                                        display: 'flex'
                                    }}>
-                                       <Typography
-                                           style={{alignSelf: 'center'}}>Order
-                                           #{index + 1}: {order.date}</Typography>
+                                       <Typography style={{ alignSelf: 'center' }}>
+                                           Order #{index + 1}: {order.date}
+                                       </Typography>
                                        <Button onClick={(event) => {
                                            handleOrderAgain(order, event);
                                        }}>
@@ -91,8 +105,8 @@ const OrderHistory = (props) => {
                                <AccordionDetails>
                                    <Grid container>
                                        {order.items.map(
-                                           item => <Grid item xs={12} sm={6} md={4} key={item.name}>{item.name}
-                                               <span style={{fontWeight: 'bold'}}> X </span>{item.amount}</Grid>
+                                           item => <Grid item xs={12} sm={6} md={4} key={item.id}>{item.name}
+                                               <span style={{ fontWeight: 'bold' }}> X </span>{item.amount}</Grid>
                                        )}
                                    </Grid>
                                </AccordionDetails>
@@ -122,7 +136,8 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
     return {
         email: state.auth.email,
-        orderComplete: state.cart.orderComplete
+        orderComplete: state.cart.orderComplete,
+        parts: state.parts.parts,
     };
 };
 

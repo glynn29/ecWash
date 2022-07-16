@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
     },
     textarea: {
-        resize: "both"
+        resize: 'both'
     },
     modal: {
         display: 'flex',
@@ -44,34 +44,66 @@ const useStyles = makeStyles((theme) => ({
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 0, 3),
-        borderRadius: 15
+        borderRadius: 15,
+        paddingTop: '0',
+        position: 'relative'
+    },
+    modalFormWrapper: {
+        maxHeight: '80vh',
+        '& .MuiGrid-container': {
+            maxHeight: '80vh',
+            overflow: 'auto'
+        },
+    },
+    modalExitButton: {
+        cursor: 'pointer',
+        position: 'absolute',
+        left: 'calc(100% - 35px)',
+        top: '0',
+        zIndex: 1,
+        backgroundColor: 'white',
+        borderRadius: '25px'
     },
     deleteButton: {
-        backgroundColor: "red",
-        color: "white"
+        backgroundColor: theme.palette.secondary.main,
+        color: theme.palette.secondary.contrastText,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.dark,
+        },
     },
     editButton: {
-        backgroundColor: "green",
-        color: "white"
+        backgroundColor: theme.palette.green.main,
+        color: theme.palette.green.contrastText,
+        '&:hover': {
+            backgroundColor: theme.palette.green.dark,
+        },
     },
     detailsButton: {
-        backgroundColor: "blue",
-        color: "white"
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText
     },
     addButton: {
         margin: theme.spacing(1, 0, 1),
-        backgroundColor: "blue",
-        color: "white",
-        minWidth: 200
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        minWidth: 200,
+        '&:hover': {
+            backgroundColor: theme.palette.primary.dark,
+        },
     },
     cancelButton: {
-        color: "red",
+        color: theme.palette.secondary.main,
+        borderColor: theme.palette.secondary.main,
+        '&:hover': {
+            color: theme.palette.secondary.dark,
+            borderColor: theme.palette.secondary.dark,
+        },
     },
     visuallyHidden: {
-        display: "none"
+        display: 'none'
     },
     active: {
-        color: "yellow"
+        color: 'yellow'
     },
     menuPaper: {
         maxHeight: 300
@@ -81,17 +113,14 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     input: {
-        display: "none"
+        display: 'none'
     },
     button: {
-        color: "blue",
+        color: 'blue',
         margin: 10
     },
     root: {
         flexGrow: 1,
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
     },
     cartButton: {
         marginLeft: theme.spacing(2),
@@ -111,51 +140,63 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     searchInput: {
-        marginLeft: theme.spacing(1),
         flex: 1,
+        '& fieldset': {
+            border: 'none'
+        }
     },
     searchIconButton: {
-        padding: 10,
+        [theme.breakpoints.down('sm')]: {
+            display: 'none'
+        },
+    },
+    filterSwitch: {
+        flexDirection: 'column',
+        whiteSpace: 'nowrap',
+        marginRight: 0,
+        marginLeft: 0
     },
     homeTitle: {
         fontWeight: 'bold !important',
         fontSize: 26,
-        [theme.breakpoints.up("sm")]: {
+        [theme.breakpoints.up('sm')]: {
             fontSize: 35
         },
-        [theme.breakpoints.up("md")]: {
+        [theme.breakpoints.up('md')]: {
             fontSize: 40
         },
-        [theme.breakpoints.up("lg")]: {
+        [theme.breakpoints.up('lg')]: {
             fontSize: 45
         },
-        [theme.breakpoints.up("xl")]: {
+        [theme.breakpoints.up('xl')]: {
             fontSize: 50
         }
     },
     homeTagLine: {
         fontWeight: 'bold !important',
-        color: '#c12736',
+        color: theme.palette.secondary.main,
         fontStyle: 'italic',
         fontSize: 17,
-        [theme.breakpoints.up("sm")]: {
+        [theme.breakpoints.up('sm')]: {
             fontSize: 22
         },
-        [theme.breakpoints.up("md")]: {
+        [theme.breakpoints.up('md')]: {
             fontSize: 28
         },
-        [theme.breakpoints.up("lg")]: {
+        [theme.breakpoints.up('lg')]: {
             fontSize: 32
         },
-        [theme.breakpoints.up("xl")]: {
+        [theme.breakpoints.up('xl')]: {
             fontSize: 38
         }
     },
     cartItem: {
         boxShadow: theme.shadows[3],
         width: '98%',
-        marginLeft: "auto",
-        marginRight: "auto"
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        border: '1px solid lightgrey',
+        borderBottom: 'none'
     }
 }));
 

@@ -11,8 +11,10 @@ import Typography from "@material-ui/core/Typography";
 import { firestore } from "../../../../firebase";
 import CustomLinearProgress from "../../../../components/UI/LinearProgress/CustomLinearProgress";
 import { loadSheetsData } from "../../../../components/UI/Helper/Helper";
+import useStyles from "../../../../components/UI/Styles/formStyle";
 
 const Filters = (props) => {
+    const styles = useStyles();
     const [jsonData, setJsonData] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -97,7 +99,7 @@ const Filters = (props) => {
                         onClick={() => loadSheetsData(currentSheetId)}
                         fullWidth
                         variant="contained"
-                        style={{ color: "white", backgroundColor: "green" }}
+                        className={styles.editButton}
                     >
                         Refresh Data
                     </Button>

@@ -129,7 +129,7 @@ const EditForm = props => {
                                 onChange={event => setCategoryId(event.target.value)}
                                 label="Part Category"
                             >
-                                <option aria-label="None" value="" />
+                                <option value="" />
                                 {props.categories.map(listItem => {
                                     return (
                                         <option key={listItem.name} value={listItem.id}>{listItem.name}</option>

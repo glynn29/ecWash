@@ -23,6 +23,12 @@ const useStyles = makeStyles(() => ({
     cover: {
         width: 100,
         height: '100%'
+    },
+    card: {
+        height: '100%',
+        border: '1px solid lightgrey',
+        borderRadius: '15px',
+        borderBottom: '0'
     }
 }));
 
@@ -31,7 +37,7 @@ const CategoryCard = props => {
     const categoryPicture = props.categoryPicture ? props.categoryPicture : alt_image;
 
     return (
-        <Card key={props.key} style={{ height: '100%' }}>
+        <Card key={props.key} className={styles.card}>
             <CardActionArea component={Link} to={'/supportdocuments/categories/' + props.name} className={styles.root}>
                 <CardContent className={styles.content}>
                     <Typography gutterBottom variant="h6">{props.name}</Typography>

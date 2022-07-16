@@ -24,6 +24,12 @@ const useStyles = makeStyles(() => ({
         width: 100,
         height: '100%'
     },
+    card: {
+        height: '100%',
+        border: '1px solid lightgrey',
+        borderRadius: '15px',
+        borderBottom: '0'
+    }
 }));
 
 const CategoryCard = props => {
@@ -31,16 +37,18 @@ const CategoryCard = props => {
     const pic = props.pictureUrl ? props.pictureUrl : alt_image;
 
     return (
-        <Card key={props.key} style={{ height: '100%' }}>
+        <Card key={props.key} className={styles.card}>
             <CardActionArea component={Link} to={'/shopping/categories/' + props.name} className={styles.root}>
                 <CardContent className={styles.content}>
                     <Typography gutterBottom variant="h6">{props.name}</Typography>
                 </CardContent>
-                <CardMedia
-                    className={styles.cover}
-                    component="img"
-                    alt={props.name}
-                    image={pic} />
+                <div style={{ backgroundColor: 'lightgrey', height: '100%' }}>
+                    <CardMedia
+                        className={styles.cover}
+                        component="img"
+                        alt={props.name}
+                        image={pic} />
+                </div>
             </CardActionArea>
         </Card>
     );

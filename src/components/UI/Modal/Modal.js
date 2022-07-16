@@ -8,15 +8,15 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import Typography from "@material-ui/core/Typography";
 
 import useStyles from "../Styles/formStyle";
+import * as classes from "../../../containers/Pages/Client/Shopping/Checkout/Checkout.module.css";
+import { Bubble } from "../../../containers/Pages/Client/Shopping/Checkout/Bubble";
 
 const TransitionModal = (props) => {
-    const classes = useStyles();
+    const styles = useStyles();
 
     return (
         <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
+            className={styles.modal}
             open={props.open}
             onClose={props.handleClose}
             closeAfterTransition
@@ -24,21 +24,21 @@ const TransitionModal = (props) => {
             BackdropProps={{
                 timeout: 500,
             }}
-            style={props.alignTop ? {alignItems: 'start'} : {alignItems: 'center'}}
+            style={props.alignTop ? { alignItems: 'start' } : { alignItems: 'center' }}
         >
             <Fade in={props.open}>
-                <div className={classes.modalPaper}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', width: '98%', margin: 'auto'}}>
-                        <div style={{width: '35px'}}></div>
-                        <Typography component="h1" variant="h5">
+                <div className={styles.modalPaper}>
+                    <HighlightOffIcon onClick={props.handleClose} color={"error"} fontSize={"large"} className={styles.modalExitButton} />
+                    <div>
+                        <Typography component={"h1"} variant={"h5"} className={classes.Title}>
+                            <Bubble left={2} />
+                            <Bubble left={90} top={33} />
                             {props.title}
                         </Typography>
-                        <HighlightOffIcon onClick={props.handleClose} color={"error"} fontSize={"large"}
-                                          style={{marginTop: '-10px', cursor: 'pointer'}}/>
                     </div>
-                    <div style={{maxHeight: '80vh'}}>
-                        {props.title && <Divider style={{width: "100%"}}/>}
-                        <br/>
+                    <div className={styles.modalFormWrapper}>
+                        {props.title && <Divider style={{ width: "100%" }} />}
+                        <br />
                         {props.form}
                     </div>
                 </div>

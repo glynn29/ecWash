@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from "@material-ui/core/Typography";
 import CardActionArea from "@material-ui/core/CardActionArea";
-import CardMedia from "@material-ui/core/CardMedia";
 
 import alt_image from "../../../../../assets/images/alt_image.jpg";
 import * as classes from "../../Shopping/Cards/ItemCard/ItemCard.module.css";
@@ -25,14 +25,12 @@ const ItemCard = ({ item, pdfs }) => {
     return (
         <Card key={item.name} className={classes.Card}>
             <CardActionArea className={classes.CardActionArea} component={Link} to={pdf} target={'_blank'} rel={"noopener noreferrer"}>
-                <div className={classes.Pic}>
-                    <CardMedia
-                        component={"img"}
-                        alt={item.name}
-                        image={itemPicture}
-                    />
+                <div className={classes.Pic} >
+                    <Document file={pdf} className={classes.Document} loading={<img src={itemPicture} alt={"img"} style={{maxHeight: '200px'}} />}>
+                        <Page pageNumber={1} height={200} className={classes.Page} />
+                    </Document>
                 </div>
-                <div className={classes.Title}>
+                <div className={classes.Title} style={{maxHeight: '150px'}}>
                     <CardContent>
                         <Typography gutterBottom variant="h6" style={{ textAlign: 'center', wordBreak: 'break-word' }}>{item.name}</Typography>
                     </CardContent>

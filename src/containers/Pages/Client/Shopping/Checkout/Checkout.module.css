@@ -1,0 +1,36 @@
+.Title {
+    font-weight: 500 !important;
+    margin: 12px !important;
+    /*background: linear-gradient(45deg, #d8222b, #FF2833);*/
+    background: linear-gradient(45deg, #0050A4, #036DDF);
+    border-radius: 5px;
+    color: white;
+    padding: 5px 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.Card {
+    box-shadow: 5px 5px 5px lightgrey !important;
+    border: 1px solid lightgrey;
+}
+
+.Bubble {
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50px;
+    position: absolute;
+}
+
+.Dot {
+    height: 10%;
+    width: 25%;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.5);
+    transform: rotate(38deg);
+    position: absolute;
+    top: 15%;
+    right: 20%;
+}

@@ -9,7 +9,7 @@ import EC_Recommended_Maintenance from "../../../../assets/files/Manager Resourc
 
 const ManagerResources = () => {
     const item = {
-        name: "Recommended Maintenance",
+        name: "Recommended Preventive Maintenance",
         file: "EC_Recommended_Maintenance"
     }
 

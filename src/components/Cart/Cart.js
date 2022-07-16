@@ -5,14 +5,18 @@ import { useHistory } from "react-router-dom";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
+import ShopIcon from '@material-ui/icons/Shop';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 import CartItem from "./CartItem/CartItem";
 import * as actions from '../../store/actions/index';
 import classes from "./Cart.module.css";
 import alt_image from "../../assets/images/alt_image.jpg";
+import useStyles from "../UI/Styles/formStyle";
 
 const Cart = (props) => {
     const history = useHistory();
+    const styles = useStyles();
     const [items, setItems] = useState(null);
     const hasItems = props.items.length > 0;
 
@@ -49,15 +53,17 @@ const Cart = (props) => {
                     </Grid>
                 }
                 <Grid item xs={12} sm={hasItems ? 6 : 12}>
-                    <Button onClick={props.close} variant={"outlined"}
-                            style={{width: '100%', color: '#d8222b'}}><span
-                        style={{whiteSpace: 'nowrap', padding: '0 20px'}}>Continue
-                            Shopping</span></Button>
+                    <Button startIcon={<ArrowBackIosIcon />} onClick={props.close} variant={"outlined"} color={"secondary"}
+                            style={{ width: '100%'}}>
+                            Continue Shopping
+                    </Button>
                 </Grid>
                 {hasItems &&
                     <Grid item xs={12} sm={6}>
-                        <Button variant={"contained"} style={{width: '100%', whiteSpace: 'nowrap'}} color={"primary"}
-                                onClick={handleCheckoutClick}>Check Out</Button>
+                        <Button startIcon={<ShopIcon />} variant={"contained"} style={{ width: '100%', whiteSpace: 'nowrap' }} color={"primary"}
+                                onClick={handleCheckoutClick}>
+                            Check Out
+                        </Button>
                     </Grid>
                 }
             </Grid>

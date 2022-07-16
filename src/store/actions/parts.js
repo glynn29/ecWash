@@ -1,21 +1,40 @@
 import * as actionTypes from './actionTypes';
 import { firestore } from "../../firebase";
 
-async function getParts() {
+async function getParts(email, isAdmin) {
     let parts = [];
     const partsRef = await firestore.collection('parts')
         .orderBy("name", "asc")
-        .get();
+        .get()
+        .catch(error => console.log(error));
+
+    const filters = [];
+
+    if (!isAdmin) {
+        const filterRef = await firestore.collectionGroup("filters")
+            .where("usersToFilter", "array-contains", email)
+            .get()
+            .catch(error => console.log(error));
+
+        filterRef.forEach(filter => {
+            filters.push(filter.ref.parent.parent.id);
+        });
+        //console.log(filters);
+    }
+
     partsRef.forEach((part) => {
-        parts.push({...part.data(), id: part.id});
+        if (isAdmin || !filters.includes(part.id)) {
+            parts.push({ ...part.data(), id: part.id });
+        }
     });
+    //console.log(parts);
     return parts;
 }
 
-export const onFetchParts = () => {
+export const onFetchParts = (email, isAdmin) => {
     return dispatch => {
         dispatch(partsStart());
-        getParts()
+        getParts(email, isAdmin)
             .then((parts) => {
                 dispatch(partsSuccess());
                 dispatch(setParts(parts));
@@ -53,6 +72,7 @@ export const addPart = (part) => {
 };
 
 export const onAddPart = (part, id) => {
+    const updatedPart = { ...part, id };
     return dispatch => {
         dispatch(partsStart());
         firestore.collection('parts')
@@ -60,7 +80,7 @@ export const onAddPart = (part, id) => {
             .set(part)
             .then(() => {
                 dispatch(partsSuccess());
-                dispatch(addPart(part));
+                dispatch(addPart(updatedPart));
             })
             .catch(error => {
                 dispatch(partsFail(error));
@@ -77,7 +97,7 @@ export const editPart = (part, id) => {
 };
 
 export const onEditPart = (part, id) => {
-    let cleanedPart = {...part};
+    let cleanedPart = { ...part };
     delete cleanedPart.id;
     delete cleanedPart.category;
 

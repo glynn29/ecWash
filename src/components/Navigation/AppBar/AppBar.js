@@ -16,7 +16,7 @@ import HeaderCartButton from "../HeaderCartButton/HeaderCartButton";
 import formStyles from "../../../components/UI/Styles/formStyle";
 
 export default function CustomAppBar() {
-    const {currentUser} = useContext(AuthContext);
+    const { currentUser } = useContext(AuthContext);
     const styles = formStyles();
     const [drawerState, setDrawerState] = useState(false);
     const [modalState, setModalState] = useState(false);
@@ -33,25 +33,25 @@ export default function CustomAppBar() {
         <Fragment>
             <AppBar position="static" className={classes.Color}>
                 <Toolbar className={classes.BarCenter}>
-                    <IconButton className={styles.menuButton} edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
+                    <IconButton className={styles.menuButton} edge="start" color="inherit" onClick={toggleDrawer}>
                         <MenuIcon fontSize={"large"} />
                     </IconButton>
                     <div className={classes.Pic}>
-                        <EcIcon/>
+                        <EcIcon />
                     </div>
                     {currentUser && <div className={classes.Search}>
-                        <SearchBar/>
+                        <SearchBar />
                     </div>}
                     {currentUser && <div className={classes.Button}>
-                        <HeaderCartButton open={toggleModal}/>
+                        <HeaderCartButton open={toggleModal} />
                     </div>}
                 </Toolbar>
             </AppBar>
-            <SideDrawer toggleDrawer={toggleDrawer} drawerState={drawerState}/>
+            <SideDrawer toggleDrawer={toggleDrawer} drawerState={drawerState} />
             <TransitionModal
                 open={modalState}
                 handleClose={toggleModal}
-                form={<Cart close={toggleModal}/>}
+                form={<Cart close={toggleModal} />}
                 title={"Cart"}
             />
         </Fragment>

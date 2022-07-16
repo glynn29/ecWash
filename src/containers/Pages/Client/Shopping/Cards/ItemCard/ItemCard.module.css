@@ -1,11 +1,14 @@
 .Card {
     height: 100%;
     max-height: 400px;
+    min-height: 300px;
     box-shadow: 5px 5px 5px lightgrey !important;
+    border: 1px solid lightgrey;
+    border-radius: 15px !important;
 }
 
 .CardActionArea {
-    display: flex;
+    height: 100%;
     flex-direction: column;
 }
 
@@ -17,4 +20,13 @@
     flex: 0 1;
     height: auto;
     max-width: 100%;
+}
+
+.Document {
+    max-height: 200px;
+    min-height: 200px;
+}
+
+.Page canvas {
+    margin: 5px auto;
 }

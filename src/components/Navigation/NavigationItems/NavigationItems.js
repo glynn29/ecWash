@@ -28,13 +28,7 @@ const NavigationItems = () => {
         :
         <NavigationItem link="/login" text="Login" icon={<ArrowForwardIosIcon />} />;
 
-    let links = (
-        <List>
-            {nav}
-            <Divider />
-            <NavigationItem link="/" exact text="Home" icon={<HomeIcon />} />
-        </List>
-    );
+    let links;
 
     if (currentUser) {
         if (isAdmin) {
@@ -43,20 +37,21 @@ const NavigationItems = () => {
                     {nav}
                     <Divider />
                     <NavigationItem link="/orders" text="Orders" icon={<HistoryIcon />} />
-                    <NavigationItem link="/users" text="Users" icon={<PersonIcon />} />
                     <NavigationItem link="/parts" text="Parts" icon={<WorkOutlineIcon />} />
-                    <NavigationItem link="/category" text="Categories" icon={<CategoryIcon />} />
                     <NavigationItem link="/filters" text="Filters" icon={<FilterListIcon />} />
+                    <NavigationItem link="/users" text="Users" icon={<PersonIcon />} />
+                    <NavigationItem link="/category" text="Categories" icon={<CategoryIcon />} />
                     <Divider />
                     <NavigationItem link="/shopping" text="Shopping" icon={<ShoppingCartIcon />} />
                     <NavigationItem link="/supportdocuments" text="Tech Support Documents" icon={<DescriptionIcon />} />
-                    <NavigationItem link="/maintenance" text="Recommended Maintenance" icon={<BuildIcon />} />
+                    <NavigationItem link="/maintenance" text="Recommended Preventive Maintenance" icon={<BuildIcon />} />
                     <Divider />
                     <NavigationItem link="/qr" text="QR Manager" icon={<CropFreeIcon />} />
                     <NavigationItem link="/kits" text="Mass Picture Upload" icon={<BurstModeIcon />} />
                 </List>
             )
         } else {
+            // 3 109 223 1
             links = (
                 <List>
                     {nav}
@@ -65,10 +60,18 @@ const NavigationItems = () => {
                     <NavigationItem link="/orderhistory" text="Orders History" icon={<HistoryIcon />} />
                     <Divider />
                     <NavigationItem link="/supportdocuments" text="Tech Support Documents" icon={<DescriptionIcon />} />
-                    <NavigationItem link="/maintenance" text="Recommended Maintenance" icon={<BuildIcon />} />
+                    <NavigationItem link="/maintenance" text="Recommended Preventive Maintenance" icon={<BuildIcon />} />
                 </List>
             );
         }
+    } else {
+        links = (
+            <List>
+                {nav}
+                <Divider />
+                <NavigationItem link="/" exact text="Home" icon={<HomeIcon />} />
+            </List>
+        );
     }
 
     return links;

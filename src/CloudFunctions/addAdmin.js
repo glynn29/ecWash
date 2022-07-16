@@ -7,7 +7,7 @@ export const AddAdmin = () => {
         event.preventDefault();
         const addAdminRole = functions.httpsCallable('addAdminRole');
         addAdminRole({email: email})
-            .then(result => console.log("added: " + result))
+            .then(result => console.log("added: " + result.message))
             .catch(error => console.log(error.message));
     };
 

@@ -68,7 +68,7 @@ export const register = (registerData) => {
     return dispatch => {
         dispatch(authStart());
         const createNewUser = functions.httpsCallable('createNewUser');
-        createNewUser({ email: registerData.email, password: registerData.password })
+        createNewUser({ email: registerData.email, password: registerData.password, isAdmin: false })
             .then(() => {
                 dispatch(registerSuccess());
                 createUser(registerData)

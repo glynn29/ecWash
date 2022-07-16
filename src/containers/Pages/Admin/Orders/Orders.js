@@ -11,6 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import AutoComplete from "@material-ui/lab/Autocomplete";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Slide from "@material-ui/core/Slide";
+import Paper from "@material-ui/core/Paper";
 
 import { firestore } from "../../../../firebase";
 import OrdersTable from "./OrdersTable";
@@ -26,7 +27,7 @@ const statusList = [
 ];
 
 const Orders = (props) => {
-    const {users} = props;
+    const { users } = props;
     const styles = useStyles();
     const [tableData, setTableData] = useState([]);
     const [filterActive, setFilterActive] = useState(false);
@@ -43,7 +44,7 @@ const Orders = (props) => {
                 variant: "success",
                 autoHideDuration: 9000,
                 TransitionComponent: Slide,
-                anchorOrigin: {vertical: 'bottom', horizontal: 'right'}
+                anchorOrigin: { vertical: 'bottom', horizontal: 'right' }
             });
             props.clearOrder();
         }
@@ -55,8 +56,8 @@ const Orders = (props) => {
             result.forEach(order => {
                 const currentDate = new Date(order.createdAt.seconds * 1000);
                 const date = currentDate.toLocaleDateString("fr-CA");
-                const time = currentDate.toLocaleTimeString([], {timeStyle: 'short'});
-                ordersList.push({...order, date: date, time: time});
+                const time = currentDate.toLocaleTimeString([], { timeStyle: 'short' });
+                ordersList.push({ ...order, date: date, time: time });
             });
             setTableData(ordersList);
         }
@@ -77,8 +78,14 @@ const Orders = (props) => {
         setFilterActive(!filterActive);
     };
 
+    const handleSearchOnChange = (value) => {
+        if (value) {
+            setFilterActive(true);
+        }
+    };
+
     const onEdit = (order, id) => {
-        const tempOrder = {...order};
+        const tempOrder = { ...order };
         firestore.collection("orders")
             .doc(id)
             .update(tempOrder)
@@ -124,29 +131,36 @@ const Orders = (props) => {
 
     return (
         <Container>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-                <div className={styles.searchBar}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Paper className={styles.searchBar}>
                     <FormControl className={styles.searchInput}>
                         <AutoComplete
                             freeSolo
                             onChange={(event, value) => {
                                 setFilterValue(value);
+                                handleSearchOnChange(value);
                             }}
-                            options={Array.from(new Set(tableData.sort((a, b) => -b.nickName.charAt(0)
-                                .localeCompare(a.nickName.charAt(0)))
-                                                            .map(row => row.nickName)))}
+                            options={Array.from(
+                                new Set(
+                                    tableData.sort((a, b) => -b.nickName.charAt(0)
+                                        .localeCompare(a.nickName.charAt(0)))
+                                        .map(row => row.nickName)))}
                             groupBy={(option) => option.charAt(0)}
                             getOptionLabel={(option) => (option)}
                             renderInput={(params) => (
-                                <TextField {...params} key={params} variant="outlined" placeholder="Filter By NickName" />
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    placeholder="Filter by NickName"
+                                />
                             )}
                         />
                     </FormControl>
-                </div>
-                <p style={{padding: 10}} />
+                </Paper>
+                <p style={{ padding: 10 }} />
                 <FormControlLabel
                     disabled={filterValue === null}
-                    style={{float: 'right'}}
+                    className={styles.filterSwitch}
                     control={<Switch checked={filterActive} onChange={handleFilterSwitch} />}
                     label={filterActive ? "Disable Filter" : "Enable Filter"}
                 />

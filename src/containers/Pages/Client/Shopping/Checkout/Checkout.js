@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -8,46 +8,40 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import PersonIcon from '@material-ui/icons/Person';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 
 import useStyles from "../../../../../components/UI/Styles/formStyle";
-import { firestore } from "../../../../../firebase";
-import classes from "../../../../../components/Cart/Cart.module.css";
+import { firestore, getTimestamp } from "../../../../../firebase";
+import cartClasses from "../../../../../components/Cart/Cart.module.css";
 import CartItem from "../../../../../components/Cart/CartItem/CartItem";
 import Spinner from "../../../../../components/UI/Spinner/Spinner";
 import * as actions from "../../../../../store/actions";
-// import * as firebase from "firebase";
+import * as classes from './Checkout.module.css';
+import { AuthContext } from "../../../../Auth/Auth";
+import alt_image from "../../../../../assets/images/alt_image.jpg";
+import { Bubble } from "./Bubble";
 
 const Checkout = (props) => {
+    const {items, email, nickName} = props;
+    const {isAdmin} = useContext(AuthContext);
     const styles = useStyles();
     const history = useHistory();
     const [name, setName] = useState(props.managerFirst + " " + props.managerLast);
     const [phoneNumber, setPhoneNumber] = useState(props.locationPhone);
     const [comment, setComment] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [customerIndex, setCustomerIndexIndex] = useState("");
 
-    //for testing
-    const items2 = [{
-        category: "Air",
-        name: "AIR:1/2 x 3/8-PTFxMNPT Straight",
-        id: "s97cLTdt8RUbmTifMgJp",
-        details: null,
-        amount: 1,
-        pictureUrl: "https://firebasestorage.googleapis.com/v0/b/carwash-57347.appspot.com/o/parts%2FAir%2FAIR%3A1%2F2inchx3%2F8inch-PTFxMNPT%20Straight?alt=media&token=51d1e302-5e97-4afc-b756-4d7014869b5b"
-    }, {
-        id: "oEaSp5q9RsLMi9fvmAF8",
-        details: null,
-        name: "AIR:1/2-PTF x MNPT Straight",
-        amount: 1,
-        pictureUrl: "https://firebasestorage.googleapis.com/v0/b/carwash-57347.appspot.com/o/parts%2FAir%2FAIR%3A1%2F2inch-PTF%20x%20MNPT%20Straight?alt=media&token=3b308f5d-b8be-4b8d-a1ed-2eb2deed389e",
-        category: "Air"
-    }];
-
-    const {items, zip, email, nickName, address, city, state} = props;
-    const cartItems = <ul className={`${classes.cartItems} ${classes.CheckOutHeight}`}>{items
+    const cartItems = <ul className={`${cartClasses.CartItems} ${cartClasses.CheckOutHeight}`}>{items
         .map((item) => (
             <CartItem
+                pictureUrl={item.pictures.length > 0 ? item.pictures[0].pictureUrl : alt_image}
                 key={item.id}
-                price={item.price}
                 amount={item.amount}
                 name={item.name}
                 isLoading={isLoading}
@@ -56,45 +50,55 @@ const Checkout = (props) => {
             />
         ))}</ul>;
 
+    useEffect(() => {
+        if (items.length < 1) {
+            history.push('/shopping'); //TODO disable for testing
+        }
+    }, []);
+
     const submitOrderHandler = (e) => {
         e.preventDefault();
+        setIsLoading(true);
+        let adminEmail = "";
+        let adminNickName = "";
+        if (isAdmin) {
+            const customer = props.users[customerIndex];
+            adminEmail = customer.email;
+            adminNickName = customer.nickName;
+        }
+
         let cleanedItems = [];
         items.forEach(item => {
-            let cleanedItem = {...item};
-            delete cleanedItem.details;
+            let cleanedItem = {
+                itemId: item.id,
+                amount: item.amount
+            };
             cleanedItems.push(cleanedItem)
         });
-        //TODO change date to a timestamp
-        //const timestamp = firebase.firestore.FieldValue.serverTimestamp;
-
-        const date = new Date().toLocaleDateString();
-        const time = new Date().toLocaleTimeString();
+        const timestamp = getTimestamp();
 
         firestore.collection("orders")
             .add({
                      status: 'new',
                      statusStep: 1,
-                     date,
-                     time,
-                     name,
-                     nickName,
-                     email,
-                     phoneNumber,
-                     address,
-                     city,
-                     state,
-                     zip,
+                     createdAt: timestamp,
+                     updatedAt: timestamp,
+                     nickName: isAdmin ? adminNickName : nickName,
+                     email: isAdmin ? adminEmail : email,
                      comment,
-                     items: cleanedItems,
+                     items: cleanedItems
                  }
             )
             .then(() => {
-                setIsLoading(true);
                 const timeoutLength = (Math.random() * 700) + 300;
                 setTimeout(function () {
                     props.orderComplete();
                     props.clearItems();
-                    history.replace('/orderHistory');
+                    if (isAdmin) {
+                        history.replace('/orders');
+                    } else {
+                        history.replace('/orderhistory');
+                    }
                 }, timeoutLength);
             })
             .catch(error => console.log(error));
@@ -139,17 +143,71 @@ const Checkout = (props) => {
                             multiline
                             variant="outlined"
                             fullWidth
-                            rows={4}
+                            minRows={4}
                             inputProps={{className: styles.textarea, maxLength: 1024}}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <Button
+                            startIcon={<CheckCircleOutlineIcon />}
                             type={"submit"}
-                            color={"primary"}
                             variant={"contained"}
+                            className={`${styles.editButton} ${styles.submit}`}
+                            disabled={items.length < 1}>
+                            Order
+                        </Button>
+                    </Grid>
+                </Grid>
+            </form>
+        </Container>
+    );
+
+    const adminForm = (
+        <Container>
+            <form onSubmit={submitOrderHandler}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <FormControl variant="outlined" className={styles.formControl} required>
+                            <InputLabel>Customer</InputLabel>
+                            <Select
+                                native
+                                value={customerIndex}
+                                onChange={event => setCustomerIndexIndex(event.target.value)}
+                                label="Customer"
+                            >
+                                <option value="" />
+                                {props.users.map((listItem, index) => {
+                                    return (
+                                        <option key={listItem.nickName} value={index}>{listItem.nickName}</option>
+                                    );
+                                })}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            autoFocus
+                            value={comment}
+                            onChange={event => setComment(event.target.value)}
+                            id="outlined-textarea"
+                            label="Comments"
+                            multiline
+                            variant="outlined"
+                            fullWidth
+                            minRows={4}
+                            inputProps={{className: styles.textarea, maxLength: 1024}}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button
+                            startIcon={<CheckCircleOutlineIcon />}
+                            type={"submit"}
+                            variant={"contained"}
+                            color={"primary"}
                             className={styles.submit}
-                            disabled={items.length < 1}>Order</Button>
+                            disabled={items.length < 1}>
+                            Order
+                        </Button>
                     </Grid>
                 </Grid>
             </form>
@@ -159,19 +217,34 @@ const Checkout = (props) => {
     return (
         <Container className={styles.container}>
             <Grid container spacing={3}>
-                <Grid item xs={12} sm={8}>
-                    <Card style={{border: "solid 1px black", boxShadow: "5px 5px 5px lightgrey"}}>
-                        <Typography variant={"h5"}>Order Summary</Typography>
-                        <Container style={{overflow: 'auto'}}>
+                <Grid item xs={12} md={8}>
+                    <Card className={classes.Card}>
+
+                        <Typography variant={"h5"} className={classes.Title}>
+                            <Bubble left={1} size={18}/>
+                            <Bubble left={90} size={20}/>
+                            <Bubble left={2} />
+                            <Bubble left={90} top={33} />
+                            <ShoppingCartIcon />
+                            Order Summary
+                        </Typography>
+
+                        <Container>
                             {cartItems}
                         </Container>
+                        <br />
                     </Card>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                    <Card style={{border: "solid 1px black", boxShadow: "5px 5px 5px lightgrey"}}>
-                        <Typography variant={"h5"}>Customer Information</Typography>
-                        <br/>
-                        {isLoading ? <Spinner/> : customerForm}
+                <Grid item xs={12} md={4}>
+                    <Card className={classes.Card}>
+                        <Typography variant={"h5"} className={classes.Title}>
+                            <Bubble left={2} size={30}/>
+                            <Bubble left={80} />
+                            <PersonIcon />
+                            Customer Information
+                        </Typography>
+                        <br />
+                        {isLoading ? <Spinner /> : (isAdmin ? adminForm : customerForm)}
                     </Card>
                 </Grid>
             </Grid>
@@ -182,15 +255,12 @@ const Checkout = (props) => {
 const mapStateToProps = state => {
     return {
         items: state.cart.items,
-        zip: state.auth.zip,
         email: state.auth.email,
         managerFirst: state.auth.first,
         managerLast: state.auth.last,
         nickName: state.auth.nickName,
         locationPhone: state.auth.locationPhone,
-        address: state.auth.address,
-        city: state.auth.city,
-        state: state.auth.state,
+        users: state.users.users,
     };
 };
 

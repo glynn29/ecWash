@@ -16,8 +16,12 @@
     flex: 2;
 }
 
+.MobileSearch {
+    display: none;
+}
+
 .Button {
-    margin-right: 12px;
+    /*margin-right: 12px;*/
 }
 
 .BarCenter {
@@ -27,5 +31,11 @@
 @media (max-width: 520px) {
     .Pic {
         display: none;
+    }
+    .Search {
+        display: block;
+    }
+    .MobileSearch {
+        display: block;
     }
 }

@@ -33,7 +33,7 @@ const EditForm = props => {
         let tempItems = [];
         items.forEach(item => {
             const partIndex = props.parts.findIndex(part => part.id === item.itemId);
-            const part = props.parts[partIndex];
+            const part = {...props.parts[partIndex], amount: item.amount};
             tempItems.push(part);
         });
         return tempItems;

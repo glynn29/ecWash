@@ -13,7 +13,6 @@ function TabPanel(props) {
             role="tabpanel"
             hidden={value !== index}
             id={`full-width-tabpanel-${index}`}
-            aria-labelledby={`full-width-tab-${index}`}
             {...other}
         >
             {value === index && (
@@ -34,7 +33,6 @@ TabPanel.propTypes = {
 function a11yProps(index) {
     return {
         id: `full-width-tab-${index}`,
-        'aria-controls': `full-width-tabpanel-${index}`,
     };
 }
 
@@ -57,7 +55,6 @@ export default function CustomTabs(props) {
                     indicatorColor="primary"
                     textColor="primary"
                     variant="fullWidth"
-                    aria-label="full width tabs example"
                 >
                     {props.tabLabelList.map(label => {
                         tabIndex++;
